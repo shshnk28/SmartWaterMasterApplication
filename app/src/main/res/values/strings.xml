@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Master</string>
+    <string name="broadcast_string">broadcast string</string>
+    <string name="broadcast_hint">enter str to be published</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="received_string">received string</string>
+</resources>
