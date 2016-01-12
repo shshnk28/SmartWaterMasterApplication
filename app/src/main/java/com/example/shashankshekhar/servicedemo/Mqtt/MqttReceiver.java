@@ -60,33 +60,12 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
     @Override
     public void messageArrived(String topic,MqttMessage msg)
     {
-        CommonUtils.printLog("data received topic: " + topic);
-        CommonUtils.printLog("mqtt message: " +msg);
-         // TODO: 10/11/15 call the library here that does the broadcast to seperate out the Mqtt implementation - long time goal
+        CommonUtils.printLog("data received in MQTT Receiver for topic: " + topic);
+         // TODO: 10/11/15 call the library here that does the broadcast to seperate out the Mqtt implementation
         Intent broadcast = new Intent();
         broadcast.putExtra("message",msg.toString());
         broadcast.setAction(topic);
         context.sendBroadcast(broadcast);
-
-
-//        Intent intent=new Intent(this,activity_subscriber_map.class);
-//        String msg_content[]=msg.toString().split("-");
-//        intent.putExtra("lat",msg_content[0]);
-//        intent.putExtra("long",msg_content[1]);
-//        intent.putExtra("event",msg_content[2]);
-//        PendingIntent pendingIntent=PendingIntent.getActivity(this, 0, intent, 0);
-//        Notification notification=new Notification.Builder(this)
-//                .setTicker(topic)
-//                .setContentTitle(msg_content[2])
-//                .setContentText("at ( "+msg_content[0]+" , "+msg_content[1]+" )")
-//                .setSmallIcon(R.drawable.iisc_logo)
-//                .setContentIntent(pendingIntent).getNotification();
-//        notification.flags=Notification.FLAG_AUTO_CANCEL;
-//        NotificationManager notificationManager= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//        notificationManager.notify(0, notification);
-
-
-
     }
 
 

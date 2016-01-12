@@ -31,10 +31,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(FirstService.BROADCAST_TO_MASTER);
-//        intentFilter.addAction("iisc/smartx/water/data");
-//        registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
@@ -43,26 +39,6 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
-//    public void startService (View view) {
-//        int id = android.os.Process.myPid();
-//        Intent intent = new Intent(this,FirstService.class);
-//        intent.putExtra("key","1234");
-//        ComponentName componentName2 = this.startService(intent);
-//    }
-//
-//    public void stopService (View view) {
-//        Intent intent = new Intent(this,FirstService.class);
-//        intent.putExtra("key", "4321");
-//        boolean didServiceStop = this.stopService(intent);
-//    }
-//    @Override
-//    public void onResume () {
-//        super.onResume();
-//        EditText editText= (EditText)findViewById(R.id.received_string);
-//        editText.setText(received_string);
-//
-//    }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -76,26 +52,6 @@ public class MainActivity extends AppCompatActivity {
         if (mBound == false || messenger == null) {
             return;
         }
-//        EditText et = (EditText) findViewById(R.id.broadcast_string);
-//        String publishMessage = et.getText().toString();
-//        if (publishMessage == null || publishMessage.equals("")) {
-//            CommonUtils.printLog("enter a string to be published");
-//            return;
-//        }
-
-
-//        Message messageToPublish = Message.obtain(null,3);
-//        Bundle bundleToPublish = new Bundle();
-//        bundleToPublish.putString("topicName","iisc/smartx/water/data");
-//        bundleToPublish.putString("eventName", "hardCodedEvent");
-//        bundleToPublish.putString("dataString", publishMessage);
-//        messageToPublish.setData(bundleToPublish);
-//        try {
-//            messenger.send(messageToPublish);
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//            printLog("remote Exception,Could not send message");
-//        }
 
     }
 

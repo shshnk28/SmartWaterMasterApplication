@@ -29,7 +29,7 @@ public class MqttSubscriber implements MQTTConstants {
         try {
             mqttClient.unsubscribe(topicName);
         } catch (MqttException e) {
-            CommonUtils.printLog("failed to unsubscribe in mqttreceiver");
+            CommonUtils.printLog("failed to unsubscribe in mqttsubscriber");
             e.printStackTrace();
         }
     }
