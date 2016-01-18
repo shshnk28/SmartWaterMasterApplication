@@ -30,16 +30,14 @@ class IncomingHandler extends Handler {
     @Override
     public void handleMessage (Message message) {
        switch (message.what) {
-           case 1:
+           case 1: // not being used
                String data = message.getData().getString("data");
                // post a broadcast here.
-               postBroadcast(data,BROADCAST_STRING);
                break;
-           case 2:
+           case 2: // not being used
                // update the main activity here with teh received string.
                String data1 = message.getData().getString("data");
                // send the data back to main activity to be displayed.
-               postBroadcast(data1,BROADCAST_TO_MASTER);
                break;
            case 3: // publish global message to a particular topic
                String topicName  = message.getData().getString("topicName");
@@ -53,10 +51,9 @@ class IncomingHandler extends Handler {
                    CommonUtils.showToast(getApplicationContext(),"Failed to publish, Network unavailable");
                    return;
                }
-               /*
-               Todo don't call MQTT directly here. make it modular so that this class does not know
-                Todo who handles the publishing event
-                */
+               // TODO: 18/01/16  don't call MQTT directly here. make it modular so that this class does not need know
+               // who handles the publishing event
+
                MqttPublisher mqttPublisher = new MqttPublisher(topicName,eventName,dataString);
                     mqttPublisher.publishTopic(getApplicationContext());
                break;
@@ -75,7 +72,7 @@ class IncomingHandler extends Handler {
                }
                // TODO: 12/11/15 return the subscribeId to the client from here.
                break;
-           case 5:// to unsubscribe to a topic
+           case 5:// unsubscribe to a topic
                if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
                    CommonUtils.showToast(getApplicationContext(),"Failed to unsubscribe, Network unavailable");
                    return;
@@ -99,6 +96,15 @@ class IncomingHandler extends Handler {
                    CommonUtils.showToast(getApplicationContext(),"client not connected ");
                }
                break;
+           case 8: // reconnect mqtt
+               if (SmartCampusMqttClient.isClientConnected()) {
+                   CommonUtils.showToast(getApplicationContext(),"client already connected ");
+                   return;
+               }
+               // try the reconnection
+               MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
+               mqttReceiver.initialiseReceiver();
+
            default:
                super.handleMessage(message);
        }
@@ -107,8 +113,7 @@ class IncomingHandler extends Handler {
 
     public FirstService() {
     }
-    public static String BROADCAST_STRING = "com.example.shashankshekhar.servicedemo.broadcast";
-    public static String BROADCAST_TO_MASTER =  "com.example.shashankshekhar.servicedemo.broadcastToMaster";
+
     List<String> subscribedTopics = new ArrayList<String>();
 
     @Override
@@ -126,26 +131,11 @@ class IncomingHandler extends Handler {
         return Service.START_NOT_STICKY;
 
     }
-    public  void postBroadcast (String string,String broadcastString) {
-        Intent broadcast = new Intent();
-
-        broadcast.putExtra("key", string);
-        if (broadcastString.equals(BROADCAST_STRING)) {
-            broadcast.setAction(BROADCAST_STRING);
-        }
-        else if (broadcastString.equals(BROADCAST_TO_MASTER)) {
-            broadcast.setAction(BROADCAST_TO_MASTER);
-        }
-        sendBroadcast(broadcast);
-        CommonUtils.printLog("publishing broadcast to 3s1...");
-    }
     @Override
     public void onCreate () {
         CommonUtils.printLog("ONCreate called in service");
         // initialise the listener here only once when the server is created
 //        MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
-//        mqttReceiver.initialiseReceiver();
-//        setupBroadcastReceiver();
 //        CommonUtils.showToast(getApplicationContext(), "Service Created");
         // You may want to create a secondary thread here to offload the work.
 
@@ -155,9 +145,7 @@ class IncomingHandler extends Handler {
         CommonUtils.printLog("SERVICE DESTROYED!!");
         unregisterReceiver(broadcastReceiver);
     }
-
     final Messenger messenger  = new Messenger(new IncomingHandler());
-
     public void setupBroadcastReceiver () {
         IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         if (broadcastReceiver == null) {
@@ -185,24 +173,14 @@ class IncomingHandler extends Handler {
             final android.net.NetworkInfo mobile = connMgr
                     .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
-            if (wifi.isConnected()) {
+            if (wifi.isConnected() || mobile.isConnected()) {
                 CommonUtils.printLog("wifi connected");
                 MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
                 mqttReceiver.initialiseReceiver();
                 resubscribeToAllTopics();
             } else {
-                CommonUtils.printLog("wifi DISconnected");
+                CommonUtils.printLog("no network available,Could not connect to mqtt");
             }
-            if (mobile.isConnected()) {
-                CommonUtils.printLog("mobile connected");
-                MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
-                mqttReceiver.initialiseReceiver();
-//                resubscribeToAllTopics();
-
-            } else {
-                CommonUtils.printLog("mobile DISconnected");
-            }
-
         }
 
     };
@@ -218,17 +196,13 @@ class IncomingHandler extends Handler {
         }
         @Override
         protected Void doInBackground(Void... params) {
-
-            MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
-            CommonUtils.printLog("log 1 for bg process");
             if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
                 CommonUtils.showToast(getApplicationContext(),"Network Unavailable, Cannot connect");
                 return null;
             }
+            MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
             mqttReceiver.initialiseReceiver();
-            CommonUtils.printLog("log 2 for bg process");
             setupBroadcastReceiver();
-            CommonUtils.printLog("log 3 for bg process");
             CommonUtils.printLog("is main thread: " + Boolean.toString(CommonUtils.checkMainThread()));
             return null;
         }

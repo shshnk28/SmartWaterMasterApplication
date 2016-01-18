@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 public class MainActivity extends AppCompatActivity {
-    private String received_string = null;
     Messenger messenger = null;
     boolean mBound = false;
     @Override
@@ -48,12 +47,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
-    public void subscribetoTopic (View view) {
-        if (mBound == false || messenger == null) {
-            return;
-        }
-
-    }
 
     public void bindService (View view) {
         ComponentName componentName = new ComponentName("com.example.shashankshekhar.servicedemo","com.example.shashankshekhar.servicedemo.FirstService");
@@ -70,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         unbindService(serviceConnection);
         mBound = false;
         messenger = null;
+        // TODO: 18/01/16  note that here you are not stopping the service actually, just th e connection of the app
+        // is being severed. but onDestroy is called on the service
     }
 
     public  void checkService (View view) {
@@ -94,6 +89,15 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         Message message = Message.obtain(null,7);
+        try {
+            messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            CommonUtils.printLog("remote Exception,Could not send message");
+        }
+    }
+    public void reconnectMqtt (View view) {
+        Message message = Message.obtain(null,8);
         try {
             messenger.send(message);
         } catch (RemoteException e) {

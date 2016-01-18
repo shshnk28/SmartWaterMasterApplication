@@ -105,31 +105,25 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         }
         try
         {
-//            mqttClient.connect(connectionOptions);
-            CommonUtils.printLog("connection request sent");
            IMqttToken token = mqttClient.connectWithResult(connectionOptions);
             CommonUtils.printLog("connection response received" + token.toString());
 //            CommonUtils.printLog(token.);
         } catch (MqttSecurityException e)
         {
             CommonUtils.printLog("MqttSecurityException could not connect in receiver");
-//            CommonUtils.printLog("message: " + e.getLocalizedMessage());
             CommonUtils.printLog("cause: " + e.getCause());
-//            CommonUtils.printLog("cause: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
         catch (MqttException e)
         {
             CommonUtils.printLog(" non-security exception could not connect in receiver");
-
             CommonUtils.printLog("cause: " + e.getCause());
             CommonUtils.printLog("reason code: " + e.getReasonCode());
             e.printStackTrace();
             return false;
         }
         CommonUtils.printLog("connection established with client: " + mqttClient.toString());
-        CommonUtils.printLog("mqttclient which registered itself as callback: " + mqttClient.toString());
         return true;
     }
 }

@@ -4,29 +4,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
-
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Start Service"-->
-        <!--android:id="@+id/button"-->
-        <!--android:onClick="startService" />-->
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Stop Service"-->
-        <!--android:id="@+id/button2"-->
-        <!--android:onClick="stopService" />-->
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bind Service"
+        android:text="Create Service"
         android:id="@+id/button4"
         android:onClick="bindService" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Unbind Service"
+        android:text="Destroy Service"
         android:id="@+id/button5"
         android:onClick="unbindService" />
     <Button
@@ -41,24 +28,11 @@
         android:text="Check Mqtt Connection"
         android:id="@+id/button7"
         android:onClick="checkConnection" />
-
-    <!--<EditText-->
-        <!--android:id="@+id/broadcast_string"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:hint="@string/broadcast_hint"/>-->
-
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Subscribe"-->
-        <!--android:id="@+id/button3"-->
-        <!--android:onClick="subscribetoTopic" />-->
-
-    <!--<EditText-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/received_string"-->
-        <!--android:hint="received string will be displayed here"/>-->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Try Reconnecting"
+        android:id="@+id/button8"
+        android:onClick="reconnectMqtt" />
 
 </LinearLayout>
