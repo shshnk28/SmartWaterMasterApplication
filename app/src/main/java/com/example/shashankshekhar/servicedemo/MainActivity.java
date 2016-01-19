@@ -20,18 +20,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
+import android.os.Handler;
+
 public class MainActivity extends AppCompatActivity {
+
     Messenger messenger = null;
     boolean mBound = false;
-    ProgressDialog connectingDialog;
+//    ProgressDialog connectingDialog;
+    Messenger clientMessanger;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        clientMessanger = new Messenger(new IncomingHandler());
     }
 
     @Override
@@ -51,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void bindService (View view) {
-        connectingDialog = ProgressDialog.show(this,"Please Wait...","Connecting to broker");   
-        connectingDialog.setCancelable(true);
+//        connectingDialog = ProgressDialog.show(this,"Please Wait...","Connecting to broker");
+//        connectingDialog.setCancelable(true);
         ComponentName componentName = new ComponentName("com.example.shashankshekhar.servicedemo","com.example.shashankshekhar.servicedemo.FirstService");
         Intent intent = new Intent();
         intent.setComponent(componentName);
@@ -78,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         Message message = Message.obtain(null,6);
+        message.replyTo = clientMessanger;
         try {
             messenger.send(message);
         } catch (RemoteException e) {
@@ -114,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             messenger = new Messenger(service);
             mBound = true;
-            connectingDialog.dismiss();
+//            connectingDialog.dismiss();
         }
 
         @Override
@@ -122,5 +129,17 @@ public class MainActivity extends AppCompatActivity {
             mBound = false;
             messenger = null;
         }
+
+
     };
+}
+class IncomingHandler extends Handler {
+    @Override
+    public void handleMessage (Message message) {
+        switch (message.what) {
+            case 1://
+                CommonUtils.printLog("data received from service in app");
+        }
+
+    }
 }

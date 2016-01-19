@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 import android.os.Handler;
 
@@ -89,6 +90,13 @@ class IncomingHandler extends Handler {
                } else {
                    CommonUtils.showToast(getApplicationContext(),"Not running");
                }
+               Message message1 = Message.obtain(null,1);
+               try {
+                   message.replyTo.send(message1);
+               } catch (RemoteException ex) {
+                   ex.printStackTrace();
+               }
+
                break;
            case 7: // check if the mqtt client is connected
                if (SmartCampusMqttClient.isClientConnected()) {
@@ -198,7 +206,6 @@ class IncomingHandler extends Handler {
         @Override
         protected Void doInBackground(Void... params) {
             if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
-                CommonUtils.showToast(getApplicationContext(),"Network Unavailable, Cannot connect");
                 return null;
             }
             MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
