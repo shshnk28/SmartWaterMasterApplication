@@ -17,7 +17,7 @@ public class SCMqttConnectionOptions implements MQTTConstants {
         connOpts.setCleanSession(true);
         connOpts.setUserName(USERNAME);
         connOpts.setPassword(PASSWORD.toCharArray());
-        connOpts.setConnectionTimeout(60);
+        connOpts.setConnectionTimeout(20);
         connOpts.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 //        connOpts.setWill("iisc/smartx/lastWill","unexpectedExit".getBytes(),1, false);
     }

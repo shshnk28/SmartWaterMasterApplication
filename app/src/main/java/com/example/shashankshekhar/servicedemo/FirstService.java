@@ -1,5 +1,6 @@
 package com.example.shashankshekhar.servicedemo;
 
+import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -120,7 +121,8 @@ class IncomingHandler extends Handler {
     public IBinder onBind(Intent intent) {
         CommonUtils.printLog("on bind called");
         // set  up the receiver and mqtt stuff
-        new AsyncCaller().execute();
+        AsyncCaller asyncCaller = new AsyncCaller();
+        asyncCaller.execute();
         return messenger.getBinder();
     }
 
@@ -187,11 +189,10 @@ class IncomingHandler extends Handler {
     private class AsyncCaller extends AsyncTask<Void, Void, Void>
     {
 
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            //this method will be running on UI thread
             CommonUtils.printLog("pre-execute");
         }
         @Override
@@ -210,6 +211,7 @@ class IncomingHandler extends Handler {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+
             CommonUtils.showToast(getApplicationContext(), "Service Created");
 
 

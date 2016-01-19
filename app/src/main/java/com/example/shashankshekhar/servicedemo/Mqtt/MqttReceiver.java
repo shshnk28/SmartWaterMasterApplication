@@ -104,14 +104,15 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
             return true;
         }
         try
-        {
+        {  CommonUtils.printLog("sending connection request");
            IMqttToken token = mqttClient.connectWithResult(connectionOptions);
-            CommonUtils.printLog("connection response received" + token.toString());
+            CommonUtils.printLog("connection response received" + token.isComplete());
 //            CommonUtils.printLog(token.);
         } catch (MqttSecurityException e)
         {
             CommonUtils.printLog("MqttSecurityException could not connect in receiver");
             CommonUtils.printLog("cause: " + e.getCause());
+            CommonUtils.showToast(context,"Could not connect to broker");
             e.printStackTrace();
             return false;
         }
@@ -121,9 +122,12 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
             CommonUtils.printLog("cause: " + e.getCause());
             CommonUtils.printLog("reason code: " + e.getReasonCode());
             e.printStackTrace();
+            CommonUtils.showToast(context, "Could not connect to broker");
             return false;
         }
         CommonUtils.printLog("connection established with client: " + mqttClient.toString());
+        CommonUtils.showToast(context, "Connected to broker");
         return true;
+
     }
 }

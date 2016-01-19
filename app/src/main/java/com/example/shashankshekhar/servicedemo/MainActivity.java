@@ -2,6 +2,7 @@ package com.example.shashankshekhar.servicedemo;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -26,6 +27,7 @@ import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 public class MainActivity extends AppCompatActivity {
     Messenger messenger = null;
     boolean mBound = false;
+    ProgressDialog connectingDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void bindService (View view) {
+        connectingDialog = ProgressDialog.show(this,"Please Wait...","Connecting to broker");   
+        connectingDialog.setCancelable(true);
         ComponentName componentName = new ComponentName("com.example.shashankshekhar.servicedemo","com.example.shashankshekhar.servicedemo.FirstService");
         Intent intent = new Intent();
         intent.setComponent(componentName);
@@ -110,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             messenger = new Messenger(service);
             mBound = true;
+            connectingDialog.dismiss();
         }
 
         @Override
