@@ -134,11 +134,20 @@ public class MainActivity extends AppCompatActivity {
     };
 }
 class IncomingHandler extends Handler {
+    static final int MQTT_CONNECTED =1;
+    static final int UNABLE_TO_CONNECT =2;
     @Override
     public void handleMessage (Message message) {
         switch (message.what) {
-            case 1://
-                CommonUtils.printLog("data received from service in app");
+            case MQTT_CONNECTED://
+                CommonUtils.printLog("mqtt connected");
+                // STOP THE progress dialog
+                // show a toast
+                break;
+            case UNABLE_TO_CONNECT:
+                CommonUtils.printLog("unable to connect");
+                // STOP THE progress dialog
+                // show a toast. show a reason as well if possible
         }
 
     }

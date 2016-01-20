@@ -16,6 +16,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.os.Handler;
 
+import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttReceiver;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttSubscriber;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class FirstService extends Service {
+public class FirstService extends Service implements MQTTConstants {
 
 class IncomingHandler extends Handler {
     @Override
@@ -41,7 +42,7 @@ class IncomingHandler extends Handler {
                String data1 = message.getData().getString("data");
                // send the data back to main activity to be displayed.
                break;
-           case 3: // publish global message to a particular topic
+           case PUBLISH_MESSAGE: // publish global message to a particular topic
                String topicName  = message.getData().getString("topicName");
                String eventName =  message.getData().getString("eventName");
                String dataString = message.getData().getString("dataString");
@@ -59,7 +60,7 @@ class IncomingHandler extends Handler {
                MqttPublisher mqttPublisher = new MqttPublisher(topicName,eventName,dataString);
                     mqttPublisher.publishTopic(getApplicationContext());
                break;
-           case 4: // to subscribe to a topic
+           case SUBSCRIBE_TO_TOPIC: // to subscribe to a topic
                topicName = message.getData().getString("topicName");
                if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
                    CommonUtils.showToast(getApplicationContext(),"Failed to subscribe, Network unavailable");
@@ -74,7 +75,7 @@ class IncomingHandler extends Handler {
                }
                // TODO: 12/11/15 return the subscribeId to the client from here.
                break;
-           case 5:// unsubscribe to a topic
+           case UNSUBSCRIBE_TO_TOPIC:// unsubscribe to a topic
                if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
                    CommonUtils.showToast(getApplicationContext(),"Failed to unsubscribe, Network unavailable");
                    return;
@@ -83,7 +84,7 @@ class IncomingHandler extends Handler {
                 MqttSubscriber.unsubscribeToTopic(topicName);
                subscribedTopics.remove(topicName);
                break;
-           case 6: // check if  service is running
+           case CHECK_SERVICE: // check if  service is running
                 boolean isRunning = CommonUtils.isMyServiceRunning(FirstService.class,getApplicationContext());
                if (isRunning) {
                    CommonUtils.showToast(getApplicationContext(),"running");
@@ -98,14 +99,14 @@ class IncomingHandler extends Handler {
                }
 
                break;
-           case 7: // check if the mqtt client is connected
+           case CHECK_MQTT_CONNECTION : // check if the mqtt client is connected
                if (SmartCampusMqttClient.isClientConnected()) {
                    CommonUtils.showToast(getApplicationContext(),"client connected ");
                } else {
                    CommonUtils.showToast(getApplicationContext(),"client not connected ");
                }
                break;
-           case 8: // reconnect mqtt
+           case RECONNECT_MQTT: // reconnect mqtt
                if (SmartCampusMqttClient.isClientConnected()) {
                    CommonUtils.showToast(getApplicationContext(),"client already connected ");
                    return;
@@ -113,7 +114,7 @@ class IncomingHandler extends Handler {
                // try the reconnection
                MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
                mqttReceiver.initialiseReceiver();
-
+               break;
            default:
                super.handleMessage(message);
        }
