@@ -8,12 +8,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.util.Log;
 import android.os.Handler;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
@@ -134,27 +132,34 @@ class IncomingHandler extends Handler {
 
     @Override
     public int   onStartCommand (Intent intent,int flags, int startId) {
-        String message= intent.getStringExtra("key");
         int id = android.os.Process.myPid();
+        CommonUtils.printLog("onStart called in service");
         return Service.START_NOT_STICKY;
 
     }
     @Override
     public void onCreate () {
         CommonUtils.printLog("ONCreate called in service");
-        // initialise the listener here only once when the server is created
-//        MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
-//        CommonUtils.showToast(getApplicationContext(), "Service Created");
-        // You may want to create a secondary thread here to offload the work.
-
     }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        CommonUtils.printLog("on unbind called");
+        return false;
+    }
+
     @Override
     public void onDestroy () {
         CommonUtils.printLog("SERVICE DESTROYED!!");
         // disconnect the mqtt in here
         MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
         mqttReceiver.disconnectMqtt();
-        unregisterReceiver(broadcastReceiver);
+
+        try {
+            unregisterReceiver(broadcastReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     final Messenger messenger  = new Messenger(new IncomingHandler());
     public void setupBroadcastReceiver () {

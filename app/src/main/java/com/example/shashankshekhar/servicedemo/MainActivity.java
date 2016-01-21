@@ -30,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     boolean mBound = false;
     ProgressDialog connectingDialog;
     Messenger clientMessanger;
+    static final String PACKAGE_NAME = "com.example.shashankshekhar.servicedemo";
+    static final String SERVICE_NAME = "com.example.shashankshekhar.servicedemo.FirstService";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,23 +57,28 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
-    public void bindService (View view) {
-        ComponentName componentName = new ComponentName("com.example.shashankshekhar.servicedemo","com.example.shashankshekhar.servicedemo.FirstService");
+    public void startAndBindService (View view) {
+        ComponentName componentName = new ComponentName(PACKAGE_NAME,SERVICE_NAME);
         Intent intent = new Intent();
         intent.setComponent(componentName);
+        ComponentName componentName1 = startService(intent);
+        CommonUtils.printLog("returned component name: "+componentName1.toString());
+        CommonUtils.printLog("now binding to service");
         Boolean bindSuccess = bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
     }
-    public void unbindService (View view) {
+    public void stopService (View view) {
         if (messenger == null || mBound == false ) {
             CommonUtils.printLog("service not connected .. returning");
             return;
         }
+        ComponentName componentName = new ComponentName(PACKAGE_NAME,SERVICE_NAME);
+        Intent intent = new Intent();
+        intent.setComponent(componentName);
+        stopService(intent);
         unbindService(serviceConnection);
         mBound = false;
         messenger = null;
-        // TODO: 18/01/16  note that here you are not stopping the service actually, just th e connection of the app
-        // is being severed. but onDestroy is called on the service
     }
 
     public  void checkService (View view) {
@@ -87,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             CommonUtils.printLog("remote Exception,Could not send message");
         }
-
     }
     public void checkConnection (View view) {
         if (messenger == null || mBound == false ) {
@@ -134,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            CommonUtils.printLog("service disconnected");
             mBound = false;
             messenger = null;
         }

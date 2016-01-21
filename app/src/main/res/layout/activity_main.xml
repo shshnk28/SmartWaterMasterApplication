@@ -7,15 +7,15 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Service"
+        android:text="Start Service"
         android:id="@+id/button4"
-        android:onClick="bindService" />
+        android:onClick="startAndBindService" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Destroy Service"
+        android:text="Stop Service"
         android:id="@+id/button5"
-        android:onClick="unbindService" />
+        android:onClick="stopService" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -124,7 +124,10 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
 
     }
     public void disconnectMqtt () {
-
+            if (mqttClient.isConnected() == false) {
+                CommonUtils.printLog("not connected");
+                return;
+            }
         try {
             mqttClient.disconnect();
             CommonUtils.printLog("successfully disconnected");
