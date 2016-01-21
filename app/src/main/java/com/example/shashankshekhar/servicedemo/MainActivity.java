@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        clientMessanger = new Messenger(new IncomingHandler(connectingDialog,this));
+
 
     }
 
@@ -58,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
         ComponentName componentName = new ComponentName("com.example.shashankshekhar.servicedemo","com.example.shashankshekhar.servicedemo.FirstService");
         Intent intent = new Intent();
         intent.setComponent(componentName);
-        connectingDialog = ProgressDialog.show(this,"Please Wait...","Connecting to broker");
-        connectingDialog.setCancelable(false);
         Boolean bindSuccess = bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
     }
@@ -105,7 +103,18 @@ public class MainActivity extends AppCompatActivity {
             CommonUtils.printLog("remote Exception,Could not send message");
         }
     }
-    public void connectMqtt (View view) {
+    public void showDialogAndConnectToMqtt (View view) {
+        if (messenger == null || mBound == false ) {
+            CommonUtils.printLog("service not connected .. returning");
+            CommonUtils.showToast(getApplicationContext(),"Service not running");
+            return;
+        }
+        connectingDialog = ProgressDialog.show(this,"Please Wait...","Connecting to broker");
+        connectingDialog.setCancelable(false);
+        clientMessanger = new Messenger(new IncomingHandler(connectingDialog,this));
+        connectMqtt();
+    }
+    public void connectMqtt () {
         Message message = Message.obtain(null,8);
         message.replyTo= clientMessanger;
         try {
@@ -120,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             messenger = new Messenger(service);
             mBound = true;
-            connectMqtt(new View(getApplicationContext()));
+            showDialogAndConnectToMqtt(null);
         }
 
         @Override
@@ -128,12 +137,13 @@ public class MainActivity extends AppCompatActivity {
             mBound = false;
             messenger = null;
         }
-        
+
     };
 }
 class IncomingHandler extends Handler {
     static final int MQTT_CONNECTED =1;
     static final int UNABLE_TO_CONNECT =2;
+    static final int MQTT_ALREADY_CONNECTED =3;
     ProgressDialog dialog;
     Context applicationContext;
     IncomingHandler(ProgressDialog dialog1, Context context) {
@@ -149,7 +159,6 @@ class IncomingHandler extends Handler {
                 // show a toast
                 dialog.dismiss();
                 CommonUtils.showToast(applicationContext, "Connected!!");
-
                 break;
             case UNABLE_TO_CONNECT:
                 CommonUtils.printLog("unable to connect");
@@ -157,6 +166,13 @@ class IncomingHandler extends Handler {
                 // show a toast. show a reason as well if possible
                 dialog.dismiss();
                 CommonUtils.showToast(applicationContext,"could not connect");
+                break;
+            case MQTT_ALREADY_CONNECTED:
+                dialog.dismiss();
+                CommonUtils.showToast(applicationContext, "Already Connected");
+                break;
+            default:
+
         }
 
     }

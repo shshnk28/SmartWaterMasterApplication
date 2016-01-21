@@ -101,7 +101,7 @@ class IncomingHandler extends Handler {
                break;
            case CONNECT_MQTT: // reconnect mqtt
                if (SmartCampusMqttClient.isClientConnected()) {
-                   CommonUtils.showToast(getApplicationContext(),"client already connected ");
+                   sendMessageToClient(message.replyTo, 3);
                    return;
                }
                // try the reconnection
@@ -109,6 +109,7 @@ class IncomingHandler extends Handler {
 //               asyncCaller.execute();
                if (message.replyTo == null) {
                    CommonUtils.showToast(getApplicationContext(),"replyTo not instantiated- technical issue");
+                   sendMessageToClient(message.replyTo, 2);
                    return;
                }
                ConnectToMqtt connectToMqtt = new ConnectToMqtt(message.replyTo);
@@ -150,6 +151,9 @@ class IncomingHandler extends Handler {
     @Override
     public void onDestroy () {
         CommonUtils.printLog("SERVICE DESTROYED!!");
+        // disconnect the mqtt in here
+        MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
+        mqttReceiver.disconnectMqtt();
         unregisterReceiver(broadcastReceiver);
     }
     final Messenger messenger  = new Messenger(new IncomingHandler());
@@ -166,6 +170,14 @@ class IncomingHandler extends Handler {
             MqttSubscriber.subscribeToTopic(topic);
             CommonUtils.printLog("reconnected to topic: " + topic);
         }
+    }
+    private void sendMessageToClient (Messenger messenger, int val) {
+        Message replyMessage = Message.obtain(null,val);
+            try {
+                messenger.send(replyMessage);
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -208,20 +220,15 @@ class IncomingHandler extends Handler {
             Message replyMessage;
             if (connectionSuccessfull == true) {
                 setupBroadcastReceiver();
-                 replyMessage = Message.obtain(null,1);
+//                 replyMessage = Message.obtain(null,1);
+                sendMessageToClient(clientMessenger,1);
             } else {
-                replyMessage = Message.obtain(null,2);
-            }
-            if (clientMessenger!=null) {
-                try {
-                    clientMessenger.send(replyMessage);
-                } catch (RemoteException ex) {
-                    ex.printStackTrace();
-                }
+                sendMessageToClient(clientMessenger,2);
             }
             CommonUtils.printLog("is main thread: " + Boolean.toString(CommonUtils.checkMainThread()));
         }
     }
+
     /*
     private class AsyncCaller extends AsyncTask<Void, Void, Void>
     {

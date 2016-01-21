@@ -69,7 +69,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         CommonUtils.printLog("connection lost in receiver!!");
         CommonUtils.printLog("cause: "+ cause.getCause());
         CommonUtils.printLog("Message: "+ cause.getMessage());
-        CommonUtils.printLog("LocalizedMessage: "+ cause.getLocalizedMessage());
+        CommonUtils.printLog("LocalizedMessage: " + cause.getLocalizedMessage());
 //        ca.printStackTrace();
 //        CommonUtils.printLog(ca.getCause().toString());
         boolean connection = connectToClientandSetcallback();
@@ -122,5 +122,21 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         CommonUtils.printLog("connection established with client: " + mqttClient.toString());
         return token.isComplete();
 
+    }
+    public void disconnectMqtt () {
+
+        try {
+            mqttClient.disconnect();
+            CommonUtils.printLog("successfully disconnected");
+        } catch (MqttException e) {
+            CommonUtils.printLog("Error.Could not disconnect mqtt. Trying force");
+            try {
+                mqttClient.disconnectForcibly();
+                CommonUtils.printLog("disconnection successful with force");
+            } catch (MqttException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
     }
 }
