@@ -91,13 +91,6 @@ class IncomingHandler extends Handler {
                } else {
                    CommonUtils.showToast(getApplicationContext(),"Not running");
                }
-               Message message1 = Message.obtain(null,1);
-               try {
-                   message.replyTo.send(message1);
-               } catch (RemoteException ex) {
-                   ex.printStackTrace();
-               }
-
                break;
            case CHECK_MQTT_CONNECTION : // check if the mqtt client is connected
                if (SmartCampusMqttClient.isClientConnected()) {
@@ -106,14 +99,20 @@ class IncomingHandler extends Handler {
                    CommonUtils.showToast(getApplicationContext(),"client not connected ");
                }
                break;
-           case RECONNECT_MQTT: // reconnect mqtt
+           case CONNECT_MQTT: // reconnect mqtt
                if (SmartCampusMqttClient.isClientConnected()) {
                    CommonUtils.showToast(getApplicationContext(),"client already connected ");
                    return;
                }
                // try the reconnection
-               MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
-               mqttReceiver.initialiseReceiver();
+//               AsyncCaller asyncCaller = new AsyncCaller();
+//               asyncCaller.execute();
+               if (message.replyTo == null) {
+                   CommonUtils.showToast(getApplicationContext(),"replyTo not instantiated- technical issue");
+                   return;
+               }
+               ConnectToMqtt connectToMqtt = new ConnectToMqtt(message.replyTo);
+               connectToMqtt.run();
                break;
            default:
                super.handleMessage(message);
@@ -129,9 +128,6 @@ class IncomingHandler extends Handler {
     @Override
     public IBinder onBind(Intent intent) {
         CommonUtils.printLog("on bind called");
-        // set  up the receiver and mqtt stuff
-        AsyncCaller asyncCaller = new AsyncCaller();
-        asyncCaller.execute();
         return messenger.getBinder();
     }
 
@@ -195,6 +191,38 @@ class IncomingHandler extends Handler {
         }
 
     };
+    private class ConnectToMqtt implements Runnable {
+        Messenger clientMessenger;
+        ConnectToMqtt (Messenger messenger) {
+            this.clientMessenger = messenger;
+        }
+        @Override
+        public void run() {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
+                return;
+            }
+
+            MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
+            Boolean connectionSuccessfull =  mqttReceiver.initialiseReceiver();
+            Message replyMessage;
+            if (connectionSuccessfull == true) {
+                setupBroadcastReceiver();
+                 replyMessage = Message.obtain(null,1);
+            } else {
+                replyMessage = Message.obtain(null,2);
+            }
+            if (clientMessenger!=null) {
+                try {
+                    clientMessenger.send(replyMessage);
+                } catch (RemoteException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            CommonUtils.printLog("is main thread: " + Boolean.toString(CommonUtils.checkMainThread()));
+        }
+    }
+    /*
     private class AsyncCaller extends AsyncTask<Void, Void, Void>
     {
 
@@ -225,7 +253,7 @@ class IncomingHandler extends Handler {
 
         }
 
-    }
+    }*/
 
 }
 

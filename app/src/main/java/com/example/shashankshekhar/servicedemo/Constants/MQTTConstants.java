@@ -11,13 +11,13 @@ public interface MQTTConstants {
     String USERNAME = "admin";
     String PASSWORD = "password";
 
-    /* CONNECTION CONSTANTS */
+    /* MESSAGE HANDLER CONSTANTS */
     int PUBLISH_MESSAGE = 3;
     int SUBSCRIBE_TO_TOPIC = 4;
     int UNSUBSCRIBE_TO_TOPIC = 5;
     int CHECK_SERVICE = 6;
     int CHECK_MQTT_CONNECTION = 7;
-    int RECONNECT_MQTT = 8;
+    int CONNECT_MQTT = 8;
 
 
 

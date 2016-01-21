@@ -33,6 +33,6 @@
         android:layout_height="wrap_content"
         android:text="Try Reconnecting"
         android:id="@+id/button8"
-        android:onClick="reconnectMqtt" />
+        android:onClick="connectMqtt" />
 
 </LinearLayout>

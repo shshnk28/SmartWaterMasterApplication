@@ -46,15 +46,9 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         }
         return mqttReceiver;
     }
-    public void initialiseReceiver () {
-//        CommonUtils.printLog("receiver initialising");
+    public boolean initialiseReceiver () {
         boolean connection = connectToClientandSetcallback();
-
-//        if (connection == true && context!=null ) {
-//            Intent broadcast = new Intent();
-//            broadcast.setAction("iisc/smartx/water/data");
-//            context.sendBroadcast(broadcast);
-//        }
+        return connection;
     }
 
     @Override
@@ -94,7 +88,9 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
     }
 
     private boolean connectToClientandSetcallback () {
+        /* we can define an error class and return the error object from this method with all the necessary info.*/
         mqttClient.setCallback(this);
+        IMqttToken token = null;
         if (mqttClient == null || connectionOptions == null) {
             CommonUtils.printLog("client null in receiver ... returning ");
             return false;
@@ -105,7 +101,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         }
         try
         {  CommonUtils.printLog("sending connection request");
-           IMqttToken token = mqttClient.connectWithResult(connectionOptions);
+           token = mqttClient.connectWithResult(connectionOptions);
             CommonUtils.printLog("connection response received" + token.isComplete());
 //            CommonUtils.printLog(token.);
         } catch (MqttSecurityException e)
@@ -124,7 +120,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
             return false;
         }
         CommonUtils.printLog("connection established with client: " + mqttClient.toString());
-        return true;
+        return token.isComplete();
 
     }
 }
