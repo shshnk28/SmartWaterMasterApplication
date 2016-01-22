@@ -103,7 +103,7 @@ class IncomingHandler extends Handler {
                    return;
                }
                if(CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
-                   sendMessageToClient(message.replyTo, 3);
+                   sendMessageToClient(message.replyTo, 4);
                    return;
                }
                if (message.replyTo == null) {
