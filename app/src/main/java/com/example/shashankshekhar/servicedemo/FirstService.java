@@ -102,9 +102,10 @@ class IncomingHandler extends Handler {
                    sendMessageToClient(message.replyTo, 3);
                    return;
                }
-               // try the reconnection
-//               AsyncCaller asyncCaller = new AsyncCaller();
-//               asyncCaller.execute();
+               if(CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
+                   sendMessageToClient(message.replyTo, 3);
+                   return;
+               }
                if (message.replyTo == null) {
                    CommonUtils.showToast(getApplicationContext(),"replyTo not instantiated- technical issue");
                    sendMessageToClient(message.replyTo, 2);
