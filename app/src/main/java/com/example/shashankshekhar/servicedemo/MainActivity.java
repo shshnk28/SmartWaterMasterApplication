@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -23,6 +24,10 @@ import android.view.View;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import android.os.Handler;
+
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,7 +52,11 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        CommonUtils.printLog("on destroy main activity called- master application");
+    }
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -56,6 +65,32 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
+    private class CheckForOpenPort implements Runnable {
+        public void run() {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            if (CommonUtils.checkMainThread() == true) {
+                CommonUtils.printLog("main thread .. returning");
+                return;
+            }
+            CommonUtils.printLog("trying to connect to 1883 port on smartx");
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress("smartx.cloudapp.net", 1883),120000);
+                socket.close();
+                // connection success
+                CommonUtils.printLog("connection successful");
+            } catch (java.io.IOException ex) {
+                CommonUtils.printLog("could not connect - ioException");
+                if (ex.getCause() != null) {
+                    CommonUtils.printLog("cause: "+ex.getCause().toString());
+                }
+                if (ex.getMessage() != null) {
+                    CommonUtils.printLog("message: " + ex.getMessage());
+                }
+
+            }
+        }
+    }
 
     public void startAndBindService (View view) {
         ComponentName componentName = new ComponentName(PACKAGE_NAME,SERVICE_NAME);
@@ -120,6 +155,12 @@ public class MainActivity extends AppCompatActivity {
         connectingDialog.setCancelable(false);
         clientMessanger = new Messenger(new IncomingHandler(connectingDialog,this));
         connectMqtt();
+    }
+    public void checkForOpenPort (View view) {
+
+        CheckForOpenPort cop = new CheckForOpenPort();
+        Thread portThread = new Thread(cop);
+        portThread.start();
     }
     public void connectMqtt () {
         Message message = Message.obtain(null,8);

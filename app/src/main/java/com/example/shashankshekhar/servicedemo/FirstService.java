@@ -111,8 +111,11 @@ class IncomingHandler extends Handler {
                    sendMessageToClient(message.replyTo, 2);
                    return;
                }
+
                ConnectToMqtt connectToMqtt = new ConnectToMqtt(message.replyTo);
-               connectToMqtt.run();
+               Thread mqttConnector  = new Thread(connectToMqtt);
+//               connectToMqtt.run();
+               mqttConnector.start();
                break;
            default:
                super.handleMessage(message);

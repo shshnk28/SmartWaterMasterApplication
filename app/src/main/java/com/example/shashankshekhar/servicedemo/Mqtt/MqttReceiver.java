@@ -54,6 +54,10 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
     @Override
     public void messageArrived(String topic,MqttMessage msg)
     {
+        /*
+        do not perform any heavy operations here. ack will go back from here only after the method has
+        finished running.keep it light
+         */
         CommonUtils.printLog("data received in MQTT Receiver for topic: " + topic);
          // TODO: 10/11/15 call the library here that does the broadcast to seperate out the Mqtt implementation
         Intent broadcast = new Intent();

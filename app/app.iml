@@ -87,7 +87,6 @@
     <orderEntry type="library" exported="" name="appcompat-v7-23.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.0.1" level="project" />
     <orderEntry type="module" module-name="mqtt-client-1.9" exported="" />
-    <orderEntry type="module" module-name="org.eclipse.paho.android.service-1.0.2" exported="" />
     <orderEntry type="module" module-name="org.eclipse.paho.client.mqttv3-1.0.2" exported="" />
   </component>
 </module>
