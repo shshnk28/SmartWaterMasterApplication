@@ -40,7 +40,7 @@ public class MqttPublisher implements MQTTConstants {
         MqttMessage message1 = new MqttMessage(payload.getBytes());
         message1.setQos(QoS);
         if (mqttClient.isConnected() == false) {
-            CommonUtils.printLog("isconnected returned false.. returning");
+            CommonUtils.printLog("not connected to mqtt.. returning in publisher");
             return;
         }
         try {

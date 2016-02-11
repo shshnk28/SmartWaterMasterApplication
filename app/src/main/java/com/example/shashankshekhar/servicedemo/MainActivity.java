@@ -202,27 +202,20 @@ class IncomingHandler extends Handler {
     }
     @Override
     public void handleMessage (Message message) {
+        dialog.dismiss();
         switch (message.what) {
             case MQTT_CONNECTED://
                 CommonUtils.printLog("mqtt connected");
-                // STOP THE progress dialog
-                // show a toast
-                dialog.dismiss();
                 CommonUtils.showToast(applicationContext, "Connected!!");
                 break;
             case UNABLE_TO_CONNECT:
                 CommonUtils.printLog("unable to connect");
-                // STOP THE progress dialog
-                // show a toast. show a reason as well if possible
-                dialog.dismiss();
                 CommonUtils.showToast(applicationContext,"could not connect");
                 break;
             case MQTT_ALREADY_CONNECTED:
-                dialog.dismiss();
                 CommonUtils.showToast(applicationContext, "Already Connected");
                 break;
             case NO_NETWORK_AVAILABLE:
-                dialog.dismiss();
                 CommonUtils.showToast(applicationContext,"No Network!!");
                 break;
             default:
