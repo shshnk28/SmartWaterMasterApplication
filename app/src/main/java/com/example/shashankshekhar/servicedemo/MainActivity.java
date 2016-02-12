@@ -194,6 +194,7 @@ class IncomingHandler extends Handler {
     static final int UNABLE_TO_CONNECT =2;
     static final int MQTT_ALREADY_CONNECTED =3;
     static final int NO_NETWORK_AVAILABLE =4;
+    static final int MQTT_CONNECTION_IN_PROGRESS = 5;
     ProgressDialog dialog;
     Context applicationContext;
     IncomingHandler(ProgressDialog dialog1, Context context) {
@@ -217,6 +218,9 @@ class IncomingHandler extends Handler {
                 break;
             case NO_NETWORK_AVAILABLE:
                 CommonUtils.showToast(applicationContext,"No Network!!");
+                break;
+            case MQTT_CONNECTION_IN_PROGRESS:
+                CommonUtils.showToast(applicationContext,"Connection in Progress");
                 break;
             default:
 
