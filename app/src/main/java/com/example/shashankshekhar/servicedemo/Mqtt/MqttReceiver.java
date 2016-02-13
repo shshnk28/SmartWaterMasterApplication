@@ -103,20 +103,16 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
             CommonUtils.printLog("already connected.. returning");
             return true;
         }
-        try
-        {  CommonUtils.printLog("sending connection request");
+        try {
            token = mqttClient.connectWithResult(connectionOptions);
-            CommonUtils.printLog("connection response received" + token.isComplete());
 //            CommonUtils.printLog(token.);
-        } catch (MqttSecurityException e)
-        {
+        } catch (MqttSecurityException e) {
             CommonUtils.printLog("MqttSecurityException could not connect in receiver");
             CommonUtils.printLog("cause: " + e.getCause());
             e.printStackTrace();
             return false;
         }
-        catch (MqttException e)
-        {
+        catch (MqttException e) {
             CommonUtils.printLog(" non-security exception could not connect in receiver");
             CommonUtils.printLog("cause: " + e.getCause());
             CommonUtils.printLog("reason code: " + e.getReasonCode());
@@ -125,7 +121,6 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         }
         CommonUtils.printLog("connection established with client: " + mqttClient.toString());
         return token.isComplete();
-
     }
     public void disconnectMqtt () {
             if (mqttClient.isConnected() == false) {
