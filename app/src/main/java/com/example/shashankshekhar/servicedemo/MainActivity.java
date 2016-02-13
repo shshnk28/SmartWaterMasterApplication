@@ -190,11 +190,13 @@ public class MainActivity extends AppCompatActivity {
     };
 }
 class IncomingHandler extends Handler {
+    // TODO: 13/02/16 this list should be with the library since many other applciations will use it. now main app
+    // 3s1 are using
     static final int MQTT_CONNECTED =1;
     static final int UNABLE_TO_CONNECT =2;
-    static final int MQTT_ALREADY_CONNECTED =3;
     static final int NO_NETWORK_AVAILABLE =4;
     static final int MQTT_CONNECTION_IN_PROGRESS = 5;
+    static final int MQTT_NOT_CONNECTED = 6;
     ProgressDialog dialog;
     Context applicationContext;
     IncomingHandler(ProgressDialog dialog1, Context context) {
@@ -212,9 +214,6 @@ class IncomingHandler extends Handler {
             case UNABLE_TO_CONNECT:
                 CommonUtils.printLog("unable to connect");
                 CommonUtils.showToast(applicationContext,"could not connect");
-                break;
-            case MQTT_ALREADY_CONNECTED:
-                CommonUtils.showToast(applicationContext, "Already Connected");
                 break;
             case NO_NETWORK_AVAILABLE:
                 CommonUtils.showToast(applicationContext,"No Network!!");

@@ -26,20 +26,19 @@ import java.util.Iterator;
 import java.util.List;
 
 public class FirstService extends Service implements MQTTConstants {
-    private static boolean isConnecting = false;
-
+    private static boolean isConnecting = false; // indicates if a MQtt session is connecting currently
+    static final int MQTT_CONNECTED =1;
+    static final int UNABLE_TO_CONNECT =2;
+    static final int NO_NETWORK_AVAILABLE =4;
+    static final int MQTT_CONNECTION_IN_PROGRESS = 5;
+    static final int MQTT_NOT_CONNECTED = 6;
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message message) {
             switch (message.what) {
                 case 1: // not being used
-                    String data = message.getData().getString("data");
-                    // post a broadcast here.
                     break;
                 case 2: // not being used
-                    // update the main activity here with teh received string.
-                    String data1 = message.getData().getString("data");
-                    // send the data back to main activity to be displayed.
                     break;
                 case PUBLISH_MESSAGE: // publish global message to a particular topic
                     String topicName = message.getData().getString("topicName");
@@ -49,20 +48,19 @@ public class FirstService extends Service implements MQTTConstants {
                         CommonUtils.printLog(" either topic, event or data is null ... returning");
                         return;
                     }
-                    if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
-                        CommonUtils.showToast(getApplicationContext(), "Failed to publish, Network unavailable");
+                    if (checkConnectivity(message.replyTo) == false) {
                         return;
                     }
                     // TODO: 18/01/16  don't call MQTT directly here. make it modular so that this class does not need know
                     // who handles the publishing event
-
                     MqttPublisher mqttPublisher = new MqttPublisher(topicName, eventName, dataString);
                     mqttPublisher.publishTopic(getApplicationContext());
                     break;
                 case SUBSCRIBE_TO_TOPIC: // to subscribe to a topic
+                    // TODO: 13/02/16 return the subscribed topic id from here via clientMessenger
+                    // set it as a string in the messenger
                     topicName = message.getData().getString("topicName");
-                    if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
-                        CommonUtils.showToast(getApplicationContext(), "Failed to subscribe, Network unavailable");
+                    if (checkConnectivity(message.replyTo) == false) {
                         return;
                     }
                     CommonUtils.printLog("subscribe call made");
@@ -75,8 +73,7 @@ public class FirstService extends Service implements MQTTConstants {
                     // TODO: 12/11/15 return the subscribeId to the client from here.
                     break;
                 case UNSUBSCRIBE_TO_TOPIC:// unsubscribe to a topic
-                    if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
-                        CommonUtils.showToast(getApplicationContext(), "Failed to unsubscribe, Network unavailable");
+                    if (checkConnectivity(message.replyTo) == false) {
                         return;
                     }
                     topicName = message.getData().getString("topicName");
@@ -103,19 +100,19 @@ public class FirstService extends Service implements MQTTConstants {
                     break;
                 case CONNECT_MQTT: // reconnect mqtt
                     if (SmartCampusMqttClient.isClientConnected()) {
-                        sendMessageToClient(message.replyTo, 3);
+                        sendMessageToClient(message.replyTo, MQTT_CONNECTED);
                         return;
                     }
                     if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
-                        sendMessageToClient(message.replyTo, 4);
+                        sendMessageToClient(message.replyTo, NO_NETWORK_AVAILABLE);
                         return;
                     }
                     if (message.replyTo == null) {
-                        sendMessageToClient(message.replyTo, 2);
+                        sendMessageToClient(message.replyTo, UNABLE_TO_CONNECT);
                         return;
                     }
                     if (isConnecting == true){
-                        sendMessageToClient(message.replyTo, 2);
+                        sendMessageToClient(message.replyTo, MQTT_CONNECTION_IN_PROGRESS);
                         return;
                     }
 
@@ -193,12 +190,27 @@ public class FirstService extends Service implements MQTTConstants {
     }
 
     private void sendMessageToClient(Messenger messenger, int val) {
+        if (messenger == null) {
+            CommonUtils.printLog("Could not send message to client app from service, replyTo is null");
+            return;
+        }
         Message replyMessage = Message.obtain(null, val);
         try {
             messenger.send(replyMessage);
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
+    }
+    private Boolean checkConnectivity (Messenger messenger) {
+        if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
+            sendMessageToClient(messenger,NO_NETWORK_AVAILABLE);
+            return false;
+        }
+        if (SmartCampusMqttClient.isClientConnected() == false) {
+            sendMessageToClient(messenger,MQTT_NOT_CONNECTED);
+            return false;
+        }
+        return true;
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -252,9 +264,9 @@ public class FirstService extends Service implements MQTTConstants {
             if (connectionSuccessful == true) {
                 setupBroadcastReceiver();
 //                 replyMessage = Message.obtain(null,1);
-                sendMessageToClient(clientMessenger, 1);
+                sendMessageToClient(clientMessenger, MQTT_CONNECTED);
             } else {
-                sendMessageToClient(clientMessenger, 2);
+                sendMessageToClient(clientMessenger, UNABLE_TO_CONNECT);
             }
             isConnecting = false;
             CommonUtils.printLog("is main thread: " + Boolean.toString(CommonUtils.checkMainThread()));
