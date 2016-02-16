@@ -27,11 +27,22 @@ import java.util.List;
 
 public class FirstService extends Service implements MQTTConstants {
     private static boolean isConnecting = false; // indicates if a MQtt session is connecting currently
+
+    // connection options
     static final int MQTT_CONNECTED =1;
     static final int UNABLE_TO_CONNECT =2;
     static final int NO_NETWORK_AVAILABLE =4;
     static final int MQTT_CONNECTION_IN_PROGRESS = 5;
     static final int MQTT_NOT_CONNECTED = 6;
+
+    // publish status
+    static final int TOPIC_PUBLISHED = 7;
+    static final int ERROR_IN_PUBLISHING = 8;
+
+    // subscription status
+    static final int SUBSCRIPTION_SUCCESS = 9;
+    static final int SUBSCRIPTION_ERROR = 10;
+
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message message) {
@@ -54,7 +65,12 @@ public class FirstService extends Service implements MQTTConstants {
                     // TODO: 18/01/16  don't call MQTT directly here. make it modular so that this class does not need know
                     // who handles the publishing event
                     MqttPublisher mqttPublisher = new MqttPublisher(topicName, eventName, dataString);
-                    mqttPublisher.publishTopic(getApplicationContext());
+                    boolean didPublish = mqttPublisher.publishTopic();
+                    if (didPublish) {
+                        sendMessageToClient(message.replyTo,TOPIC_PUBLISHED);
+                    } else {
+                        sendMessageToClient(message.replyTo,ERROR_IN_PUBLISHING);
+                    }
                     break;
                 case SUBSCRIBE_TO_TOPIC: // to subscribe to a topic
                     // TODO: 13/02/16 return the subscribed topic id from here via clientMessenger
@@ -65,9 +81,10 @@ public class FirstService extends Service implements MQTTConstants {
                     }
                     CommonUtils.printLog("subscribe call made");
                     String subscribeID = MqttSubscriber.subscribeToTopic(topicName);
-                    if (subscribeID == null) {
+                    if (subscribeID == null|| subscribedTopics.contains(topicName) == true) {
                         CommonUtils.printLog("couldnot subscribe to topic : ");
-                    } else {
+                    }
+                    else {
                         subscribedTopics.add(topicName);
                     }
                     // TODO: 12/11/15 return the subscribeId to the client from here.

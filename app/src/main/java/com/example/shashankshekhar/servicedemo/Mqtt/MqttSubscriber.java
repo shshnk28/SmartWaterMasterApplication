@@ -13,6 +13,8 @@ public class MqttSubscriber implements MQTTConstants {
     public static String subscribeToTopic (String topicName) {
         MqttClient mqttClient = SmartCampusMqttClient.getMqttClient(true);
         try {
+            // TODO: 14/02/16 check why the client is getting unsubscribed after some time
+            // is there is timeout in subscription?
             mqttClient.subscribe(topicName, 1);
             CommonUtils.printLog("topic subscribed: " + topicName);
             CommonUtils.printLog("for client: "+ mqttClient.toString());

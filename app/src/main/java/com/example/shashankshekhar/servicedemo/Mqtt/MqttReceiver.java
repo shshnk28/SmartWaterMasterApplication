@@ -62,6 +62,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
          // TODO: 10/11/15 call the library here that does the broadcast to seperate out the Mqtt implementation
         Intent broadcast = new Intent();
         broadcast.putExtra("message",msg.toString());
+        broadcast.putExtra("topicName",topic);
         broadcast.setAction(topic);
         context.sendBroadcast(broadcast);
     }

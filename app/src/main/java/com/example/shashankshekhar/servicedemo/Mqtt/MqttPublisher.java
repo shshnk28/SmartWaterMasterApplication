@@ -27,13 +27,13 @@ public class MqttPublisher implements MQTTConstants {
         this.eventName = eventName;
         this.dataString= dataString;
     }
-    public void publishTopic (Context context) {
+    public boolean publishTopic () {
         CommonUtils.printLog("trying to publish the topic");
 
         MqttClient mqttClient = SmartCampusMqttClient.getMqttClient(true);
         if (mqttClient == null) {
             CommonUtils.printLog("couldnot instantiate mqtt client..returning");
-            return;
+            return false;
         }
 //        CommonUtils.printLog("client address in publisher: "+mqttClient.toString());
         String payload = eventName + "-" + dataString;
@@ -41,18 +41,19 @@ public class MqttPublisher implements MQTTConstants {
         message1.setQos(QoS);
         if (mqttClient.isConnected() == false) {
             CommonUtils.printLog("not connected to mqtt.. returning in publisher");
-            return;
+            return false;
         }
         try {
             mqttClient.publish(topicName, message1);
             CommonUtils.printLog("successfully published topic&message" + topicName);
-            CommonUtils.showToast(context,topicName + " published");
+            return true;
         } catch (MqttException ex){
             ex.printStackTrace();
             CommonUtils.printLog("failed to publish");
             CommonUtils.printLog("message : " + ex.getMessage());
             CommonUtils.printLog("reason : " + ex.getReasonCode());
             CommonUtils.printLog("cause : " + ex.getCause());
+            return false;
         }
 
 
