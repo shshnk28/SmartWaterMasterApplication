@@ -14,12 +14,12 @@ public class SCMqttConnectionOptions implements MQTTConstants {
     private static MqttConnectOptions connOpts = null;
     private static void initialiseConnectionOptions () {
         connOpts = new MqttConnectOptions();
+        // TODO: 29/02/16 set the clean session to false if you want to get resubscribed to the old topics   
         connOpts.setCleanSession(true);
         connOpts.setUserName(USERNAME);
         connOpts.setPassword(PASSWORD.toCharArray());
         connOpts.setConnectionTimeout(60);
         connOpts.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-//        connOpts.setWill("iisc/smartx/lastWill","unexpectedExit".getBytes(),1, false);
     }
     public static MqttConnectOptions getConnectionOptions () {
         if (connOpts == null) {

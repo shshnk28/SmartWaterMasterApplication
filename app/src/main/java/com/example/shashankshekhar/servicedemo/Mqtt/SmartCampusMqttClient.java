@@ -29,7 +29,16 @@ public class SmartCampusMqttClient  implements MQTTConstants{
             persistence = new MemoryPersistence();
         }
         try {
-            SCMqttClient = new MqttClient(BROKER_ADDRESS_CLOUD,CLIENT_ID,persistence);
+            /*
+            do not generate a random client id. if you reconnect withe the same client id then you do not have to
+            resubscribe the topics.
+            read here for more details. first para
+            also in the connection options set the clean session to false
+            http://www.hivemq.com/blog/mqtt-essentials-part-7-persistent-session-queuing-messages
+             */
+            // TODO: 29/02/16 remove random client id generation. it should be generated one time when the app installs
+            String randomClientId = CommonUtils.randomString();
+            SCMqttClient = new MqttClient(BROKER_ADDRESS_CLOUD,randomClientId ,persistence);
         } catch (MqttException ex) {
             ex.printStackTrace();
             CommonUtils.printLog("message : " + ex.getMessage());

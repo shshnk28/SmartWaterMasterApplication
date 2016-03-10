@@ -5,11 +5,13 @@ package com.example.shashankshekhar.servicedemo.Constants;
  */
 public interface MQTTConstants {
     /* CONNECTION CONSTANTS */
-    String CLIENT_ID = "shashank";
+//    String CLIENT_ID = "someRandomPerson";
     int QoS = 1;
-    String BROKER_ADDRESS_CLOUD = "tcp://smartx.cloudapp.net:1883";
-    String USERNAME = "admin";
-    String PASSWORD = "password";
+    String BROKER_ADDRESS_CLOUD = "tcp://smartx.cds.iisc.ac.in:1883";
+    //smartx.cloudapp.net
+    //smartx.cds.iisc.ac.in
+    String USERNAME = "AppUser";
+    String PASSWORD = "scdl@App";
 
     /* MESSAGE HANDLER CONSTANTS */
     int PUBLISH_MESSAGE = 3;
@@ -18,7 +20,5 @@ public interface MQTTConstants {
     int CHECK_SERVICE = 6;
     int CHECK_MQTT_CONNECTION = 7;
     int CONNECT_MQTT = 8;
-
-
 
 }

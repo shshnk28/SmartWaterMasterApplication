@@ -21,15 +21,17 @@ import android.view.Menu;
 import android.view.View;
 
 
+import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import android.os.Handler;
+import android.widget.Toast;
 
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MQTTConstants{
 
     Messenger messenger = null;
     boolean mBound = false;
@@ -65,32 +67,42 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
-    private class CheckForOpenPort implements Runnable {
-        public void run() {
-            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-            if (CommonUtils.checkMainThread() == true) {
-                CommonUtils.printLog("main thread .. returning");
-                return;
-            }
-            CommonUtils.printLog("trying to connect to 1883 port on smartx");
-            try {
-                Socket socket = new Socket();
-                socket.connect(new InetSocketAddress("smartx.cloudapp.net", 1883),120000);
-                socket.close();
-                // connection success
-                CommonUtils.printLog("connection successful");
-            } catch (java.io.IOException ex) {
-                CommonUtils.printLog("could not connect - ioException");
-                if (ex.getCause() != null) {
-                    CommonUtils.printLog("cause: "+ex.getCause().toString());
-                }
-                if (ex.getMessage() != null) {
-                    CommonUtils.printLog("message: " + ex.getMessage());
-                }
-
-            }
-        }
-    }
+//    private class CheckForOpenPort implements Runnable {
+//        public void run() {
+//            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+//            if (CommonUtils.checkMainThread() == true) {
+//                CommonUtils.printLog("main thread .. returning");
+//                return;
+//            }
+//            CommonUtils.printLog("trying to connect to 1883 port on smartx");
+//            try {
+//                Socket socket = new Socket();
+//                socket.connect(new InetSocketAddress(BROKER_ADDRESS_CLOUD, 1883),120000);
+//                socket.close();
+//                // connection success
+//                CommonUtils.printLog("connection successful");
+//                runOnUiThread(new Runnable() {
+//                    public void run() {
+//                        Toast.makeText(getApplicationContext(), "Accessible", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            } catch (java.io.IOException ex) {
+//                runOnUiThread(new Runnable() {
+//                    public void run() {
+//                        Toast.makeText(getApplicationContext(), "Not Accessible", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//                CommonUtils.printLog("could not connect - ioException");
+//                if (ex.getCause() != null) {
+//                    CommonUtils.printLog("cause: "+ex.getCause().toString());
+//                }
+//                if (ex.getMessage() != null) {
+//                    CommonUtils.printLog("message: " + ex.getMessage());
+//                }
+//
+//            }
+//        }
+//    }
 
     public void startAndBindService (View view) {
         ComponentName componentName = new ComponentName(PACKAGE_NAME,SERVICE_NAME);
@@ -156,12 +168,12 @@ public class MainActivity extends AppCompatActivity {
         clientMessanger = new Messenger(new IncomingHandler(connectingDialog,this));
         connectMqtt();
     }
-    public void checkForOpenPort (View view) {
-
-        CheckForOpenPort cop = new CheckForOpenPort();
-        Thread portThread = new Thread(cop);
-        portThread.start();
-    }
+//    public void checkForOpenPort (View view) {
+//
+//        CheckForOpenPort cop = new CheckForOpenPort();
+//        Thread portThread = new Thread(cop);
+//        portThread.start();
+//    }
     public void connectMqtt () {
         Message message = Message.obtain(null,8);
         message.replyTo= clientMessanger;

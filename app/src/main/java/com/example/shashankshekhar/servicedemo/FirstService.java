@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -138,6 +139,7 @@ public class FirstService extends Service implements MQTTConstants {
                     ConnectToMqtt connectToMqtt = new ConnectToMqtt(message.replyTo);
                     Thread mqttConnector = new Thread(connectToMqtt);
 //               connectToMqtt.run();
+
                     mqttConnector.start();
                     break;
                 default:
@@ -242,6 +244,28 @@ public class FirstService extends Service implements MQTTConstants {
             if (SmartCampusMqttClient.isClientConnected() == true) {
                 CommonUtils.printLog("client already connected ...returning from broadcast receiver");
             }
+            ConnectivityManager connectivityManager
+                    = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+                CommonUtils.printLog("connecton rq initaited in br");
+                isConnecting = true;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
+                        boolean isConnected = mqttReceiver.initialiseReceiver();
+                        if (isConnected == true) {
+                            resubscribeToAllTopics();
+                        }
+                        isConnecting = false;
+                        CommonUtils.printLog("connecton rq completed in br");
+                    }
+                }).start();
+            } else {
+                CommonUtils.printLog("no network available,Could not connect to mqtt");
+            }
+            /*
             final ConnectivityManager connMgr = (ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             final android.net.NetworkInfo wifi = connMgr
@@ -266,7 +290,7 @@ public class FirstService extends Service implements MQTTConstants {
                 }).start();
             } else {
                 CommonUtils.printLog("no network available,Could not connect to mqtt");
-            }
+            }*/
         }
 
     };

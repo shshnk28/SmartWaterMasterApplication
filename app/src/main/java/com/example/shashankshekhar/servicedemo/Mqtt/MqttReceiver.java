@@ -12,6 +12,7 @@ import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -31,6 +32,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
     private static MqttReceiver mqttReceiver = null;
 
     private MqttClient mqttClient = null;
+    private MqttAsyncClient mqttAsyncClient;
     private MqttConnectOptions  connectionOptions = null;
     private Context context = null;
 
@@ -58,7 +60,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         do not perform any heavy operations here. ack will go back from here only after the method has
         finished running.keep it light
          */
-        CommonUtils.printLog("data received in MQTT Receiver for topic: " + topic);
+        CommonUtils.printLog("MQTT notif for topic: " + topic+ "on thread "+ CommonUtils.checkMainThread());
          // TODO: 10/11/15 call the library here that does the broadcast to seperate out the Mqtt implementation
         Intent broadcast = new Intent();
         broadcast.putExtra("message",msg.toString());
@@ -71,13 +73,8 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
     @Override
     public void connectionLost(Throwable cause)
     {
-        CommonUtils.printLog("connection lost in receiver!!");
+        CommonUtils.printLog("connection lost to broker");
         CommonUtils.printLog("cause: "+ cause.getCause());
-        CommonUtils.printLog("Message: "+ cause.getMessage());
-        CommonUtils.printLog("LocalizedMessage: " + cause.getLocalizedMessage());
-//        ca.printStackTrace();
-//        CommonUtils.printLog(ca.getCause().toString());
-        boolean connection = connectToClientandSetcallback();
     }
     @Override
     public void deliveryComplete(IMqttDeliveryToken tk)
@@ -106,10 +103,13 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         }
         try {
            token = mqttClient.connectWithResult(connectionOptions);
+
 //            CommonUtils.printLog(token.);
         } catch (MqttSecurityException e) {
             CommonUtils.printLog("MqttSecurityException could not connect in receiver");
             CommonUtils.printLog("cause: " + e.getCause());
+            CommonUtils.printLog("reason code: " + e.getReasonCode());
+            CommonUtils.printLog("message: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

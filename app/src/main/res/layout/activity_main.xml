@@ -34,10 +34,10 @@
         android:text="Try Reconnecting"
         android:id="@+id/button8"
         android:onClick="showDialogAndConnectToMqtt" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Check Port"
-        android:id="@+id/button9"
-        android:onClick="checkForOpenPort"/>
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Check Port"-->
+        <!--android:id="@+id/button9"-->
+        <!--android:onClick="checkForOpenPort"/>-->
 </LinearLayout>
