@@ -319,7 +319,7 @@ public class FirstService extends Service implements MQTTConstants {
         }
     }
 
-    /*
+    /* left for referecne purpose
     private class AsyncCaller extends AsyncTask<Void, Void, Void>
     {
 

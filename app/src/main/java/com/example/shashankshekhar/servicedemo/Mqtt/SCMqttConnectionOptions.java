@@ -19,7 +19,6 @@ public class SCMqttConnectionOptions implements MQTTConstants {
         connOpts.setUserName(USERNAME);
         connOpts.setPassword(PASSWORD.toCharArray());
         connOpts.setConnectionTimeout(60);
-        connOpts.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
     }
     public static MqttConnectOptions getConnectionOptions () {
         if (connOpts == null) {

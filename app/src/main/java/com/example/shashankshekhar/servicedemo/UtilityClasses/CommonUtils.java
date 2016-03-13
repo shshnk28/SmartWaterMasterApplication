@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -36,6 +37,15 @@ public class CommonUtils {
             }
         }
         return false;
+    }
+    public static String deviceId (Context appContext) {
+        if (appContext == null) {
+            return null;
+        } else {
+            String id = Settings.Secure.getString(appContext.getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
+            return id;
+        }
     }
     public static boolean checkMainThread () {
         if(Looper.myLooper() == Looper.getMainLooper()) {
