@@ -1,17 +1,11 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
-import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /**
  * Created by shashankshekhar on 06/11/15.
@@ -27,7 +21,24 @@ public class MqttPublisher implements MQTTConstants {
         this.eventName = eventName;
         this.dataString= dataString;
     }
-    public boolean publishTopic () {
+    public MqttPublisher (String topicName,String dataString) {
+        this(topicName,null,dataString);
+    }
+    public MqttPublisher (String topicName) {
+        this(topicName,null,null);
+    }
+    public void changePublisherData (String topicName,String eventName,String dataString) {
+        if (topicName!=null && topicName.isEmpty() == false) {
+            this.topicName = topicName;
+        }
+        if (eventName !=null && eventName.isEmpty() == false) {
+            this.eventName = eventName;
+        }
+        if (dataString !=null && dataString.isEmpty() == false) {
+            this.dataString = dataString;
+        }
+    }
+    public boolean publishData(String data) {
         CommonUtils.printLog("trying to publish the topic");
 
         MqttClient mqttClient = SmartCampusMqttClient.getMqttClient(true);
@@ -35,8 +46,13 @@ public class MqttPublisher implements MQTTConstants {
             CommonUtils.printLog("couldnot instantiate mqtt client..returning");
             return false;
         }
-//        CommonUtils.printLog("client address in publisher: "+mqttClient.toString());
-        String payload = eventName + "-" + dataString;
+        String payload;
+        if (eventName!=null) {
+            payload = eventName + "-" + data;
+        }
+        else {
+            payload = data;
+        }
         MqttMessage message1 = new MqttMessage(payload.getBytes());
         message1.setQos(QoS);
         if (mqttClient.isConnected() == false) {
@@ -59,7 +75,14 @@ public class MqttPublisher implements MQTTConstants {
             return false;
         }
 
-
+    }
+    public boolean publishData() {
+        if (dataString!=null) {
+            boolean retVal = publishData(dataString);
+            return retVal;
+        }
+        CommonUtils.printLog("data to be sent is null.. returning");
+        return false;
     }
 
 }

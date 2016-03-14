@@ -3,9 +3,8 @@ package com.example.shashankshekhar.servicedemo.Logger;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
-import android.provider.Settings;
-import android.util.Log;
 
+import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import java.io.BufferedReader;
@@ -25,12 +24,14 @@ import java.util.TimeZone;
 public class MqttLogger {
     private static final String SMART_CAMPUS_FOLDER_NAME = "SmartCampus";
     private static final String SMART_CAMPUS_LOG_FILE_NAME = "SmartCampusLog.txt";
-    static private String phoneModel;
+    private static final String MOBILE_TELEMETRY_TOPIC_NAME =  "iisc/smartx/mobile/telemetry/data";
+    private static final String MOBILE_TELEMETRY_EVENT_NAME = "Mobile Telemetry";
+    private static String phoneModel;
 
     // note: this is not the IMEI  or mac address
-    static private String deviceId;
-    static private Context applicationContext;
-    static private File smartCampusDirectory = new File(Environment.getExternalStorageDirectory(), SMART_CAMPUS_FOLDER_NAME);
+    private static String deviceId;
+    private static Context applicationContext;
+    private static File smartCampusDirectory = new File(Environment.getExternalStorageDirectory(), SMART_CAMPUS_FOLDER_NAME);
 
     private static void initAppContext(Context appContext) {
         if (applicationContext == null) {
@@ -83,32 +84,57 @@ public class MqttLogger {
         }
         File logFile = new File(smartCampusDirectory, SMART_CAMPUS_LOG_FILE_NAME);
         try {
-            BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
-            buf.append(text);
-            buf.newLine();
-            buf.close();
+            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
+            writer.append(text);
+            writer.newLine();
+            writer.close();
         } catch (IOException e) {
             CommonUtils.printLog("file write failed in mqtt logfile");
             return;
         }
     }
+
     public void publishLoggerData(int n) {
         // publish the last n line from the file
         /*
         if n is less than or equal to num file lines then publish all
          */
-        int lines  = numberofLineInFile();
+        int lines = numberofLinesInFile();
         if (lines == -1) {
             return;
         }
-        if (lines <=n) {
-            // publish all
+        File logFile = new File(smartCampusDirectory, SMART_CAMPUS_LOG_FILE_NAME);
+        BufferedReader reader = null;
+        MqttPublisher publisher  = new MqttPublisher(MOBILE_TELEMETRY_TOPIC_NAME);
+        try {
+            reader = new BufferedReader(new FileReader(logFile));
+            if (lines > n) {
+                for (int i = 0;i< lines-n;i++) {
+                    reader.readLine();
+                }
+            }
+            String data;
+            while ((data = reader.readLine())!=null) {
+                // publish data on a BG thread with a thread sleep of 1 sec
+                publisher.publishData(data);
+                try {
+                    Thread.currentThread().sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            reader.close();
+            //delete the log file now
+            logFile.delete();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        else {
-            // goto line num lines-n and from there start publishing
-        }
+
     }
-    private int numberofLineInFile() {
+
+    private int numberofLinesInFile() {
         File logFile = new File(smartCampusDirectory, SMART_CAMPUS_LOG_FILE_NAME);
         int lines = 0;
         BufferedReader reader = null;
@@ -119,7 +145,7 @@ public class MqttLogger {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return -1;
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return -1;
         }

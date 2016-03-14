@@ -1,12 +1,10 @@
 package com.example.shashankshekhar.servicedemo;
 
-import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.IBinder;
@@ -23,7 +21,6 @@ import com.example.shashankshekhar.servicedemo.Mqtt.SmartCampusMqttClient;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class FirstService extends Service implements MQTTConstants {
@@ -66,7 +63,7 @@ public class FirstService extends Service implements MQTTConstants {
                     // TODO: 18/01/16  don't call MQTT directly here. make it modular so that this class does not need know
                     // who handles the publishing event
                     MqttPublisher mqttPublisher = new MqttPublisher(topicName, eventName, dataString);
-                    boolean didPublish = mqttPublisher.publishTopic();
+                    boolean didPublish = mqttPublisher.publishData();
                     if (didPublish) {
                         sendMessageToClient(message.replyTo,TOPIC_PUBLISHED);
                     } else {
