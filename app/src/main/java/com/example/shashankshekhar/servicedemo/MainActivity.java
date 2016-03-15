@@ -29,8 +29,11 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MQTTConstants{
 
@@ -68,45 +71,6 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
         }
 
     };
-//    private class CheckForOpenPort implements Runnable {
-//        public void run() {
-//            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-//            if (CommonUtils.checkMainThread() == true) {
-//                CommonUtils.printLog("main thread .. returning");
-//                return;
-//            }
-//            CommonUtils.printLog("trying to connect to 1883 port on smartx");
-//            try {
-//                Socket socket = new Socket();
-//                socket.connect(new InetSocketAddress(BROKER_ADDRESS_CLOUD,PORT_NUM), 10000);
-//                if (socket.isConnected()) {
-//
-//                }
-//                socket.close();
-//                // connection success
-//                CommonUtils.printLog("connection successful");
-//                runOnUiThread(new Runnable() {
-//                    public void run() {
-//                        Toast.makeText(getApplicationContext(), "Accessible", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            } catch (java.io.IOException ex) {
-//                runOnUiThread(new Runnable() {
-//                    public void run() {
-//                        Toast.makeText(getApplicationContext(), "Not Accessible", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//                CommonUtils.printLog("could not connect - ioException");
-//                if (ex.getCause() != null) {
-//                    CommonUtils.printLog("cause: "+ex.getCause().toString());
-//                }
-//                if (ex.getMessage() != null) {
-//                    CommonUtils.printLog("message: " + ex.getMessage());
-//                }
-//
-//            }
-//        }
-//    }
 
     public void startAndBindService (View view) {
         ComponentName componentName = new ComponentName(PACKAGE_NAME,SERVICE_NAME);
@@ -172,86 +136,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
         clientMessanger = new Messenger(new IncomingHandler(connectingDialog,this));
         connectMqtt();
     }
-    public void checkGoogle(View view) {
-        pingTest("www.google.co.in");
-    }
-    public void checkWODNS(View view) {
-        pingTest("8.8.8.8");
-    }
-    public void checkBroker(View view) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Long start  = System.currentTimeMillis();
-                    Socket socket = new Socket();
-                    socket.connect(new InetSocketAddress("smartx.cds.iisc.ac.in", 1883), 10000);
-                    if (socket.isConnected()) {
-                        CommonUtils.printLog("socket connection ok");
-                        CommonUtils.printLog(" time taken: " + (System.currentTimeMillis() - start));
-                    }
-                    socket.close();
-                    return;
-                } catch (java.io.IOException ex) {
-                    CommonUtils.printLog("exception in connecting to socket");
-                }
-            }
-        }).start();
 
-    }
-    public void checkBrokerWODNS(View view) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Long start  = System.currentTimeMillis();
-                    Socket socket = new Socket();
-                    socket.connect(new InetSocketAddress("13.76.132.113", 1883), 10000);
-                    if (socket.isConnected()) {
-                        CommonUtils.printLog("socket connection ok wo dns");
-                        CommonUtils.printLog(" time taken: " + (System.currentTimeMillis() - start));
-                    }
-                    socket.close();
-                    return;
-                } catch (java.io.IOException ex) {
-                    CommonUtils.printLog("exception in connecting to socket wo dns");
-                }
-            }
-        }).start();
-    }
-    private void pingTest(String ipAddress) {
-        Runtime runtime = Runtime.getRuntime();
-        Process mIpAddrProcess = null;
-        try {
-            Long start  = System.currentTimeMillis();
-            mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 " + ipAddress);
-            int mExitValue = mIpAddrProcess.waitFor();
-            if (mExitValue == 0) {
-                CommonUtils.printLog("able to ping: "+ ipAddress);
-                CommonUtils.printLog("time taken: " + (System.currentTimeMillis() - start));
-                mIpAddrProcess.destroy();
-                return;
-            } else {
-                CommonUtils.printLog("not able to ping1: " + ipAddress);
-                mIpAddrProcess.destroy();
-                return;
-            }
-        } catch (InterruptedException ignore) {
-            ignore.printStackTrace();
-            System.out.println(" Exception:" + ignore);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println(" Exception:" + e);
-        }
-        mIpAddrProcess.destroy();
-        CommonUtils.printLog("not able to ping2: "+ ipAddress);
-    }
-//    public void checkForOpenPort (View view) {
-//
-//        CheckForOpenPort cop = new CheckForOpenPort();
-//        Thread portThread = new Thread(cop);
-//        portThread.start();
-//    }
     public void connectMqtt () {
         Message message = Message.obtain(null,8);
         message.replyTo= clientMessanger;
@@ -261,6 +146,10 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
             e.printStackTrace();
             CommonUtils.printLog("remote Exception,Could not send message");
         }
+    }
+    public void launchDebugScreen(View view) {
+        Intent debugIntent = new Intent(this,ConnectionCheckActivity.class);
+        startActivity(debugIntent);
     }
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -314,6 +203,5 @@ class IncomingHandler extends Handler {
             default:
 
         }
-
     }
 }

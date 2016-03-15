@@ -123,7 +123,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         CommonUtils.printLog("connection established with client: " + mqttClient.toString());
         MqttLogger.initAppContext(appContext);
         MqttLogger.writeDataToLogFile(" Connection Successful/");
-        MqttLogger.publishLoggerData(30);
+        MqttLogger.runStatusPublisher(30);
         return token.isComplete();
     }
     public void disconnectMqtt () {

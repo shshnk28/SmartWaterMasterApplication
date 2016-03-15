@@ -162,7 +162,7 @@ public class MqttLogger {
         }
         return lines;
     }
-    private static void runStatusPublisher (final int num) {
+    public static void runStatusPublisher (final int num) {
         new Thread(new Runnable() {
             @Override
             public void run() {

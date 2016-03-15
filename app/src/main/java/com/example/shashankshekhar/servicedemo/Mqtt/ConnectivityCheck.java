@@ -7,8 +7,11 @@ import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 
 /**
  * Created by shashankshekhar on 11/03/16.
@@ -27,21 +30,26 @@ public class ConnectivityCheck implements MQTTConstants {
     ConnectivityCheck(Context applicationContext) {
         this.appContext = applicationContext;
     }
-    public void checkNonConnectivityReason () {
+
+    public void checkNonConnectivityReason() {
         checkNonConnectivityReason(" ");
     }
-    public void checkNonConnectivityReason (String logString) {
+
+    public void checkNonConnectivityReason(String logString) {
         MqttLogger.initAppContext(appContext);
         CheckNonConnectivity cnc = new CheckNonConnectivity();
         cnc.setLogString(logString);
         Thread portThread = new Thread(cnc);
         portThread.start();
     }
+
     private class CheckNonConnectivity implements Runnable {
         private String logString;
+
         public void setLogString(String logStr) {
             this.logString = logStr;
         }
+
         public void run() {
 
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
@@ -51,7 +59,7 @@ public class ConnectivityCheck implements MQTTConstants {
             }
             logString += " Initialising Checks/";
             CommonUtils.printLog("Initialising Checks");
-            boolean isNetConnected =CommonUtils.isNetworkAvailable(appContext);
+            boolean isNetConnected = CommonUtils.isNetworkAvailable(appContext);
             if (isNetConnected == false) {
                 logString += " S1-Net Disconnected/";
                 MqttLogger.writeDataToLogFile(logString);
@@ -67,7 +75,7 @@ public class ConnectivityCheck implements MQTTConstants {
                 socket.connect(new InetSocketAddress(BROKER_ADDRESS, PORT_NUM), 10000);
                 if (socket.isConnected()) {
                     // update the logger stating that socket is reachable
-                    logString+=" S2-Socket Connection to broker established with DNS/";
+                    logString += " S2-Socket Connection to broker established with DNS/";
                     MqttLogger.writeDataToLogFile(logString);
                 }
                 socket.close();
@@ -75,19 +83,19 @@ public class ConnectivityCheck implements MQTTConstants {
             } catch (java.io.IOException ex) {
                 // update logger socket connection failed
                 // try without the DNS now
-                logString+=" S2-Socket Connection to broker not established with DNS/";
+                logString += " S2-Socket Connection to broker not established with DNS/";
                 try {
                     Socket socket = new Socket();
                     socket.connect(new InetSocketAddress(BROKER_ADDRESS_NO_DNS, PORT_NUM), 10000);
                     if (socket.isConnected()) {
-                        logString+=" S3-Socket Connection established withOUT DNS/";
+                        logString += " S3-Socket Connection established withOUT DNS/";
                         MqttLogger.writeDataToLogFile(logString);
                     }
                     socket.close();
                     return;
                 } catch (IOException e) {
                     // update the logger failed without DNS
-                    logString+=" S3-Socket Connection not established withOUT DNS/";
+                    logString += " S3-Socket Connection not established withOUT DNS/";
 
                 }
 
@@ -96,25 +104,25 @@ public class ConnectivityCheck implements MQTTConstants {
             boolean pingResult = pingTest("www.google.co.in");
             if (pingResult == true) {
                 // update the logger
-                logString+=" S4-Able to Ping GoogleIndia/";
+                logString += " S4-Able to Ping GoogleIndia/";
                 MqttLogger.writeDataToLogFile(logString);
                 return;
             } else {
-                logString+=" S4-Not able to ping GoogleIndia/";
+                logString += " S4-Not able to ping GoogleIndia/";
                 pingResult = pingTest("8.8.8.8");
                 if (pingResult == true) {
-                    logString+=" S5-Able to ping Google without DNS/";
+                    logString += " S5-Able to ping Google without DNS/";
                     MqttLogger.writeDataToLogFile(logString);
                     return;
                 } else {
-                    logString+=" S5-Not able to ping Google withOut DNS/";
-                    isNetConnected =CommonUtils.isInternetConnectedSec(appContext);
+                    logString += " S5-Not able to ping Google withOut DNS/";
+                    isNetConnected = CommonUtils.isInternetConnectedSec(appContext);
                     if (isNetConnected == true) {
-                        logString+=" S6-Internet Connected/";
+                        logString += " S6-Internet Connected/";
                     } else {
-                        logString+=" S6-Internet DISconnected/";
+                        logString += " S6-Internet DISconnected/";
                     }
-                    logString+=" Checks complete/";
+                    logString += " Checks complete/";
                     MqttLogger.writeDataToLogFile(logString);
                     /*
                     check if net is available and write it to the log
@@ -130,10 +138,8 @@ public class ConnectivityCheck implements MQTTConstants {
             http connection
             https://stackoverflow.com/questions/1443166/android-how-to-check-if-the-server-is-available
             https://stackoverflow.com/questions/2786720/android-service-ping-url
-
             ping
             https://stackoverflow.com/questions/3905358/how-to-ping-external-ip-from-java-android
-
              */
         }
 
@@ -154,6 +160,25 @@ public class ConnectivityCheck implements MQTTConstants {
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println(" Exception:" + e);
+            }
+            return false;
+        }
+
+        private boolean urlPingTest(String url) {
+            try {
+                URL url1 = new URL("http://" + url);
+                HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
+                connection.setRequestProperty("User-Agent", "Android Application:");
+                connection.setRequestProperty("Connection", "close");
+                connection.setConnectTimeout(1000 * 10); // mTimeout is in seconds
+                connection.connect();
+                if (connection.getResponseCode() == 200) {
+                    return true;
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             return false;
         }
