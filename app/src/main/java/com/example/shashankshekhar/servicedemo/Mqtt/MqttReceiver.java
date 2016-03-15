@@ -1,16 +1,12 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
-import com.example.shashankshekhar.servicedemo.FirstService;
+import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
-import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -20,9 +16,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
-
-import java.lang.ref.PhantomReference;
-import java.util.ConcurrentModificationException;
 
 /**
  * Created by shashankshekhar on 09/11/15.
@@ -34,12 +27,12 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
     private MqttClient mqttClient = null;
     private MqttAsyncClient mqttAsyncClient;
     private MqttConnectOptions  connectionOptions = null;
-    private Context context = null;
+    private Context appContext = null;
 
     private MqttReceiver (Context context1) {
         this.mqttClient = SmartCampusMqttClient.getMqttClient(true);
         this.connectionOptions= SCMqttConnectionOptions.getConnectionOptions();
-        this.context = context1;
+        this.appContext = context1;
     }
     public synchronized static MqttReceiver getReceiverInstance (Context context1) {
         if (mqttReceiver == null) {
@@ -66,7 +59,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         broadcast.putExtra("message",msg.toString());
         broadcast.putExtra("topicName",topic);
         broadcast.setAction(topic);
-        context.sendBroadcast(broadcast);
+        appContext.sendBroadcast(broadcast);
     }
 
 
@@ -75,17 +68,17 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
     {
         CommonUtils.printLog("connection lost to broker");
         CommonUtils.printLog("cause: "+ cause.getCause());
+        String logString = "Connection lost to broker/ ";
+        if (cause.getCause()!= null) {
+            logString+=cause.getCause();
+        }
+        MqttLogger.initAppContext(appContext);
+        MqttLogger.writeDataToLogFile(logString);
+        //write to log file here as well
     }
     @Override
     public void deliveryComplete(IMqttDeliveryToken tk)
     {
-//        try {
-//            CommonUtils.printLog(tk.getMessage().toString()+ "in delivery complete");
-//        } catch (MqttException ex) {
-//            ex.printStackTrace();
-//            CommonUtils.printLog("could notget ");
-//        }
-
         CommonUtils.printLog("delivery complete");
     }
 
@@ -108,19 +101,29 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         } catch (MqttSecurityException e) {
             CommonUtils.printLog("MqttSecurityException could not connect in receiver");
             CommonUtils.printLog("cause: " + e.getCause());
-            CommonUtils.printLog("reason code: " + e.getReasonCode());
-            CommonUtils.printLog("message: " + e.getMessage());
-            e.printStackTrace();
+            String logStr = "MqttSecurityException/";
+            if (e.getCause()!= null) {
+                logStr+=" "+e.getCause()+"/";
+            }
+//            ConnectivityCheck connectivityCheck = new ConnectivityCheck(appContext);
+//            connectivityCheck.checkNonConnectivityReason(logStr);
             return false;
         }
         catch (MqttException e) {
             CommonUtils.printLog(" non-security exception could not connect in receiver");
             CommonUtils.printLog("cause: " + e.getCause());
-            CommonUtils.printLog("reason code: " + e.getReasonCode());
-            e.printStackTrace();
+            String logStr = "MqttException/";
+            if (e.getCause()!= null) {
+                logStr+=" "+e.getCause()+"/";
+            }
+//            ConnectivityCheck connectivityCheck = new ConnectivityCheck(appContext);
+//            connectivityCheck.checkNonConnectivityReason(logStr);
             return false;
         }
         CommonUtils.printLog("connection established with client: " + mqttClient.toString());
+        MqttLogger.initAppContext(appContext);
+        MqttLogger.writeDataToLogFile(" Connection Successful/");
+        MqttLogger.publishLoggerData(30);
         return token.isComplete();
     }
     public void disconnectMqtt () {

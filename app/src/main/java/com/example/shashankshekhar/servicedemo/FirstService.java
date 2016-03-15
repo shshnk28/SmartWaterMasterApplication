@@ -167,6 +167,7 @@ public class FirstService extends Service implements MQTTConstants {
     @Override
     public void onCreate() {
         CommonUtils.printLog("ONCreate called in service");
+        setupBroadcastReceiver();
     }
 
     @Override
@@ -235,15 +236,16 @@ public class FirstService extends Service implements MQTTConstants {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (isConnecting == true) {
-                CommonUtils.printLog("A Connection req is already in progress.. returning");
+                CommonUtils.printLog("A Connection req is already in progress.. returning from BR");
                 return;
             }
             if (SmartCampusMqttClient.isClientConnected() == true) {
-                CommonUtils.printLog("client already connected ...returning from broadcast receiver");
+                CommonUtils.printLog("client already connected ...returning from BR");
             }
             ConnectivityManager connectivityManager
                     = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            CommonUtils.printLog("in BR net chek");
             if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
                 CommonUtils.printLog("connecton rq initaited in br");
                 isConnecting = true;
@@ -305,8 +307,6 @@ public class FirstService extends Service implements MQTTConstants {
             MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
             Boolean connectionSuccessful = mqttReceiver.initialiseReceiver();
             if (connectionSuccessful == true) {
-                setupBroadcastReceiver();
-//                 replyMessage = Message.obtain(null,1);
                 sendMessageToClient(clientMessenger, MQTT_CONNECTED);
             } else {
                 sendMessageToClient(clientMessenger, UNABLE_TO_CONNECT);

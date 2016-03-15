@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Stack;
 import java.util.TimeZone;
 
 /**
@@ -33,7 +34,7 @@ public class MqttLogger {
     private static Context applicationContext;
     private static File smartCampusDirectory = new File(Environment.getExternalStorageDirectory(), SMART_CAMPUS_FOLDER_NAME);
 
-    private static void initAppContext(Context appContext) {
+    public static void initAppContext(Context appContext) {
         if (applicationContext == null) {
             applicationContext = appContext;
         }
@@ -63,7 +64,19 @@ public class MqttLogger {
         return dateString;
     }
 
-    public static void doLogging(String loggerData) {
+//    public static void doLogging(String loggerData) {
+//        String dateString = getCurrentDate();
+//        if (phoneModel == null) {
+//            setPhoneModel();
+//        }
+//        if (deviceId == null || " ".equals(deviceId)) {
+//            setDeviceId();
+//        }
+//        String loggerString = phoneModel + "," + deviceId + "," + dateString + "," + loggerData;
+//        writeDataToLogFile(loggerString);
+//    }
+
+    public static void writeDataToLogFile(String logString) {
         String dateString = getCurrentDate();
         if (phoneModel == null) {
             setPhoneModel();
@@ -71,11 +84,8 @@ public class MqttLogger {
         if (deviceId == null || " ".equals(deviceId)) {
             setDeviceId();
         }
-        String loggerString = phoneModel + "," + deviceId + "," + dateString + "," + loggerData;
-        writeDataToLogFile(loggerString);
-    }
+        String loggerString = phoneModel + "," + deviceId + "," + dateString + "," + logString;
 
-    private static void writeDataToLogFile(String text) {
         if (smartCampusDirectory.exists() == false) {
             if (!smartCampusDirectory.mkdirs()) {
                 CommonUtils.printLog("failed to create logfile ");
@@ -85,7 +95,7 @@ public class MqttLogger {
         File logFile = new File(smartCampusDirectory, SMART_CAMPUS_LOG_FILE_NAME);
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
-            writer.append(text);
+            writer.append(loggerString);
             writer.newLine();
             writer.close();
         } catch (IOException e) {
@@ -94,7 +104,7 @@ public class MqttLogger {
         }
     }
 
-    public void publishLoggerData(int n) {
+    public static void publishLoggerData(int n) {
         // publish the last n line from the file
         /*
         if n is less than or equal to num file lines then publish all
@@ -116,7 +126,8 @@ public class MqttLogger {
             String data;
             while ((data = reader.readLine())!=null) {
                 // publish data on a BG thread with a thread sleep of 1 sec
-                publisher.publishData(data);
+//                publisher.publishData(data);
+                CommonUtils.printLog("data published from log file: " + data);
                 try {
                     Thread.currentThread().sleep(2000);
                 } catch (InterruptedException e) {
@@ -134,7 +145,7 @@ public class MqttLogger {
 
     }
 
-    private int numberofLinesInFile() {
+    private static int numberofLinesInFile() {
         File logFile = new File(smartCampusDirectory, SMART_CAMPUS_LOG_FILE_NAME);
         int lines = 0;
         BufferedReader reader = null;
@@ -150,6 +161,14 @@ public class MqttLogger {
             return -1;
         }
         return lines;
+    }
+    private static void runStatusPublisher (final int num) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                publishLoggerData(num);
+            }
+        }).start();
     }
 }
 
