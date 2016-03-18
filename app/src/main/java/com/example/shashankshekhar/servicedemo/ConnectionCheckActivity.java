@@ -138,7 +138,6 @@ public class ConnectionCheckActivity extends AppCompatActivity {
                 CommonUtils.showToast(getApplicationContext(), message);
             }
         });
-
     }
     Runnable block = new Runnable() {
         @Override

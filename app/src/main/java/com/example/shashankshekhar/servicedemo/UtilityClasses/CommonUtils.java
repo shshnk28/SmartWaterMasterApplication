@@ -10,6 +10,10 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.UUID;
 
 /**
@@ -98,5 +102,20 @@ public class CommonUtils {
 
         }
         return true;
+    }
+    public static boolean httpConnectionTest(String url) {
+        try {
+            URL url1 = new URL("http://" + url);
+            HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
+            connection.setConnectTimeout(1000 * 10); // mTimeout is in seconds
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                return true;
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

@@ -9,6 +9,8 @@ public interface MQTTConstants {
     int QoS = 1;
     String BROKER_ADDRESS_CLOUD = "tcp://smartx.cds.iisc.ac.in:1883";
     String STATIC_BROKER_ADDRESS = "tcp://13.76.132.113:1883";
+    String GOOGLE_INDIA = "www.google.co.in";
+    String GOOGLE_INDIA_NO_DNS = "8:8:8:8";
     //smartx.cloudapp.net
     //smartx.cds.iisc.ac.in
     String USERNAME = "AppUser";

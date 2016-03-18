@@ -13,6 +13,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.Handler;
 
+import com.example.shashankshekhar.servicedemo.BroadcastReceiver.NetworkConnectivityReceiver;
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttReceiver;
@@ -24,12 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FirstService extends Service implements MQTTConstants {
-    private static boolean isConnecting = false; // indicates if a MQtt session is connecting currently
+
 
     // connection options
-    static final int MQTT_CONNECTED =1;
-    static final int UNABLE_TO_CONNECT =2;
-    static final int NO_NETWORK_AVAILABLE =4;
+    static final int MQTT_CONNECTED = 1;
+    static final int UNABLE_TO_CONNECT = 2;
+    static final int NO_NETWORK_AVAILABLE = 4;
     static final int MQTT_CONNECTION_IN_PROGRESS = 5;
     static final int MQTT_NOT_CONNECTED = 6;
 
@@ -40,6 +41,9 @@ public class FirstService extends Service implements MQTTConstants {
     // subscription status
     static final int SUBSCRIPTION_SUCCESS = 9;
     static final int SUBSCRIPTION_ERROR = 10;
+
+    private static boolean isConnecting = false; // indicates if a MQtt session is connecting currently
+    final Messenger messenger = new Messenger(new IncomingHandler());
 
     class IncomingHandler extends Handler {
         @Override
@@ -65,9 +69,9 @@ public class FirstService extends Service implements MQTTConstants {
                     MqttPublisher mqttPublisher = new MqttPublisher(topicName, eventName, dataString);
                     boolean didPublish = mqttPublisher.publishData();
                     if (didPublish) {
-                        sendMessageToClient(message.replyTo,TOPIC_PUBLISHED);
+                        sendMessageToClient(message.replyTo, TOPIC_PUBLISHED);
                     } else {
-                        sendMessageToClient(message.replyTo,ERROR_IN_PUBLISHING);
+                        sendMessageToClient(message.replyTo, ERROR_IN_PUBLISHING);
                     }
                     break;
                 case SUBSCRIBE_TO_TOPIC: // to subscribe to a topic
@@ -79,10 +83,9 @@ public class FirstService extends Service implements MQTTConstants {
                     }
                     CommonUtils.printLog("subscribe call made");
                     String subscribeID = MqttSubscriber.subscribeToTopic(topicName);
-                    if (subscribeID == null|| subscribedTopics.contains(topicName) == true) {
+                    if (subscribeID == null || subscribedTopics.contains(topicName) == true) {
                         CommonUtils.printLog("couldnot subscribe to topic : ");
-                    }
-                    else {
+                    } else {
                         subscribedTopics.add(topicName);
                     }
                     // TODO: 12/11/15 return the subscribeId to the client from here.
@@ -116,27 +119,20 @@ public class FirstService extends Service implements MQTTConstants {
                     }
                     break;
                 case CONNECT_MQTT: // reconnect mqtt
-                    if (SmartCampusMqttClient.isClientConnected()) {
-                        sendMessageToClient(message.replyTo, MQTT_CONNECTED);
-                        return;
-                    }
-                    if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
-                        sendMessageToClient(message.replyTo, NO_NETWORK_AVAILABLE);
-                        return;
-                    }
                     if (message.replyTo == null) {
                         sendMessageToClient(message.replyTo, UNABLE_TO_CONNECT);
                         return;
                     }
-                    if (isConnecting == true){
+                    if (isConnecting == true) {
                         sendMessageToClient(message.replyTo, MQTT_CONNECTION_IN_PROGRESS);
                         return;
                     }
-
+                    if (SmartCampusMqttClient.isClientConnected() == true) {
+                        sendMessageToClient(message.replyTo,MQTT_CONNECTED);
+                        return;
+                    }
                     ConnectToMqtt connectToMqtt = new ConnectToMqtt(message.replyTo);
                     Thread mqttConnector = new Thread(connectToMqtt);
-//               connectToMqtt.run();
-
                     mqttConnector.start();
                     break;
                 default:
@@ -167,7 +163,7 @@ public class FirstService extends Service implements MQTTConstants {
     @Override
     public void onCreate() {
         CommonUtils.printLog("ONCreate called in service");
-        setupBroadcastReceiver();
+        NetworkConnectivityReceiver.initServiceObj(this);
     }
 
     @Override
@@ -182,23 +178,6 @@ public class FirstService extends Service implements MQTTConstants {
         // disconnect the mqtt in here
         MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
         mqttReceiver.disconnectMqtt();
-
-        try {
-            unregisterReceiver(broadcastReceiver);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    final Messenger messenger = new Messenger(new IncomingHandler());
-
-    public void setupBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        if (broadcastReceiver == null) {
-            CommonUtils.printLog("broadcast receiver is null..returning");
-            return;
-        }
-        registerReceiver(broadcastReceiver, intentFilter);
     }
 
     public void resubscribeToAllTopics() {
@@ -220,101 +199,79 @@ public class FirstService extends Service implements MQTTConstants {
             ex.printStackTrace();
         }
     }
-    private Boolean checkConnectivity (Messenger messenger) {
+
+    private Boolean checkConnectivity(Messenger messenger) {
         if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
-            sendMessageToClient(messenger,NO_NETWORK_AVAILABLE);
+            sendMessageToClient(messenger, NO_NETWORK_AVAILABLE);
             return false;
         }
         if (SmartCampusMqttClient.isClientConnected() == false) {
-            sendMessageToClient(messenger,MQTT_NOT_CONNECTED);
+            sendMessageToClient(messenger, MQTT_NOT_CONNECTED);
             return false;
         }
         return true;
     }
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (isConnecting == true) {
-                CommonUtils.printLog("A Connection req is already in progress.. returning from BR");
-                return;
+    private void intiateMqttConnection(boolean sendMessage, Messenger clientMessenger) {
+        if (CommonUtils.httpConnectionTest(GOOGLE_INDIA) == false) {
+            if (sendMessage == true && clientMessenger != null) {
+                sendMessageToClient(clientMessenger, NO_NETWORK_AVAILABLE);
             }
-            if (SmartCampusMqttClient.isClientConnected() == true) {
-                CommonUtils.printLog("client already connected ...returning from BR");
-            }
-            ConnectivityManager connectivityManager
-                    = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-            CommonUtils.printLog("in BR net chek");
-            if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
-                CommonUtils.printLog("connecton rq initaited in br");
-                isConnecting = true;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
-                        boolean isConnected = mqttReceiver.initialiseReceiver();
-                        if (isConnected == true) {
-                            resubscribeToAllTopics();
-                        }
-                        isConnecting = false;
-                        CommonUtils.printLog("connecton rq completed in br");
-                    }
-                }).start();
-            } else {
-                CommonUtils.printLog("no network available,Could not connect to mqtt");
-            }
-            /*
-            final ConnectivityManager connMgr = (ConnectivityManager) context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            final android.net.NetworkInfo wifi = connMgr
-                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            final android.net.NetworkInfo mobile = connMgr
-                    .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-            if (wifi.isConnected() || mobile.isConnected()) {
-                CommonUtils.printLog("connecton rq initaited in br");
-                isConnecting = true;
-                CommonUtils.printLog("wifi connected");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
-                        boolean isConnected = mqttReceiver.initialiseReceiver();
-                        if (isConnected == true) {
-                            resubscribeToAllTopics();
-                        }
-                        isConnecting = false;
-                        CommonUtils.printLog("connecton rq completed in br");
-                    }
-                }).start();
-            } else {
-                CommonUtils.printLog("no network available,Could not connect to mqtt");
-            }*/
+            return;
         }
+        isConnecting = true;
+        MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
+        Boolean connectionSuccessful = mqttReceiver.initialiseReceiver();
+        if (connectionSuccessful == true) {
+            if (sendMessage == true) {
+                sendMessageToClient(clientMessenger, MQTT_CONNECTED);
+            } else {
+                resubscribeToAllTopics();
+            }
+        } else {
+            sendMessageToClient(clientMessenger, UNABLE_TO_CONNECT);
+        }
+        isConnecting = false;
+    }
 
-    };
 
     private class ConnectToMqtt implements Runnable {
         Messenger clientMessenger;
         ConnectToMqtt(Messenger messenger) {
             this.clientMessenger = messenger;
         }
+
         @Override
         public void run() {
             CommonUtils.printLog("manual connection req initiated");
-            isConnecting = true;
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-            MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
-            Boolean connectionSuccessful = mqttReceiver.initialiseReceiver();
-            if (connectionSuccessful == true) {
-                sendMessageToClient(clientMessenger, MQTT_CONNECTED);
-            } else {
-                sendMessageToClient(clientMessenger, UNABLE_TO_CONNECT);
-            }
-            isConnecting = false;
+            intiateMqttConnection(true, clientMessenger);
             CommonUtils.printLog("manual connection req returned");
         }
     }
+
+    public void onNetworkChange() {
+        if (isConnecting == true) {
+            CommonUtils.printLog("A Connection req is already in progress.. returning from BR");
+            return;
+        }
+        if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
+            CommonUtils.printLog("no internetconnection detected.. returning from BR");
+            return;
+        }
+        if (SmartCampusMqttClient.isClientConnected() == true) {
+            CommonUtils.printLog("client already connected ...returning from BR");
+            return;
+        }
+        CommonUtils.printLog("reconnection initiated via BR");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                intiateMqttConnection(false, null);
+            }
+        }).start();
+    }
+
 
     /* left for referecne purpose
     private class AsyncCaller extends AsyncTask<Void, Void, Void>
