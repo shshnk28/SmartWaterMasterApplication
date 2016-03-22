@@ -128,7 +128,7 @@ public class FirstService extends Service implements MQTTConstants {
                         return;
                     }
                     if (SmartCampusMqttClient.isClientConnected() == true) {
-                        sendMessageToClient(message.replyTo,MQTT_CONNECTED);
+                        sendMessageToClient(message.replyTo, MQTT_CONNECTED);
                         return;
                     }
                     ConnectToMqtt connectToMqtt = new ConnectToMqtt(message.replyTo);
@@ -156,6 +156,13 @@ public class FirstService extends Service implements MQTTConstants {
     public int onStartCommand(Intent intent, int flags, int startId) {
         int id = android.os.Process.myPid();
         CommonUtils.printLog("onStart called in service");
+        if (intent.getBooleanExtra("fromBroadcastReceiver",false) == true) {
+            // the service start call is coming from network change broadcast receiver
+            CommonUtils.printLog("service start call from BR receiver");
+            onNetworkChange();
+        } else {
+            CommonUtils.printLog("service start call NOT from BR receiver");
+        }
         return Service.START_NOT_STICKY;
 
     }
@@ -163,7 +170,7 @@ public class FirstService extends Service implements MQTTConstants {
     @Override
     public void onCreate() {
         CommonUtils.printLog("ONCreate called in service");
-        NetworkConnectivityReceiver.initServiceObj(this);
+
     }
 
     @Override
@@ -237,6 +244,7 @@ public class FirstService extends Service implements MQTTConstants {
 
     private class ConnectToMqtt implements Runnable {
         Messenger clientMessenger;
+
         ConnectToMqtt(Messenger messenger) {
             this.clientMessenger = messenger;
         }

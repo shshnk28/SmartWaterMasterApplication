@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
     boolean mBound = false;
     ProgressDialog connectingDialog;
     Messenger clientMessanger;
-    static final String PACKAGE_NAME = "com.example.shashankshekhar.servicedemo";
-    static final String SERVICE_NAME = "com.example.shashankshekhar.servicedemo.FirstService";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

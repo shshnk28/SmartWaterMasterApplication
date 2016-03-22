@@ -11,10 +11,13 @@ public interface MQTTConstants {
     String STATIC_BROKER_ADDRESS = "tcp://13.76.132.113:1883";
     String GOOGLE_INDIA = "www.google.co.in";
     String GOOGLE_INDIA_NO_DNS = "8:8:8:8";
-    //smartx.cloudapp.net
-    //smartx.cds.iisc.ac.in
+
+
     String USERNAME = "AppUser";
     String PASSWORD = "scdl@App";
+
+    String PACKAGE_NAME = "com.example.shashankshekhar.servicedemo";
+    String SERVICE_NAME = "com.example.shashankshekhar.servicedemo.FirstService";
 
     /* MESSAGE HANDLER CONSTANTS */
     int PUBLISH_MESSAGE = 3;
