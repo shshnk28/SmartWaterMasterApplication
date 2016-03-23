@@ -33,12 +33,12 @@ public class MqttConnector {
             token = mqttClient.connect(connectionOptions, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
+                    isConnecting = false;
                     CommonUtils.printLog("connection established with client: ");
                     MqttLogger.initAppContext(appContext);
                     MqttLogger.writeDataToLogFile(" Connection Successful/");
                     MqttLogger.runStatusPublisher(30);
                     onSuccess.run();
-                    isConnecting = false;
                     return;
                 }
 

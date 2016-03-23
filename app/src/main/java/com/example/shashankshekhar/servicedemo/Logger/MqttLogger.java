@@ -76,7 +76,7 @@ public class MqttLogger {
 //        writeDataToLogFile(loggerString);
 //    }
 
-    public static void writeDataToLogFile(String logString) {
+    public static synchronized void writeDataToLogFile(String logString) {
         String dateString = getCurrentDate();
         if (phoneModel == null) {
             setPhoneModel();
@@ -104,7 +104,7 @@ public class MqttLogger {
         }
     }
 
-    public static void publishLoggerData(int n) {
+    public synchronized static void publishLoggerData(int n) {
         // publish the last n line from the file
         /*
         if n is less than or equal to num file lines then publish all

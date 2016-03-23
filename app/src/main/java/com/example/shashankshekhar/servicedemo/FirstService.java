@@ -9,9 +9,11 @@ import android.os.RemoteException;
 import android.os.Handler;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttConnector;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttReceiver;
+import com.example.shashankshekhar.servicedemo.Mqtt.MqttReconnecter;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttSubscriber;
 import com.example.shashankshekhar.servicedemo.Mqtt.SCMqttClient;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
@@ -20,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FirstService extends Service implements MQTTConstants {
-
 
     // connection options
     static final int MQTT_CONNECTED = 1;
@@ -37,8 +38,8 @@ public class FirstService extends Service implements MQTTConstants {
     static final int SUBSCRIPTION_SUCCESS = 9;
     static final int SUBSCRIPTION_ERROR = 10;
 
-    private static boolean isConnecting = false; // indicates if a MQtt session is connecting currently
     final Messenger messenger = new Messenger(new IncomingHandler());
+    MqttReconnecter reconnecter;
 
     class IncomingHandler extends Handler {
         @Override
@@ -103,7 +104,7 @@ public class FirstService extends Service implements MQTTConstants {
                     break;
                 case CHECK_MQTT_CONNECTION: // check if the mqtt client is connected
                     // check network before
-                    if (isConnecting) {
+                    if (MqttConnector.isConnecting) {
                         CommonUtils.showToast(getApplicationContext(), "connection in progress");
                         return;
                     }
@@ -118,7 +119,7 @@ public class FirstService extends Service implements MQTTConstants {
                         sendMessageToClient(message.replyTo, UNABLE_TO_CONNECT);
                         return;
                     }
-                    if (isConnecting == true) {
+                    if (MqttConnector.isConnecting == true) {
                         sendMessageToClient(message.replyTo, MQTT_CONNECTION_IN_PROGRESS);
                         return;
                     }
@@ -155,7 +156,10 @@ public class FirstService extends Service implements MQTTConstants {
             // the service start call is coming from network change broadcast receiver
             CommonUtils.printLog("service start call from BR receiver");
             onNetworkChange();
-        } else {
+        } else if (intent.getBooleanExtra("fromReconnecter",false) == true) {
+            initiateMqttOnNewThread();
+        }
+        else {
             CommonUtils.printLog("service start call NOT from BR receiver");
         }
         return Service.START_NOT_STICKY;
@@ -165,7 +169,10 @@ public class FirstService extends Service implements MQTTConstants {
     @Override
     public void onCreate() {
         CommonUtils.printLog("ONCreate called in service");
-
+        // start ReConnector Thread
+        reconnecter  = new MqttReconnecter(getApplicationContext());
+        reconnecter.setRunReconnectorThread(true);
+        reconnecter.startReconnectorThread();
     }
 
     @Override
@@ -215,6 +222,8 @@ public class FirstService extends Service implements MQTTConstants {
 
     private void intiateMqttConnection( final boolean sendMessage, final Messenger clientMessenger) {
         if (CommonUtils.httpConnectionTest(GOOGLE_INDIA) == false) {
+            MqttLogger.initAppContext(getApplicationContext());
+            MqttLogger.writeDataToLogFile("Not able to ping Google India");
             if (sendMessage == true && clientMessenger != null) {
                 sendMessageToClient(clientMessenger, NO_NETWORK_AVAILABLE);
             }
@@ -237,7 +246,7 @@ public class FirstService extends Service implements MQTTConstants {
                 sendMessageToClient(clientMessenger, UNABLE_TO_CONNECT);
             }
         };
-        MqttConnector.connectToMqttClient(success,failure,getApplicationContext());
+        MqttConnector.connectToMqttClient(success, failure, getApplicationContext());
     }
 
 
@@ -256,7 +265,7 @@ public class FirstService extends Service implements MQTTConstants {
     }
 
     public void onNetworkChange() {
-        if (isConnecting == true) {
+        if (MqttConnector.isConnecting == true) {
             CommonUtils.printLog("A Connection req is already in progress.. returning from BR");
             return;
         }
@@ -269,6 +278,9 @@ public class FirstService extends Service implements MQTTConstants {
             return;
         }
         CommonUtils.printLog("reconnection initiated via BR");
+        initiateMqttOnNewThread();
+    }
+    public void initiateMqttOnNewThread () {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -276,7 +288,6 @@ public class FirstService extends Service implements MQTTConstants {
             }
         }).start();
     }
-
 
     /* left for referecne purpose
     private class AsyncCaller extends AsyncTask<Void, Void, Void>
