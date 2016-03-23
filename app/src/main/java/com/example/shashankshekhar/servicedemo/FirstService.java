@@ -1,24 +1,19 @@
 package com.example.shashankshekhar.servicedemo;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.Handler;
 
-import com.example.shashankshekhar.servicedemo.BroadcastReceiver.NetworkConnectivityReceiver;
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.Mqtt.MqttConnector;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttReceiver;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttSubscriber;
-import com.example.shashankshekhar.servicedemo.Mqtt.SmartCampusMqttClient;
+import com.example.shashankshekhar.servicedemo.Mqtt.SCMqttClient;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import java.util.ArrayList;
@@ -112,7 +107,7 @@ public class FirstService extends Service implements MQTTConstants {
                         CommonUtils.showToast(getApplicationContext(), "connection in progress");
                         return;
                     }
-                    if (SmartCampusMqttClient.isClientConnected()) {
+                    if (SCMqttClient.isMqttConnected()) {
                         CommonUtils.showToast(getApplicationContext(), "client connected ");
                     } else {
                         CommonUtils.showToast(getApplicationContext(), "client not connected ");
@@ -127,7 +122,7 @@ public class FirstService extends Service implements MQTTConstants {
                         sendMessageToClient(message.replyTo, MQTT_CONNECTION_IN_PROGRESS);
                         return;
                     }
-                    if (SmartCampusMqttClient.isClientConnected() == true) {
+                    if (SCMqttClient.isMqttConnected() == true) {
                         sendMessageToClient(message.replyTo, MQTT_CONNECTED);
                         return;
                     }
@@ -183,8 +178,7 @@ public class FirstService extends Service implements MQTTConstants {
     public void onDestroy() {
         CommonUtils.printLog("SERVICE DESTROYED!!");
         // disconnect the mqtt in here
-        MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
-        mqttReceiver.disconnectMqtt();
+        MqttConnector.disconnectMqtt();
     }
 
     public void resubscribeToAllTopics() {
@@ -212,43 +206,46 @@ public class FirstService extends Service implements MQTTConstants {
             sendMessageToClient(messenger, NO_NETWORK_AVAILABLE);
             return false;
         }
-        if (SmartCampusMqttClient.isClientConnected() == false) {
+        if (SCMqttClient.isMqttConnected() == false) {
             sendMessageToClient(messenger, MQTT_NOT_CONNECTED);
             return false;
         }
         return true;
     }
 
-    private void intiateMqttConnection(boolean sendMessage, Messenger clientMessenger) {
+    private void intiateMqttConnection( final boolean sendMessage, final Messenger clientMessenger) {
         if (CommonUtils.httpConnectionTest(GOOGLE_INDIA) == false) {
             if (sendMessage == true && clientMessenger != null) {
                 sendMessageToClient(clientMessenger, NO_NETWORK_AVAILABLE);
             }
             return;
         }
-        isConnecting = true;
-        MqttReceiver mqttReceiver = MqttReceiver.getReceiverInstance(getApplicationContext());
-        Boolean connectionSuccessful = mqttReceiver.initialiseReceiver();
-        if (connectionSuccessful == true) {
-            if (sendMessage == true) {
-                sendMessageToClient(clientMessenger, MQTT_CONNECTED);
-            } else {
-                resubscribeToAllTopics();
+        Runnable success = new Runnable() {
+            @Override
+            public void run() {
+                new MqttReceiver(getApplicationContext());
+                if (sendMessage == true) {
+                    sendMessageToClient(clientMessenger, MQTT_CONNECTED);
+                } else {
+                    resubscribeToAllTopics();
+                }
             }
-        } else {
-            sendMessageToClient(clientMessenger, UNABLE_TO_CONNECT);
-        }
-        isConnecting = false;
+        };
+        Runnable failure= new Runnable() {
+            @Override
+            public void run() {
+                sendMessageToClient(clientMessenger, UNABLE_TO_CONNECT);
+            }
+        };
+        MqttConnector.connectToMqttClient(success,failure,getApplicationContext());
     }
 
 
     private class ConnectToMqtt implements Runnable {
         Messenger clientMessenger;
-
         ConnectToMqtt(Messenger messenger) {
             this.clientMessenger = messenger;
         }
-
         @Override
         public void run() {
             CommonUtils.printLog("manual connection req initiated");
@@ -267,7 +264,7 @@ public class FirstService extends Service implements MQTTConstants {
             CommonUtils.printLog("no internetconnection detected.. returning from BR");
             return;
         }
-        if (SmartCampusMqttClient.isClientConnected() == true) {
+        if (SCMqttClient.isMqttConnected() == true) {
             CommonUtils.printLog("client already connected ...returning from BR");
             return;
         }

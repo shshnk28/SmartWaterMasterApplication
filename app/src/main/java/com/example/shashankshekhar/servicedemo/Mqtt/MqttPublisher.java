@@ -3,6 +3,7 @@ package com.example.shashankshekhar.servicedemo.Mqtt;
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -41,7 +42,7 @@ public class MqttPublisher implements MQTTConstants {
     public boolean publishData(String data) {
         CommonUtils.printLog("trying to publish the topic");
 
-        MqttClient mqttClient = SmartCampusMqttClient.getMqttClient(true);
+        MqttAsyncClient mqttClient = SCMqttClient.getInstance();
         if (mqttClient == null) {
             CommonUtils.printLog("couldnot instantiate mqtt client..returning");
             return false;

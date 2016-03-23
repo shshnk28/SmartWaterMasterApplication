@@ -3,6 +3,7 @@ package com.example.shashankshekhar.servicedemo.Mqtt;
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
@@ -11,7 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
  */
 public class MqttSubscriber implements MQTTConstants {
     public static String subscribeToTopic (String topicName) {
-        MqttClient mqttClient = SmartCampusMqttClient.getMqttClient(true);
+        MqttAsyncClient mqttClient = SCMqttClient.getInstance();
         try {
             // TODO: 14/02/16 check why the client is getting unsubscribed after some time
             // is there is timeout in subscription?
@@ -27,7 +28,7 @@ public class MqttSubscriber implements MQTTConstants {
         return CommonUtils.randomString();
     }
     public static void unsubscribeToTopic (String topicName) {
-        MqttClient mqttClient = SmartCampusMqttClient.getMqttClient(true);
+        MqttAsyncClient mqttClient = SCMqttClient.getInstance();
         try {
             mqttClient.unsubscribe(topicName);
         } catch (MqttException e) {

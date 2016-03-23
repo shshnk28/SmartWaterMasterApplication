@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
     }
 
     public void connectMqtt () {
+        // TODO: 22/03/16 remove the hardcoded stuff such as 8. integrate the library
         Message message = Message.obtain(null,8);
         message.replyTo= clientMessanger;
         try {
