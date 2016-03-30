@@ -2,14 +2,11 @@ package com.example.shashankshekhar.servicedemo;
 
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -25,22 +22,13 @@ import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import android.os.Handler;
-import android.widget.Toast;
-
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MQTTConstants{
 
     Messenger messenger = null;
     boolean mBound = false;
     ProgressDialog connectingDialog;
-    Messenger clientMessanger;
+    Messenger clientMessenger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +49,12 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
         super.onDestroy();
         CommonUtils.printLog("on destroy main activity called- master application");
     }
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-//            received_string = intent.getStringExtra("key");
-            CommonUtils.printLog("received intent = " + intent.toString());
-        }
-
-    };
 
     public void startAndBindService (View view) {
+        if (messenger != null && mBound != false) {
+            CommonUtils.printLog("service connected service");
+            return;
+        }
         ComponentName componentName = new ComponentName(PACKAGE_NAME,SERVICE_NAME);
         Intent intent = new Intent();
         intent.setComponent(componentName);
@@ -80,49 +64,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
         Boolean bindSuccess = bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
     }
-    public void stopService (View view) {
-        if (messenger == null || mBound == false ) {
-            CommonUtils.printLog("service not connected .. returning");
-            return;
-        }
-        ComponentName componentName = new ComponentName(PACKAGE_NAME,SERVICE_NAME);
-        Intent intent = new Intent();
-        intent.setComponent(componentName);
-        stopService(intent);
-        unbindService(serviceConnection);
-        mBound = false;
-        messenger = null;
-    }
 
-    public  void checkService (View view) {
-        if (messenger == null || mBound == false ) {
-            CommonUtils.printLog("service not connected .. returning");
-            CommonUtils.showToast(getApplicationContext(), "not running");
-            return;
-        }
-        Message message = Message.obtain(null,6);
-        message.replyTo = clientMessanger;
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
-    }
-    public void checkConnection (View view) {
-        if (messenger == null || mBound == false ) {
-            CommonUtils.printLog("service not connected .. returning");
-            CommonUtils.showToast(getApplicationContext(), "Service not running");
-            return;
-        }
-        Message message = Message.obtain(null,7);
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
-    }
     public void showDialogAndConnectToMqtt (View view) {
         if (messenger == null || mBound == false ) {
             CommonUtils.printLog("service not connected .. returning");
@@ -131,14 +73,14 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
         }
         connectingDialog = ProgressDialog.show(this,"Please Wait...","Connecting to broker");
         connectingDialog.setCancelable(false);
-        clientMessanger = new Messenger(new IncomingHandler(connectingDialog,this));
+        clientMessenger = new Messenger(new IncomingHandler(connectingDialog,this));
         connectMqtt();
     }
 
     public void connectMqtt () {
         // TODO: 22/03/16 remove the hardcoded stuff such as 8. integrate the library
         Message message = Message.obtain(null,8);
-        message.replyTo= clientMessanger;
+        message.replyTo= clientMessenger;
         try {
             messenger.send(message);
         } catch (RemoteException e) {
@@ -148,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
     }
     public void launchDebugScreen(View view) {
         Intent debugIntent = new Intent(this,ConnectionCheckActivity.class);
+        debugIntent.putExtra("messengerObj",messenger);
+        debugIntent.putExtra("bound",mBound);
         startActivity(debugIntent);
     }
     private ServiceConnection serviceConnection = new ServiceConnection() {

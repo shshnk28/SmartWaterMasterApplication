@@ -28,6 +28,10 @@ public class MqttConnector {
             onFailure.run();
             return;
         }
+        if (isConnecting == true) {
+            CommonUtils.printLog("connection in progress in in mqttConnector .. returning");
+            return;
+        }
         try {
             isConnecting = true;
             token = mqttClient.connect(connectionOptions, null, new IMqttActionListener() {

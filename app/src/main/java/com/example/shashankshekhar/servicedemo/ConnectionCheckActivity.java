@@ -1,6 +1,9 @@
 package com.example.shashankshekhar.servicedemo;
 
 import android.content.Context;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,11 +20,19 @@ import java.net.Socket;
 import java.net.URL;
 
 public class ConnectionCheckActivity extends AppCompatActivity {
-
+    Messenger messenger;
+    boolean mBound;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connection_check);
+//        debugIntent.putExtra("messengerObj", messenger);
+//        debugIntent.putExtra("bound", mBound);
+        messenger = getIntent().getParcelableExtra("messengerObj");
+        mBound = getIntent().getBooleanExtra("bound",false);
+        if (messenger == null) {
+            CommonUtils.printLog("messenger is null in debug screen");
+        }
     }
     public void checkGoogle(View view) {
         pingTest("www.google.co.in");
@@ -74,37 +85,68 @@ public class ConnectionCheckActivity extends AppCompatActivity {
             }
         }).start();
     }
-    private void pingTest(String ipAddress) {
-        Runtime runtime = Runtime.getRuntime();
-        Process mIpAddrProcess = null;
-        try {
-            Long start  = System.currentTimeMillis();
-            mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 " + ipAddress);
-            int mExitValue = mIpAddrProcess.waitFor();
-            if (mExitValue == 0) {
-                CommonUtils.printLog("able to ping: "+ ipAddress);
-                CommonUtils.printLog("time taken: " + (System.currentTimeMillis() - start));
-                showToastOnUIThread("ping success");
-                mIpAddrProcess.destroy();
-                return;
-            } else {
-                CommonUtils.printLog("not able to ping1: " + ipAddress);
+    private void pingTest( final String ipAddress) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Runtime runtime = Runtime.getRuntime();
+                Process mIpAddrProcess = null;
+                try {
+                    Long start  = System.currentTimeMillis();
+                    mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 " + ipAddress);
+                    int mExitValue = mIpAddrProcess.waitFor();
+                    if (mExitValue == 0) {
+                        CommonUtils.printLog("able to ping: "+ ipAddress);
+                        CommonUtils.printLog("time taken: " + (System.currentTimeMillis() - start));
+                        showToastOnUIThread("ping success");
+                        mIpAddrProcess.destroy();
+                        return;
+                    } else {
+                        CommonUtils.printLog("not able to ping1: " + ipAddress);
+                    }
+                } catch (InterruptedException ignore) {
+                    ignore.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (mIpAddrProcess != null) {
+                    mIpAddrProcess.destroy();
+                }
+                CommonUtils.printLog("not able to ping2: " + ipAddress);
+                showToastOnUIThread("ping failed");
             }
-        } catch (InterruptedException ignore) {
-            ignore.printStackTrace();
-            System.out.println(" Exception:" + ignore);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println(" Exception:" + e);
-        }
-        if (mIpAddrProcess != null) {
-            mIpAddrProcess.destroy();
-        }
-        CommonUtils.printLog("not able to ping2: " + ipAddress);
-        showToastOnUIThread("ping failed");
+        }).start();
     }
     public void checkHttpConn (View view) {
         httpConnectionTest("www.google.co.in");
+    }
+    public  void checkService (View view) {
+        if (messenger == null || mBound == false ) {
+            CommonUtils.printLog("service not connected .. returning");
+            CommonUtils.showToast(getApplicationContext(), "not running");
+            return;
+        }
+        Message message = Message.obtain(null,6);
+        try {
+            messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            CommonUtils.printLog("remote Exception,Could not send message");
+        }
+    }
+    public void checkConnection (View view) {
+        if (messenger == null || mBound == false ) {
+            CommonUtils.printLog("service not connected .. returning");
+            CommonUtils.showToast(getApplicationContext(), "Service not running");
+            return;
+        }
+        Message message = Message.obtain(null,7);
+        try {
+            messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            CommonUtils.printLog("remote Exception,Could not send message");
+        }
     }
     private void httpConnectionTest(final String url) {
         new Thread(new Runnable() {
@@ -139,10 +181,4 @@ public class ConnectionCheckActivity extends AppCompatActivity {
             }
         });
     }
-    Runnable block = new Runnable() {
-        @Override
-        public void run() {
-            CommonUtils.printLog("shashank");
-        }
-    };
 }
