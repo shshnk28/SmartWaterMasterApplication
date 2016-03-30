@@ -47,6 +47,7 @@ public class MqttConnector {
                     isConnecting = false;
                     CommonUtils.printLog("failed to connect in failure block");
                     String logStr = "Failed to connect/";
+                    onFailure.run();
                     if (throwable.getCause() != null) {
                         logStr+= " "+throwable.getCause() + "/";
                     }

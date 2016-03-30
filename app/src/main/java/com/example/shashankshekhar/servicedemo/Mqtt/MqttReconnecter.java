@@ -8,6 +8,8 @@ import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 /**
  * Created by shashankshekhar on 23/03/16.
+ * this class creates a thread that checkks if mqtt is connected. if not then it checks certain conditions and tries
+ * to reconnect
  */
 public class MqttReconnecter {
     private final int THREAD_SLEEP_TIME = 4*60*1000; // 4 minutes sleep time between each sleep

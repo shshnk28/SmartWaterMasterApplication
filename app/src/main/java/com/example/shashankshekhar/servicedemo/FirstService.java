@@ -191,7 +191,6 @@ public class FirstService extends Service implements MQTTConstants {
     public void resubscribeToAllTopics() {
         for (String topic : subscribedTopics) {
             MqttSubscriber.subscribeToTopic(topic);
-            CommonUtils.printLog("reconnected to topic: " + topic);
         }
     }
 
@@ -243,7 +242,9 @@ public class FirstService extends Service implements MQTTConstants {
         Runnable failure= new Runnable() {
             @Override
             public void run() {
-                sendMessageToClient(clientMessenger, UNABLE_TO_CONNECT);
+                if (sendMessage == true) {
+                    sendMessageToClient(clientMessenger, UNABLE_TO_CONNECT);
+                }
             }
         };
         MqttConnector.connectToMqttClient(success, failure, getApplicationContext());
