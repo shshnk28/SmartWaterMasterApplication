@@ -55,8 +55,8 @@ public class MqttConnector {
                     if (throwable.getCause() != null) {
                         logStr+= " "+throwable.getCause() + "/";
                     }
-//                    ConnectivityCheck connectivityCheck  = new ConnectivityCheck(appContext);
-//                    connectivityCheck.checkNonConnectivityReason(logStr);
+                    ConnectivityCheck connectivityCheck  = new ConnectivityCheck(appContext);
+                    connectivityCheck.checkNonConnectivityReason(logStr);
                     return;
                 }
             });
@@ -70,8 +70,8 @@ public class MqttConnector {
             if (e.getCause() != null) {
                 logStr += " " + e.getCause() + "/";
             }
-//            ConnectivityCheck connectivityCheck = new ConnectivityCheck(appContext);
-//            connectivityCheck.checkNonConnectivityReason(logStr);
+            ConnectivityCheck connectivityCheck = new ConnectivityCheck(appContext);
+            connectivityCheck.checkNonConnectivityReason(logStr);
         } catch (MqttException e) {
             isConnecting = false;
             CommonUtils.printLog(" non-security exception could not connect in receiver");
@@ -80,8 +80,8 @@ public class MqttConnector {
             if (e.getCause() != null) {
                 logStr += " " + e.getCause() + "/";
             }
-//            ConnectivityCheck connectivityCheck = new ConnectivityCheck(appContext);
-//            connectivityCheck.checkNonConnectivityReason(logStr);
+            ConnectivityCheck connectivityCheck = new ConnectivityCheck(appContext);
+            connectivityCheck.checkNonConnectivityReason(logStr);
             onFailure.run();
         }
 

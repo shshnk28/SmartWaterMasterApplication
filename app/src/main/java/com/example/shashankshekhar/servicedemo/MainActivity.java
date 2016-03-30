@@ -22,6 +22,7 @@ import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import android.os.Handler;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity implements MQTTConstants{
 
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
     boolean mBound = false;
     ProgressDialog connectingDialog;
     Messenger clientMessenger;
+    String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +53,18 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
     }
 
     public void startAndBindService (View view) {
+        EditText editText = (EditText)findViewById(R.id.textView1);
+        userName = editText.getText().toString();
+        if (userName == null || userName.isEmpty()) {
+            CommonUtils.showToast(getApplicationContext(),"Pls enter name");
+            return;
+        }
         if (messenger != null && mBound != false) {
-            CommonUtils.printLog("service connected service");
+            CommonUtils.printLog("service connected already ");
+            CommonUtils.showToast(getApplicationContext(), "Service already connected");
+            Intent publisherServiceIntent = new Intent(getApplicationContext(), PublisherService.class);
+            publisherServiceIntent.putExtra("userName",userName);
+            startService(publisherServiceIntent);
             return;
         }
         ComponentName componentName = new ComponentName(PACKAGE_NAME,SERVICE_NAME);
@@ -75,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
         connectingDialog.setCancelable(false);
         clientMessenger = new Messenger(new IncomingHandler(connectingDialog,this));
         connectMqtt();
+        Intent publisherServiceIntent = new Intent(getApplicationContext(), PublisherService.class);
+        publisherServiceIntent.putExtra("userName",userName);
+        startService(publisherServiceIntent);
     }
 
     public void connectMqtt () {
@@ -89,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
         }
     }
     public void launchDebugScreen(View view) {
-        Intent debugIntent = new Intent(this,ConnectionCheckActivity.class);
+        Intent debugIntent = new Intent(this,DebugActivity.class);
         debugIntent.putExtra("messengerObj",messenger);
         debugIntent.putExtra("bound",mBound);
         startActivity(debugIntent);

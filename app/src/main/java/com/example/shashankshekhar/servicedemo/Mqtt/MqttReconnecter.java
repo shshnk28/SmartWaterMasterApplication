@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.shashankshekhar.servicedemo.FirstService;
+import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 /**
@@ -32,13 +33,18 @@ public class MqttReconnecter {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if ((SCMqttClient.isMqttConnected() == false) &&
-                            (MqttConnector.isConnecting == false) &&
-                            CommonUtils.isNetworkAvailable(appContext) == true ) {
-                        Intent serviceIntent = new Intent(appContext, FirstService.class);
-                        serviceIntent.putExtra("fromReconnecter", true);
-                        appContext.startService(serviceIntent);
+                    if (SCMqttClient.isMqttConnected() == false)  {
+                        if ((MqttConnector.isConnecting == false) &&
+                                CommonUtils.isNetworkAvailable(appContext) == true ) {
+                            {
+                                Intent serviceIntent = new Intent(appContext, FirstService.class);
+                                serviceIntent.putExtra("fromReconnecter", true);
+                                appContext.startService(serviceIntent);
+                            }
+                        }
                     }
+                    CommonUtils.printLog("log from reconnector thread");
+
                 }
             }
         }).start();

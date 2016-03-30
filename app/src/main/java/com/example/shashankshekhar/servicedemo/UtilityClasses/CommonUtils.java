@@ -22,7 +22,7 @@ import java.util.UUID;
  */
 public class CommonUtils {
     public static void printLog (String string) {
-        Log.i("S-WATER",string);
+        Log.d("S-WATER",string);
     }
     public static String randomString () {
         String uuid = UUID.randomUUID().toString().replaceAll("-","");

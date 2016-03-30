@@ -27,33 +27,15 @@ public class MqttLogger {
     private static final String SMART_CAMPUS_LOG_FILE_NAME = "SmartCampusLog.txt";
     private static final String MOBILE_TELEMETRY_TOPIC_NAME =  "iisc/smartx/mobile/telemetry/data";
     private static final String MOBILE_TELEMETRY_EVENT_NAME = "Mobile Telemetry";
-    private static String phoneModel;
-
-    // note: this is not the IMEI  or mac address
-    private static String deviceId;
     private static Context applicationContext;
     private static File smartCampusDirectory = new File(Environment.getExternalStorageDirectory(), SMART_CAMPUS_FOLDER_NAME);
-
+    private static String userName;
+    public static void setUserName (String userName1) {
+        userName = userName1;
+    }
     public static void initAppContext(Context appContext) {
         if (applicationContext == null) {
             applicationContext = appContext;
-        }
-    }
-
-    private static void setDeviceId() {
-        deviceId = CommonUtils.deviceId(applicationContext);
-        if (deviceId == null) {
-            deviceId = " ";
-        }
-    }
-
-    private static void setPhoneModel() {
-        String manufacturer = Build.MANUFACTURER;
-        String model = Build.MODEL;
-        if (model.startsWith(manufacturer)) {
-            phoneModel = model;
-        } else {
-            phoneModel = manufacturer + "-" + model;
         }
     }
 
@@ -78,14 +60,7 @@ public class MqttLogger {
 
     public static synchronized void writeDataToLogFile(String logString) {
         String dateString = getCurrentDate();
-        if (phoneModel == null) {
-            setPhoneModel();
-        }
-        if (deviceId == null || " ".equals(deviceId)) {
-            setDeviceId();
-        }
-        String loggerString = phoneModel + "," + deviceId + "," + dateString + "," + logString;
-
+        String loggerString = dateString + "," +userName + ","+ logString;
         if (smartCampusDirectory.exists() == false) {
             if (!smartCampusDirectory.mkdirs()) {
                 CommonUtils.printLog("failed to create logfile ");

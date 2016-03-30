@@ -27,9 +27,11 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name= ".BroadcastReceiver.NetworkConnectivityReceiver">
-            <intent-filter>              
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+        <receiver android:name=".BroadcastReceiver.NetworkConnectivityReceiver">
+            <intent-filter>
+                 
+
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
 
@@ -49,8 +51,14 @@
             <!-- <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" /> -->
         </service>
 
-        <activity android:name=".ConnectionCheckActivity">
+        <activity android:name=".DebugActivity">
         </activity>
+
+        <service
+            android:name=".PublisherService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

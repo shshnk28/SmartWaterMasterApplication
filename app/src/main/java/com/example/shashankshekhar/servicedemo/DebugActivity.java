@@ -19,7 +19,7 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 
-public class ConnectionCheckActivity extends AppCompatActivity {
+public class DebugActivity extends AppCompatActivity {
     Messenger messenger;
     boolean mBound;
     @Override

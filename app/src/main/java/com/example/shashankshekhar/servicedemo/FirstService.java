@@ -150,17 +150,20 @@ public class FirstService extends Service implements MQTTConstants {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        int id = android.os.Process.myPid();
+        MqttLogger.initAppContext(getApplicationContext());
         CommonUtils.printLog("onStart called in service");
-        if (intent.getBooleanExtra("fromBroadcastReceiver",false) == true) {
+        if (intent != null && intent.getBooleanExtra("fromBroadcastReceiver",false) == true) {
             // the service start call is coming from network change broadcast receiver
             CommonUtils.printLog("service start call from BR receiver");
+            MqttLogger.writeDataToLogFile("reconnection initiated from BR");
             onNetworkChange();
-        } else if (intent.getBooleanExtra("fromReconnecter",false) == true) {
+        } else if (intent != null && intent.getBooleanExtra("fromReconnecter",false) == true) {
+            CommonUtils.printLog("service start call from reconnector");
+            MqttLogger.writeDataToLogFile("reconnection initiated from reconnector thread");
             initiateMqttOnNewThread();
         }
         else {
-            CommonUtils.printLog("service start call NOT from BR receiver");
+            CommonUtils.printLog("manual start service call");
         }
         return Service.START_NOT_STICKY;
 
@@ -184,8 +187,10 @@ public class FirstService extends Service implements MQTTConstants {
     @Override
     public void onDestroy() {
         CommonUtils.printLog("SERVICE DESTROYED!!");
-        // disconnect the mqtt in here
         MqttConnector.disconnectMqtt();
+        MqttLogger.initAppContext(getApplicationContext());
+        MqttLogger.writeDataToLogFile("Mqtt Service DESTROYED!!");
+
     }
 
     public void resubscribeToAllTopics() {
@@ -266,15 +271,19 @@ public class FirstService extends Service implements MQTTConstants {
     }
 
     public void onNetworkChange() {
+        MqttLogger.initAppContext(getApplicationContext());
         if (MqttConnector.isConnecting == true) {
+            MqttLogger.writeDataToLogFile("isConnecting true. Returning from BR call");
             CommonUtils.printLog("A Connection req is already in progress.. returning from BR");
             return;
         }
         if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
+            MqttLogger.writeDataToLogFile("No network available. Returning from BR call");
             CommonUtils.printLog("no internetconnection detected.. returning from BR");
             return;
         }
         if (SCMqttClient.isMqttConnected() == true) {
+            MqttLogger.writeDataToLogFile("Mqtt already Connected. Returning from BR call");
             CommonUtils.printLog("client already connected ...returning from BR");
             return;
         }
