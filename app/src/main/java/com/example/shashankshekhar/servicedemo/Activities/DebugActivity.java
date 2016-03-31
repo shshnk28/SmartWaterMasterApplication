@@ -1,15 +1,14 @@
-package com.example.shashankshekhar.servicedemo;
+package com.example.shashankshekhar.servicedemo.Activities;
 
-import android.content.Context;
 import android.os.Message;
-import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 
+import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.R;
+import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import java.io.IOException;
@@ -19,18 +18,15 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 
-public class DebugActivity extends AppCompatActivity {
-    Messenger messenger;
-    boolean mBound;
+public class DebugActivity extends AppCompatActivity implements MQTTConstants {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connection_check);
 //        debugIntent.putExtra("messengerObj", messenger);
 //        debugIntent.putExtra("bound", mBound);
-        messenger = getIntent().getParcelableExtra("messengerObj");
-        mBound = getIntent().getBooleanExtra("bound",false);
-        if (messenger == null) {
+        if (SCServiceConnector.messenger == null) {
             CommonUtils.printLog("messenger is null in debug screen");
         }
     }
@@ -121,28 +117,28 @@ public class DebugActivity extends AppCompatActivity {
         httpConnectionTest("www.google.co.in");
     }
     public  void checkService (View view) {
-        if (messenger == null || mBound == false ) {
+        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false ) {
             CommonUtils.printLog("service not connected .. returning");
             CommonUtils.showToast(getApplicationContext(), "not running");
             return;
         }
-        Message message = Message.obtain(null,6);
+        Message message = Message.obtain(null,CHECK_SERVICE);
         try {
-            messenger.send(message);
+            SCServiceConnector.messenger.send(message);
         } catch (RemoteException e) {
             e.printStackTrace();
             CommonUtils.printLog("remote Exception,Could not send message");
         }
     }
     public void checkConnection (View view) {
-        if (messenger == null || mBound == false ) {
+        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false ) {
             CommonUtils.printLog("service not connected .. returning");
             CommonUtils.showToast(getApplicationContext(), "Service not running");
             return;
         }
-        Message message = Message.obtain(null,7);
+        Message message = Message.obtain(null,CHECK_MQTT_CONNECTION);
         try {
-            messenger.send(message);
+            SCServiceConnector.messenger.send(message);
         } catch (RemoteException e) {
             e.printStackTrace();
             CommonUtils.printLog("remote Exception,Could not send message");

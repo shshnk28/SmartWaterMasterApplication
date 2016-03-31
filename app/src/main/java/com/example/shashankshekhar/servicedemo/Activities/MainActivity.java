@@ -1,12 +1,10 @@
-package com.example.shashankshekhar.servicedemo;
+package com.example.shashankshekhar.servicedemo.Activities;
 
 
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -19,25 +17,27 @@ import android.view.View;
 
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.IncomingHandler;
+import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
+import com.example.shashankshekhar.servicedemo.PublisherService;
+import com.example.shashankshekhar.servicedemo.R;
+import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
-import android.os.Handler;
 import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity implements MQTTConstants{
+public class MainActivity extends AppCompatActivity implements MQTTConstants,ServiceCallback{
 
-    Messenger messenger = null;
-    boolean mBound = false;
-    ProgressDialog connectingDialog;
+//    ProgressDialog connectingDialog;
     Messenger clientMessenger;
     String userName;
+    ProgressDialog connectingDialog;
+    SCServiceConnector serviceConnector = new SCServiceConnector(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
     }
 
     @Override
@@ -49,7 +49,48 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        CommonUtils.printLog("on destroy main activity called- master application");
+    }
+    // service callbacks
+    @Override
+    public void messageReceivedFromService(int number) {
+        CommonUtils.printLog("messageReceivedFromService  in mainActivity" + number);
+//        int MQTT_CONNECTED =1;
+//        int UNABLE_TO_CONNECT =2;
+//        int NO_NETWORK_AVAILABLE =4;
+//        int MQTT_CONNECTION_IN_PROGRESS = 5;
+//        int MQTT_NOT_CONNECTED = 6;
+        connectingDialog.dismiss();
+        String toastStr;
+        switch (number) {
+            case MQTT_CONNECTED:
+                toastStr = "Mqtt Connected";
+                break;
+            case UNABLE_TO_CONNECT:
+                toastStr = "Not Connected";
+                break;
+            case NO_NETWORK_AVAILABLE:
+                toastStr = "No network";
+                break;
+            case MQTT_CONNECTION_IN_PROGRESS:
+                toastStr = "Connection in progress";
+                break;
+            case MQTT_NOT_CONNECTED:
+                toastStr = "Mqtt Not Connected";
+                break;
+            default:
+                toastStr = "switch case unknown";
+
+        }
+        showToastOnUIThread(toastStr);
+    }
+    @Override
+    public void serviceConnected () {
+        CommonUtils.printLog("service connected callback received in main");
+        showDialogAndConnectToMqtt(null);
+    }
+    @Override
+    public void serviceDisconnected() {
+        CommonUtils.printLog("service disconnecetd");
     }
 
     public void startAndBindService (View view) {
@@ -59,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
             CommonUtils.showToast(getApplicationContext(),"Pls enter name");
             return;
         }
-        if (messenger != null && mBound != false) {
+        if (SCServiceConnector.messenger != null && SCServiceConnector.mBound != false) {
             CommonUtils.printLog("service connected already ");
             CommonUtils.showToast(getApplicationContext(), "Service already connected");
             Intent publisherServiceIntent = new Intent(getApplicationContext(), PublisherService.class);
@@ -69,23 +110,22 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
         }
         ComponentName componentName = new ComponentName(PACKAGE_NAME,SERVICE_NAME);
         Intent intent = new Intent();
+        intent.putExtra("username",userName);
         intent.setComponent(componentName);
         ComponentName componentName1 = startService(intent);
-        CommonUtils.printLog("returned component name: "+componentName1.toString());
-        CommonUtils.printLog("now binding to service");
-        Boolean bindSuccess = bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        Boolean bindSuccess = bindService(intent, serviceConnector, Context.BIND_AUTO_CREATE);
 
     }
 
     public void showDialogAndConnectToMqtt (View view) {
-        if (messenger == null || mBound == false ) {
+        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false ) {
             CommonUtils.printLog("service not connected .. returning");
-            CommonUtils.showToast(getApplicationContext(),"Service not running");
+            CommonUtils.showToast(getApplicationContext(), "Service not running");
             return;
         }
         connectingDialog = ProgressDialog.show(this,"Please Wait...","Connecting to broker");
         connectingDialog.setCancelable(false);
-        clientMessenger = new Messenger(new IncomingHandler(connectingDialog,this));
+        clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(),this));
         connectMqtt();
         Intent publisherServiceIntent = new Intent(getApplicationContext(), PublisherService.class);
         publisherServiceIntent.putExtra("userName",userName);
@@ -97,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
         Message message = Message.obtain(null,8);
         message.replyTo= clientMessenger;
         try {
-            messenger.send(message);
+            SCServiceConnector.messenger.send(message);
         } catch (RemoteException e) {
             e.printStackTrace();
             CommonUtils.printLog("remote Exception,Could not send message");
@@ -105,61 +145,13 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants{
     }
     public void launchDebugScreen(View view) {
         Intent debugIntent = new Intent(this,DebugActivity.class);
-        debugIntent.putExtra("messengerObj",messenger);
-        debugIntent.putExtra("bound",mBound);
         startActivity(debugIntent);
     }
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            messenger = new Messenger(service);
-            mBound = true;
-            showDialogAndConnectToMqtt(null);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            CommonUtils.printLog("service disconnected");
-            mBound = false;
-            messenger = null;
-        }
-
-    };
-}
-class IncomingHandler extends Handler {
-    // TODO: 13/02/16 this list should be with the library since many other applciations will use it. now main app
-    // 3s1 are using
-    static final int MQTT_CONNECTED =1;
-    static final int UNABLE_TO_CONNECT =2;
-    static final int NO_NETWORK_AVAILABLE =4;
-    static final int MQTT_CONNECTION_IN_PROGRESS = 5;
-    static final int MQTT_NOT_CONNECTED = 6;
-    ProgressDialog dialog;
-    Context applicationContext;
-    IncomingHandler(ProgressDialog dialog1, Context context) {
-        this.dialog= dialog1;
-        this.applicationContext = context;
-    }
-    @Override
-    public void handleMessage (Message message) {
-        dialog.dismiss();
-        switch (message.what) {
-            case MQTT_CONNECTED://
-                CommonUtils.printLog("mqtt connected");
-                CommonUtils.showToast(applicationContext, "Connected!!");
-                break;
-            case UNABLE_TO_CONNECT:
-                CommonUtils.printLog("unable to connect");
-                CommonUtils.showToast(applicationContext,"could not connect");
-                break;
-            case NO_NETWORK_AVAILABLE:
-                CommonUtils.showToast(applicationContext,"No Network!!");
-                break;
-            case MQTT_CONNECTION_IN_PROGRESS:
-                CommonUtils.showToast(applicationContext,"Connection in Progress");
-                break;
-            default:
-
-        }
+    private void showToastOnUIThread(final String message) {
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+                CommonUtils.showToast(getApplicationContext(), message);
+            }
+        });
     }
 }

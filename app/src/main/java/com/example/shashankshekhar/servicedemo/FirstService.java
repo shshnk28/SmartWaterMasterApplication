@@ -53,7 +53,7 @@ public class FirstService extends Service implements MQTTConstants {
                     String topicName = message.getData().getString("topicName");
                     String eventName = message.getData().getString("eventName");
                     String dataString = message.getData().getString("dataString");
-                    if (topicName == null || eventName == null || dataString == null) {
+                    if (topicName == null) {
                         CommonUtils.printLog(" either topic, event or data is null ... returning");
                         return;
                     }
@@ -95,6 +95,7 @@ public class FirstService extends Service implements MQTTConstants {
                     subscribedTopics.remove(topicName);
                     break;
                 case CHECK_SERVICE: // check if  service is running
+                    // TODO: 31/03/16 this is not sendng a reply back to client. send it
                     boolean isRunning = CommonUtils.isMyServiceRunning(FirstService.class, getApplicationContext());
                     if (isRunning) {
                         CommonUtils.showToast(getApplicationContext(), "running");
@@ -103,7 +104,7 @@ public class FirstService extends Service implements MQTTConstants {
                     }
                     break;
                 case CHECK_MQTT_CONNECTION: // check if the mqtt client is connected
-                    // check network before
+                    // TODO: 31/03/16 this is not sendng a reply back to client. send it
                     if (MqttConnector.isConnecting) {
                         CommonUtils.showToast(getApplicationContext(), "connection in progress");
                         return;
@@ -164,6 +165,8 @@ public class FirstService extends Service implements MQTTConstants {
         }
         else {
             CommonUtils.printLog("manual start service call");
+//            intent.putExtra("username", userName);
+            MqttLogger.setUserName(intent.getStringExtra("userName"));
         }
         return Service.START_NOT_STICKY;
 

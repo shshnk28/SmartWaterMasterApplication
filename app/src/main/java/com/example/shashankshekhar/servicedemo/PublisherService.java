@@ -2,23 +2,26 @@ package com.example.shashankshekhar.servicedemo;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 
-import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
-import com.example.shashankshekhar.servicedemo.Mqtt.MqttConnector;
-import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
-import com.example.shashankshekhar.servicedemo.Mqtt.SCMqttClient;
+import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
-public class PublisherService extends Service {
+public class PublisherService extends Service implements ServiceCallback,MQTTConstants {
     private final String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
     String userName;
-
+    Messenger clientMessenger;
+    Message messageToPublish;
+    Bundle bundleToPublish;
     public PublisherService() {
     }
 
@@ -33,32 +36,46 @@ public class PublisherService extends Service {
         userName = intent.getStringExtra("userName");
         return START_NOT_STICKY;
     }
+    @Override
+    public void messageReceivedFromService(int number) {
+        CommonUtils.printLog(" messageReceivedFromService in publisherservice: " + number);
+        switch (number) {
+            case TOPIC_PUBLISHED:
+                CommonUtils.printLog("topic published");
+                break;
+            case ERROR_IN_PUBLISHING:
+                CommonUtils.printLog("error in publshing");
+                break;
+            default:
+        }
+    }
+
+    @Override
+    public void serviceConnected () {
+
+    }
+    @Override
+    public void serviceDisconnected() {
+//        CommonUtils.printLog("service disconnecetd");
+    }
 
     @Override
     public void onCreate() {
-        while (true) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (SCMqttClient.isMqttConnected() == true) {
-                        String data = getCurrentDate() + "," + userName;
-                        CommonUtils.printLog(data);
-//                        MqttPublisher publisher = new MqttPublisher(TEST_TOPIC);
-//                        publisher.publishData(data);
-                    } else {
-                        CommonUtils.printLog("Mqtt is not connected in publisher thread");
-                        MqttLogger.initAppContext(getApplicationContext());
-                        MqttLogger.writeDataToLogFile("Mqtt not connected");
-                    }
-
+        configureMessage();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    String dataString = getCurrentDate() + "," + userName;
+                    publishMessage(dataString);
                     try {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-            }).start();
-        }
+            }
+        }).start();
     }
 
     private static String getCurrentDate() {
@@ -66,5 +83,23 @@ public class PublisherService extends Service {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String dateString = dateFormat.format(calendar.getTime());
         return dateString;
+    }
+    private void configureMessage () {
+        clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(),this));
+        messageToPublish = Message.obtain(null, PUBLISH_MESSAGE);
+        bundleToPublish = new Bundle();
+        bundleToPublish.putString("topicName", TEST_TOPIC);
+        messageToPublish.setData(bundleToPublish);
+        messageToPublish.replyTo = clientMessenger;
+    }
+    private void publishMessage (String message) {
+        bundleToPublish.remove("dataString");
+        bundleToPublish.putString("dataString", message);
+        try {
+            SCServiceConnector.messenger.send(messageToPublish);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            CommonUtils.printLog("remote Exception,Could not send message");
+        }
     }
 }
