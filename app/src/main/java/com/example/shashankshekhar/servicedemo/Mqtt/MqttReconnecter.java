@@ -13,7 +13,7 @@ import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
  * to reconnect
  */
 public class MqttReconnecter {
-    private final int THREAD_SLEEP_TIME = 4*60*1000; // 4 minutes sleep time between each sleep
+    private final int THREAD_SLEEP_TIME = 3*60*1000; // 3 minutes sleep time between each sleep
     private boolean runReconnectorThread = false;
     private Context appContext;
     public MqttReconnecter (Context appContext) {

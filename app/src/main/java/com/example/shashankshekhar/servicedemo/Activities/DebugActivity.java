@@ -40,6 +40,7 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 try {
                     Long start  = System.currentTimeMillis();
                     Socket socket = new Socket();
@@ -63,6 +64,7 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 try {
                     Long start  = System.currentTimeMillis();
                     Socket socket = new Socket();
@@ -85,6 +87,7 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 Runtime runtime = Runtime.getRuntime();
                 Process mIpAddrProcess = null;
                 try {
@@ -148,6 +151,7 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 try {
                     URL url1 = new URL("http://" + url);
                     Long start1 = System.currentTimeMillis();

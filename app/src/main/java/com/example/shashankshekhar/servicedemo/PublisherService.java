@@ -2,11 +2,7 @@ package com.example.shashankshekhar.servicedemo;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
+import android.os.*;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
@@ -18,6 +14,7 @@ import java.util.TimeZone;
 
 public class PublisherService extends Service implements ServiceCallback,MQTTConstants {
     private final String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
+    private final int SLEEP_TIME = 120*1000; // 120 secs
     String userName;
     Messenger clientMessenger;
     Message messageToPublish;
@@ -38,13 +35,18 @@ public class PublisherService extends Service implements ServiceCallback,MQTTCon
     }
     @Override
     public void messageReceivedFromService(int number) {
-        CommonUtils.printLog(" messageReceivedFromService in publisherservice: " + number);
         switch (number) {
             case TOPIC_PUBLISHED:
                 CommonUtils.printLog("topic published");
                 break;
             case ERROR_IN_PUBLISHING:
                 CommonUtils.printLog("error in publshing");
+                break;
+            case NO_NETWORK_AVAILABLE:
+                CommonUtils.printLog("network is not available");
+                break;
+            case MQTT_NOT_CONNECTED:
+                CommonUtils.printLog("mqtt is not connected");
                 break;
             default:
         }
@@ -65,11 +67,12 @@ public class PublisherService extends Service implements ServiceCallback,MQTTCon
         new Thread(new Runnable() {
             @Override
             public void run() {
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 while (true) {
                     String dataString = getCurrentDate() + "," + userName;
                     publishMessage(dataString);
                     try {
-                        Thread.sleep(10000);
+                        Thread.sleep(SLEEP_TIME);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

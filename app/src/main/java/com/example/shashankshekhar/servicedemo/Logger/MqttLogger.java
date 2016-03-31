@@ -27,6 +27,7 @@ public class MqttLogger {
     private static final String SMART_CAMPUS_LOG_FILE_NAME = "SmartCampusLog.txt";
     private static final String MOBILE_TELEMETRY_TOPIC_NAME =  "iisc/smartx/mobile/telemetry/data";
     private static final String MOBILE_TELEMETRY_EVENT_NAME = "Mobile Telemetry";
+    private static final String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
     private static Context applicationContext;
     private static File smartCampusDirectory = new File(Environment.getExternalStorageDirectory(), SMART_CAMPUS_FOLDER_NAME);
     private static String userName;
@@ -90,7 +91,7 @@ public class MqttLogger {
         }
         File logFile = new File(smartCampusDirectory, SMART_CAMPUS_LOG_FILE_NAME);
         BufferedReader reader = null;
-        MqttPublisher publisher  = new MqttPublisher(MOBILE_TELEMETRY_TOPIC_NAME);
+        MqttPublisher publisher  = new MqttPublisher(TEST_TOPIC);
         try {
             reader = new BufferedReader(new FileReader(logFile));
             if (lines > n) {
@@ -101,7 +102,7 @@ public class MqttLogger {
             String data;
             while ((data = reader.readLine())!=null) {
                 // publish data on a BG thread with a thread sleep of 1 sec
-//                publisher.publishData(data);
+                publisher.publishData(data);
                 CommonUtils.printLog("data published from log file: " + data);
                 try {
                     Thread.currentThread().sleep(2000);

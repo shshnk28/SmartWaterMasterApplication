@@ -29,27 +29,5 @@ public class IncomingHandler extends Handler {
     @Override
     public void handleMessage (Message message) {
         callback.messageReceivedFromService(message.what);
-//        switch (message.what) {
-//            case MQTT_CONNECTED://
-//                CommonUtils.printLog("mqtt connected");
-////                CommonUtils.showToast(applicationContext, "Connected!!");
-//                messageReceivedFromService.messageReceivedFromService(MQTT_CONNECTED);
-//                break;
-//            case UNABLE_TO_CONNECT:
-//                CommonUtils.printLog("unable to connect");
-////                CommonUtils.showToast(applicationContext,"could not connect");
-//                messageReceivedFromService.messageReceivedFromService(UNABLE_TO_CONNECT);
-//                break;
-//            case NO_NETWORK_AVAILABLE:
-//
-//                break;
-//            case MQTT_CONNECTION_IN_PROGRESS:
-//
-//                break;
-//            case MQTT_NOT_CONNECTED:
-//
-//            default:
-//
-//        }
     }
 }

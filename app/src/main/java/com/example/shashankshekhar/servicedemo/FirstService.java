@@ -53,11 +53,16 @@ public class FirstService extends Service implements MQTTConstants {
                     String topicName = message.getData().getString("topicName");
                     String eventName = message.getData().getString("eventName");
                     String dataString = message.getData().getString("dataString");
-                    if (topicName == null) {
-                        CommonUtils.printLog(" either topic, event or data is null ... returning");
+                    if (message.replyTo == null) {
+                        CommonUtils.printLog("reply messenger is null.. returning");
                         return;
                     }
                     if (checkConnectivity(message.replyTo) == false) {
+                        return;
+                    }
+                    if (topicName == null) {
+                        CommonUtils.printLog("topic,null ... returning");
+                        sendMessageToClient(message.replyTo, ERROR_IN_PUBLISHING);
                         return;
                     }
                     // TODO: 18/01/16  don't call MQTT directly here. make it modular so that this class does not need know
@@ -164,12 +169,11 @@ public class FirstService extends Service implements MQTTConstants {
             initiateMqttOnNewThread();
         }
         else {
-            CommonUtils.printLog("manual start service call");
 //            intent.putExtra("username", userName);
-            MqttLogger.setUserName(intent.getStringExtra("userName"));
+            MqttLogger.setUserName(intent.getStringExtra("username"));
+            CommonUtils.printLog("manual start service call userName: " + intent.getStringExtra("username"));
         }
         return Service.START_NOT_STICKY;
-
     }
 
     @Override

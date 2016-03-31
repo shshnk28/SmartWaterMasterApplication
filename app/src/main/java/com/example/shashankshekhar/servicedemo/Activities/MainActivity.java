@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants,Ser
     public void startAndBindService (View view) {
         EditText editText = (EditText)findViewById(R.id.textView1);
         userName = editText.getText().toString();
+        userName = userName.trim();
         if (userName == null || userName.isEmpty()) {
             CommonUtils.showToast(getApplicationContext(),"Pls enter name");
             return;

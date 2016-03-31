@@ -62,9 +62,8 @@ public class MqttPublisher implements MQTTConstants {
         }
         try {
             // TODO: 16/02/16 the message has to be in json format. It needs to be made a standard in SmartX
-            CommonUtils.printLog("main thread in publisher: " + CommonUtils.checkMainThread());
             mqttClient.publish(topicName, message1);
-            CommonUtils.printLog("successfully published@: " + topicName);
+            CommonUtils.printLog("published: " + topicName + " data: "+ payload);
             return true;
         } catch (MqttException ex){
             ex.printStackTrace();
