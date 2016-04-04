@@ -26,9 +26,9 @@ import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity implements MQTTConstants,ServiceCallback{
+public class MainActivity extends AppCompatActivity implements MQTTConstants, ServiceCallback {
 
-//    ProgressDialog connectingDialog;
+    //    ProgressDialog connectingDialog;
     Messenger clientMessenger;
     String userName;
     ProgressDialog connectingDialog;
@@ -46,10 +46,12 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants,Ser
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
     }
+
     // service callbacks
     @Override
     public void messageReceivedFromService(int number) {
@@ -83,60 +85,61 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants,Ser
         }
         showToastOnUIThread(toastStr);
     }
+
     @Override
-    public void serviceConnected () {
+    public void serviceConnected() {
         CommonUtils.printLog("service connected callback received in main");
         showDialogAndConnectToMqtt(null);
     }
+
     @Override
     public void serviceDisconnected() {
         CommonUtils.printLog("service disconnecetd");
     }
 
-    public void startAndBindService (View view) {
-        EditText editText = (EditText)findViewById(R.id.textView1);
-        userName = editText.getText().toString();
-        userName = userName.trim();
-        if (userName == null || userName.isEmpty()) {
-            CommonUtils.showToast(getApplicationContext(),"Pls enter name");
-            return;
-        }
+    public void startAndBindService(View view) {
         if (SCServiceConnector.messenger != null && SCServiceConnector.mBound != false) {
             CommonUtils.printLog("service connected already ");
             CommonUtils.showToast(getApplicationContext(), "Service already connected");
-            Intent publisherServiceIntent = new Intent(getApplicationContext(), PublisherService.class);
-            publisherServiceIntent.putExtra("userName",userName);
-            startService(publisherServiceIntent);
             return;
         }
-        ComponentName componentName = new ComponentName(PACKAGE_NAME,SERVICE_NAME);
+
+        EditText editText = (EditText) findViewById(R.id.textView1);
+        userName = editText.getText().toString();
+        userName = userName.trim();
+        if (userName == null || userName.isEmpty()) {
+            CommonUtils.showToast(getApplicationContext(), "Pls enter name");
+            return;
+        }
+
+        ComponentName componentName = new ComponentName(PACKAGE_NAME, SERVICE_NAME);
         Intent intent = new Intent();
-        intent.putExtra("username",userName);
+        intent.putExtra("username", userName);
         intent.setComponent(componentName);
         ComponentName componentName1 = startService(intent);
         Boolean bindSuccess = bindService(intent, serviceConnector, Context.BIND_AUTO_CREATE);
 
     }
 
-    public void showDialogAndConnectToMqtt (View view) {
-        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false ) {
+    public void showDialogAndConnectToMqtt(View view) {
+        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false) {
             CommonUtils.printLog("service not connected .. returning");
             CommonUtils.showToast(getApplicationContext(), "Service not running");
             return;
         }
-        connectingDialog = ProgressDialog.show(this,"Please Wait...","Connecting to broker");
+        connectingDialog = ProgressDialog.show(this, "Please Wait...", "Connecting to broker");
         connectingDialog.setCancelable(false);
-        clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(),this));
+        clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(), this));
         connectMqtt();
         Intent publisherServiceIntent = new Intent(getApplicationContext(), PublisherService.class);
-        publisherServiceIntent.putExtra("userName",userName);
+        publisherServiceIntent.putExtra("userName", userName);
         startService(publisherServiceIntent);
     }
 
-    public void connectMqtt () {
+    public void connectMqtt() {
         // TODO: 22/03/16 remove the hardcoded stuff such as 8. integrate the library
-        Message message = Message.obtain(null,8);
-        message.replyTo= clientMessenger;
+        Message message = Message.obtain(null, 8);
+        message.replyTo = clientMessenger;
         try {
             SCServiceConnector.messenger.send(message);
         } catch (RemoteException e) {
@@ -144,10 +147,12 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants,Ser
             CommonUtils.printLog("remote Exception,Could not send message");
         }
     }
+
     public void launchDebugScreen(View view) {
-        Intent debugIntent = new Intent(this,DebugActivity.class);
+        Intent debugIntent = new Intent(this, DebugActivity.class);
         startActivity(debugIntent);
     }
+
     private void showToastOnUIThread(final String message) {
         this.runOnUiThread(new Runnable() {
             public void run() {

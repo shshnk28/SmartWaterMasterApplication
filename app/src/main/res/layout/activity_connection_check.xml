@@ -21,13 +21,13 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Check Google"
+        android:text="Ping Google"
         android:id="@+id/button1"
         android:onClick="checkGoogle"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Check Ggl WO DNS"
+        android:text="Ping Ggl WO DNS"
         android:id="@+id/button2"
         android:onClick="checkWODNS"/>
     <Button

@@ -1,9 +1,11 @@
 package com.example.shashankshekhar.servicedemo.Logger;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Environment;
 
+import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
@@ -22,7 +24,7 @@ import java.util.TimeZone;
 /**
  * Created by shashankshekhar on 10/03/16.
  */
-public class MqttLogger {
+public class MqttLogger implements MQTTConstants {
     private static final String SMART_CAMPUS_FOLDER_NAME = "SmartCampus";
     private static final String SMART_CAMPUS_LOG_FILE_NAME = "SmartCampusLog.txt";
     private static final String MOBILE_TELEMETRY_TOPIC_NAME =  "iisc/smartx/mobile/telemetry/data";
@@ -30,10 +32,12 @@ public class MqttLogger {
     private static final String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
     private static Context applicationContext;
     private static File smartCampusDirectory = new File(Environment.getExternalStorageDirectory(), SMART_CAMPUS_FOLDER_NAME);
-    private static String userName;
-    public static void setUserName (String userName1) {
-        userName = userName1;
-    }
+
+
+    // temp
+    private static final String SMART_CAMPUS_LOG_FILE_NAME2 = "FromBGService.txt";
+
+
     public static void initAppContext(Context appContext) {
         if (applicationContext == null) {
             applicationContext = appContext;
@@ -60,6 +64,7 @@ public class MqttLogger {
 //    }
 
     public static synchronized void writeDataToLogFile(String logString) {
+        String userName = "Shashank";
         String dateString = getCurrentDate();
         String loggerString = dateString + "," +userName + ","+ logString;
         if (smartCampusDirectory.exists() == false) {
@@ -145,6 +150,32 @@ public class MqttLogger {
                 publishLoggerData(num);
             }
         }).start();
+    }
+    public static String readFromSharedPrefs (String key ) {
+        SharedPreferences settings = applicationContext.getSharedPreferences(PREFS_NAME,0);
+        String userName = settings.getString(USER_NAME_KEY,"Anon");
+        return userName;
+    }
+    public static synchronized void writeDataToTempLogFile(String logString) {
+        String userName = "Shashank";
+        String dateString = getCurrentDate();
+        String loggerString = dateString + "," +userName + ","+ logString;
+        if (smartCampusDirectory.exists() == false) {
+            if (!smartCampusDirectory.mkdirs()) {
+                CommonUtils.printLog("failed to create logfile ");
+                return;
+            }
+        }
+        File logFile = new File(smartCampusDirectory, SMART_CAMPUS_LOG_FILE_NAME2);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
+            writer.append(loggerString);
+            writer.newLine();
+            writer.close();
+        } catch (IOException e) {
+            CommonUtils.printLog("file write failed in mqtt logfile");
+            return;
+        }
     }
 }
 

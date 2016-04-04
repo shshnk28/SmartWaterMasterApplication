@@ -2,6 +2,7 @@ package com.example.shashankshekhar.servicedemo;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -170,7 +171,11 @@ public class FirstService extends Service implements MQTTConstants {
         }
         else {
 //            intent.putExtra("username", userName);
-            MqttLogger.setUserName(intent.getStringExtra("username"));
+            String userName = intent.getStringExtra("username");
+            if (userName != null) {
+                CommonUtils.printLog("username received: "+userName);
+                writeToSharedPreferences(USER_NAME_KEY,userName);
+            }
             CommonUtils.printLog("manual start service call userName: " + intent.getStringExtra("username"));
         }
         return Service.START_NOT_STICKY;
@@ -305,7 +310,13 @@ public class FirstService extends Service implements MQTTConstants {
             }
         }).start();
     }
+    private void writeToSharedPreferences (String key, String val) {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key,val);
+        editor.commit();
 
+    }
     /* left for referecne purpose
     private class AsyncCaller extends AsyncTask<Void, Void, Void>
     {

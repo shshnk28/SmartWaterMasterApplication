@@ -74,5 +74,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
     @Override
     public void deliveryComplete(IMqttDeliveryToken tk) {
         CommonUtils.printLog("delivery complete");
+        MqttLogger.initAppContext(appContext);
+        MqttLogger.writeDataToTempLogFile("delivery complete");
     }
 }

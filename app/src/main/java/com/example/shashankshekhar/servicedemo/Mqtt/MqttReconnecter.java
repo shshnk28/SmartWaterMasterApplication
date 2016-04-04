@@ -44,6 +44,7 @@ public class MqttReconnecter {
                         }
                     }
                     CommonUtils.printLog("log from reconnector thread");
+                    MqttLogger.writeDataToTempLogFile("reconnector thread in work");
 
                 }
             }

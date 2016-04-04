@@ -1,6 +1,7 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
@@ -63,7 +64,8 @@ public class MqttPublisher implements MQTTConstants {
         try {
             // TODO: 16/02/16 the message has to be in json format. It needs to be made a standard in SmartX
             mqttClient.publish(topicName, message1);
-            CommonUtils.printLog("published: " + topicName + " data: "+ payload);
+            CommonUtils.printLog("published: " + topicName + " data:" + payload);
+            MqttLogger.writeDataToTempLogFile("mqtt message published: "+ payload);
             return true;
         } catch (MqttException ex){
             ex.printStackTrace();

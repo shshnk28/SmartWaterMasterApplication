@@ -8,6 +8,10 @@ import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -15,6 +19,9 @@ import java.util.TimeZone;
 public class PublisherService extends Service implements ServiceCallback,MQTTConstants {
     private final String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
     private final int SLEEP_TIME = 120*1000; // 120 secs
+    private static final String SMART_CAMPUS_FOLDER_NAME = "SmartCampus";
+    private static final String SMART_CAMPUS_LOG_FILE_NAME2 = "FromPubThread.txt";
+    private static File smartCampusDirectory = new File(Environment.getExternalStorageDirectory(), SMART_CAMPUS_FOLDER_NAME);
     String userName;
     Messenger clientMessenger;
     Message messageToPublish;
@@ -71,6 +78,7 @@ public class PublisherService extends Service implements ServiceCallback,MQTTCon
                 while (true) {
                     String dataString = getCurrentDate() + "," + userName;
                     publishMessage(dataString);
+                    writeDataToLogFile("Publish message sent from Publisher thread");
                     try {
                         Thread.sleep(SLEEP_TIME);
                     } catch (InterruptedException e) {
@@ -103,6 +111,27 @@ public class PublisherService extends Service implements ServiceCallback,MQTTCon
         } catch (RemoteException e) {
             e.printStackTrace();
             CommonUtils.printLog("remote Exception,Could not send message");
+        }
+    }
+    public void writeDataToLogFile(String logString) {
+        String userName = "Shashank";
+        String dateString = getCurrentDate();
+        String loggerString = dateString + "," +userName + ","+ logString;
+        if (smartCampusDirectory.exists() == false) {
+            if (!smartCampusDirectory.mkdirs()) {
+                CommonUtils.printLog("failed to create logfile ");
+                return;
+            }
+        }
+        File logFile = new File(smartCampusDirectory, SMART_CAMPUS_LOG_FILE_NAME2);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
+            writer.append(loggerString);
+            writer.newLine();
+            writer.close();
+        } catch (IOException e) {
+            CommonUtils.printLog("file write failed in mqtt logfile");
+            return;
         }
     }
 }
