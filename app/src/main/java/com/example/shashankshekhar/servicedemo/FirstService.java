@@ -18,11 +18,12 @@ import com.example.shashankshekhar.servicedemo.Mqtt.MqttReconnecter;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttSubscriber;
 import com.example.shashankshekhar.servicedemo.Mqtt.SCMqttClient;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.google.android.gms.gcm.GcmListenerService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FirstService extends Service implements MQTTConstants {
+public class FirstService  extends Service implements MQTTConstants {
 
     // connection options
     static final int MQTT_CONNECTED = 1;
