@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
+
 
 android {
     compileSdkVersion 23
@@ -27,3 +27,4 @@ dependencies {
     compile project(':org.eclipse.paho.client.mqttv3-1.0.2')
     compile project(':mqtt-client-1.9')
 }
+apply plugin: 'com.google.gms.google-services'

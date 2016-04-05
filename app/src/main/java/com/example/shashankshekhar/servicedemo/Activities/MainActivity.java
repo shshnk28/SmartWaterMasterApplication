@@ -17,8 +17,10 @@ import android.view.View;
 
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.GcmMessageHandler;
 import com.example.shashankshekhar.servicedemo.IncomingHandler;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
+import com.example.shashankshekhar.servicedemo.MyInstanceIDService;
 import com.example.shashankshekhar.servicedemo.PublisherService;
 import com.example.shashankshekhar.servicedemo.R;
 import com.example.shashankshekhar.servicedemo.SCServiceConnector;
@@ -146,6 +148,12 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
             e.printStackTrace();
             CommonUtils.printLog("remote Exception,Could not send message");
         }
+    }
+    public void connectToGcm (View view) {
+        // start the gcm thingy
+         Intent mServiceIntent = new Intent(getApplicationContext(), MyInstanceIDService.class);
+        startService(mServiceIntent);
+
     }
 
     public void launchDebugScreen(View view) {

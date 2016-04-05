@@ -72,7 +72,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".GcmListenerService"
+            android:name=".GcmMessageHandler"
             android:enabled="true"
             android:exported="false">
             <intent-filter>

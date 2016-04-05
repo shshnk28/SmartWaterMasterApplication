@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
 
+import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
@@ -17,7 +18,7 @@ import java.io.IOException;
  * helper methods.
  */
 public class MyInstanceIDService extends IntentService {
-
+private final String SENDER_ID = "162530255284";
     public MyInstanceIDService() {
         super("MyInstanceIDService");
     }
@@ -25,12 +26,17 @@ public class MyInstanceIDService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         InstanceID instanceID = InstanceID.getInstance(this);
-        String senderId = "someSenderId";
         try {
             // request token that will be used by the server to send push notifications
-            String token = instanceID.getToken(senderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE);
+            CommonUtils.printLog("sending token request in intent service");
+            String token = instanceID.getToken(SENDER_ID, GoogleCloudMessaging.INSTANCE_ID_SCOPE);
+//            CommonUtils.printLog("token received: " + token + "length: " + token.length());
             GcmPubSub pubSub = GcmPubSub.getInstance(this);
-            pubSub.subscribe(token,"/topics/dogs",null);
+            try {
+                pubSub.subscribe(token,"/topics/hello",null);
+            } catch (IOException e) {
+                CommonUtils.printLog("subscription failed");
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
