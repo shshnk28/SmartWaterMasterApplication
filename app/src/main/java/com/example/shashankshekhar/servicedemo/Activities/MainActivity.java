@@ -133,9 +133,9 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
         connectingDialog.setCancelable(false);
         clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(), this));
         connectMqtt();
-        Intent publisherServiceIntent = new Intent(getApplicationContext(), PublisherService.class);
-        publisherServiceIntent.putExtra("userName", userName);
-        startService(publisherServiceIntent);
+//        Intent publisherServiceIntent = new Intent(getApplicationContext(), PublisherService.class);
+//        publisherServiceIntent.putExtra("userName", userName);
+//        startService(publisherServiceIntent);
     }
 
     public void connectMqtt() {
