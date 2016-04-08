@@ -8,6 +8,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.Handler;
+import android.util.ArraySet;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
@@ -20,7 +21,9 @@ import com.example.shashankshekhar.servicedemo.Mqtt.SCMqttClient;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FirstService extends Service implements MQTTConstants {
 
@@ -79,16 +82,22 @@ public class FirstService extends Service implements MQTTConstants {
                 case SUBSCRIBE_TO_TOPIC: // to subscribe to a topic
                     // TODO: 13/02/16 return the subscribed topic id from here via clientMessenger
                     // set it as a string in the messenger
+                    if (message.replyTo == null) {
+                        CommonUtils.printLog("no reply messenger .. returning");
+                        return;
+                    }
                     topicName = message.getData().getString("topicName");
                     if (checkConnectivity(message.replyTo) == false) {
                         return;
                     }
                     CommonUtils.printLog("subscribe call made");
                     String subscribeID = MqttSubscriber.subscribeToTopic(topicName);
-                    if (subscribeID == null || subscribedTopics.contains(topicName) == true) {
+                    if (subscribeID == null) {
+                        sendMessageToClient(message.replyTo, SUBSCRIPTION_ERROR);
                         CommonUtils.printLog("couldnot subscribe to topic : ");
                     } else {
                         subscribedTopics.add(topicName);
+                        sendMessageToClient(message.replyTo, SUBSCRIPTION_SUCCESS);
                     }
                     // TODO: 12/11/15 return the subscribeId to the client from here.
                     break;
@@ -147,7 +156,8 @@ public class FirstService extends Service implements MQTTConstants {
     public FirstService() {
     }
 
-    List<String> subscribedTopics = new ArrayList<String>();
+    Set<String> subscribedTopics = new HashSet<>();
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -188,6 +198,7 @@ public class FirstService extends Service implements MQTTConstants {
         reconnecter  = new MqttReconnecter(getApplicationContext());
         reconnecter.setRunReconnectorThread(true);
         reconnecter.startReconnectorThread();
+
     }
 
     @Override
@@ -317,6 +328,7 @@ public class FirstService extends Service implements MQTTConstants {
         editor.commit();
 
     }
+
     /* left for referecne purpose
     private class AsyncCaller extends AsyncTask<Void, Void, Void>
     {

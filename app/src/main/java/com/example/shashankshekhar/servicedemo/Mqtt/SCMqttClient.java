@@ -1,11 +1,14 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.TimerPingSender;
+import org.eclipse.paho.client.mqttv3.internal.ClientComms;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /**
@@ -13,6 +16,8 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  */
 public class SCMqttClient extends MqttAsyncClient implements MQTTConstants {
     private static SCMqttClient scMqttClient;
+//    private static ClientComms clientComms;
+//    private static TimerPingSender pingSender;
     private SCMqttClient(String brokerAddress,String clientId,MqttClientPersistence persistence) throws MqttException{
         super(brokerAddress,clientId,persistence);
     }
@@ -21,7 +26,13 @@ public class SCMqttClient extends MqttAsyncClient implements MQTTConstants {
              return scMqttClient;
          }
          try {
-             scMqttClient = new SCMqttClient(BROKER_ADDRESS_CLOUD, CommonUtils.randomString(),new MemoryPersistence());
+             MemoryPersistence persistence = new MemoryPersistence();
+             scMqttClient = new SCMqttClient(BROKER_ADDRESS_CLOUD, CommonUtils.randomString(),persistence);
+//             pingSender = new TimerPingSender();
+//             clientComms = new ClientComms(scMqttClient,persistence,pingSender);
+//             pingSender.init(clientComms);
+//             pingSender.start();
+             MqttLogger.writeDataToTempLogFile("client connected");
              return scMqttClient;
          } catch (MqttException e) {
              CommonUtils.printLog("message : " + e.getMessage());
@@ -37,4 +48,7 @@ public class SCMqttClient extends MqttAsyncClient implements MQTTConstants {
         }
         return scMqttClient.isConnected();
     }
+// public static void stopPingSender () {
+//     pingSender.stop();
+// }
 }

@@ -50,16 +50,19 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
          */
 //        CommonUtils.printLog("MQTT notif for topic: " + topic + "on thread " + CommonUtils.checkMainThread());
         // TODO: 10/11/15 call the library here that does the broadcast to seperate out the Mqtt implementation
-        Intent broadcast = new Intent();
-        broadcast.putExtra("message", msg.toString());
-        broadcast.putExtra("topicName", topic);
-        broadcast.setAction(topic);
-        appContext.sendBroadcast(broadcast);
+//        Intent broadcast = new Intent();
+//        broadcast.putExtra("message", msg.toString());
+//        broadcast.putExtra("topicName", topic);
+//        broadcast.setAction(topic);
+//        appContext.sendBroadcast(broadcast);
+        MqttLogger.writeDataToTempLogFile("message arr");
+        CommonUtils.printLog("message arrived");
     }
 
 
     @Override
     public void connectionLost(Throwable cause) {
+        MqttConnector.cancelAlarm();
         CommonUtils.printLog("connection lost to broker");
         CommonUtils.printLog("cause: " + cause.getCause());
         String logString = "Connection lost to broker/ ";
@@ -69,6 +72,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         MqttLogger.initAppContext(appContext);
         MqttLogger.writeDataToLogFile(logString);
         //write to log file here as well
+        MqttLogger.writeDataToTempLogFile("Connection Lost");
     }
 
     @Override

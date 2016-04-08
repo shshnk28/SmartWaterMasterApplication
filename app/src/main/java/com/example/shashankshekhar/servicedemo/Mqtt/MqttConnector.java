@@ -1,7 +1,11 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 
+import com.example.shashankshekhar.servicedemo.BroadcastReceiver.AlarmReceiver;
 import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
@@ -17,6 +21,8 @@ import org.eclipse.paho.client.mqttv3.MqttSecurityException;
  */
 public class MqttConnector {
     public static boolean isConnecting;
+    private static AlarmManager alarmManager;
+    private static PendingIntent pendingIntent;
     public static void connectToMqttClient(final Runnable onSuccess, final Runnable onFailure, final Context appContext) {
 
         /* we can define an error class and return the error object from this method with all the necessary info.*/
@@ -42,6 +48,7 @@ public class MqttConnector {
                     MqttLogger.initAppContext(appContext);
                     MqttLogger.writeDataToLogFile(" Connection Successful/");
                     MqttLogger.runStatusPublisher(30);
+                    setPingAlarm(appContext);
                     onSuccess.run();
                     return;
                 }
@@ -105,6 +112,19 @@ public class MqttConnector {
             }
             e.printStackTrace();
         }
+    }
+    private static void setPingAlarm (Context appContext) {
+        alarmManager = (AlarmManager)appContext.getSystemService(Context.ALARM_SERVICE);
+        MqttAsyncClient mqttClient = SCMqttClient.getInstance();
+        MqttConnectOptions connectionOptions = SCMqttConnectionOptions.getConnectionOptions();
+        int keepAlive = connectionOptions.getKeepAliveInterval();
+        Intent intent = new Intent(appContext, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(appContext, 0, intent, 0);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,keepAlive*1000,keepAlive*1000,pendingIntent);
+        CommonUtils.printLog("alarm set with keepalive: "+keepAlive);
+    }
+    public static void cancelAlarm () {
+        alarmManager.cancel(pendingIntent);
     }
 
 }

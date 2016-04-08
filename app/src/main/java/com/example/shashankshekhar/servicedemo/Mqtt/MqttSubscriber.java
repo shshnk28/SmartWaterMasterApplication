@@ -14,8 +14,6 @@ public class MqttSubscriber implements MQTTConstants {
     public static String subscribeToTopic (String topicName) {
         MqttAsyncClient mqttClient = SCMqttClient.getInstance();
         try {
-            // TODO: 14/02/16 check why the client is getting unsubscribed after some time
-            // is there is timeout in subscription?
             mqttClient.subscribe(topicName, QoS);
             CommonUtils.printLog("topic subscribed: " + topicName);
             CommonUtils.printLog("for client: "+ mqttClient.toString());

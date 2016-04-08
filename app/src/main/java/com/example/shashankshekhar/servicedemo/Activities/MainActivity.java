@@ -66,6 +66,18 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
         switch (number) {
             case MQTT_CONNECTED:
                 toastStr = "Mqtt Connected";
+                // SUBSCRIBE call
+//                Message message = Message.obtain(null, SUBSCRIBE_TO_TOPIC);
+//                Bundle bundle = new Bundle();
+//                bundle.putString("topicName",TEST_TOPIC);
+//                message.setData(bundle);
+//                message.replyTo = clientMessenger;
+//                try {
+//                    SCServiceConnector.messenger.send(message);
+//                } catch (RemoteException e) {
+//                    e.printStackTrace();
+//                    CommonUtils.printLog("remote Exception,Could not send message");
+//                }
                 break;
             case UNABLE_TO_CONNECT:
                 toastStr = "Not Connected";
@@ -78,6 +90,12 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
                 break;
             case MQTT_NOT_CONNECTED:
                 toastStr = "Mqtt Not Connected";
+                break;
+            case SUBSCRIPTION_ERROR:
+                toastStr = "Subscription failed";
+                break;
+            case SUBSCRIPTION_SUCCESS:
+                toastStr = "Subscription success";
                 break;
             default:
                 toastStr = "switch case unknown";
@@ -131,14 +149,16 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
         connectingDialog.setCancelable(false);
         clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(), this));
         connectMqtt();
-        Intent publisherServiceIntent = new Intent(getApplicationContext(), PublisherService.class);
-        publisherServiceIntent.putExtra("userName", userName);
-        startService(publisherServiceIntent);
+//        Intent publisherServiceIntent = new Intent(getApplicationContext(), PublisherService.class);
+//        publisherServiceIntent.putExtra("userName", userName);
+//        startService(publisherServiceIntent);
     }
 
     public void connectMqtt() {
-        // TODO: 22/03/16 remove the hardcoded stuff such as 8. integrate the library
-        Message message = Message.obtain(null, 8);
+        // TODO: 22/03/16 remove the hardcoded stuff such as 8. integrate the library and also amake a new subclass
+        // of message which mandates a reply to messenger to which the reply can be sent
+
+        Message message = Message.obtain(null, CONNECT_MQTT);
         message.replyTo = clientMessenger;
         try {
             SCServiceConnector.messenger.send(message);

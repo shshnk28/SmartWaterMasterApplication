@@ -17,7 +17,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 public class PublisherService extends Service implements ServiceCallback,MQTTConstants {
-    private final String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
+
     private final int SLEEP_TIME = 120*1000; // 120 secs
     private static final String SMART_CAMPUS_FOLDER_NAME = "SmartCampus";
     private static final String SMART_CAMPUS_LOG_FILE_NAME2 = "FromPubThread.txt";
@@ -71,6 +71,16 @@ public class PublisherService extends Service implements ServiceCallback,MQTTCon
     @Override
     public void onCreate() {
         configureMessage();
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        final PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+//                "MyWakelockTag");
+//        if (wakeLock.isHeld() == false) {
+//            wakeLock.acquire();
+//            CommonUtils.printLog("wake lock acquired");
+//        } else {
+//            CommonUtils.printLog("wake lock not acquired");
+//        }
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -78,7 +88,7 @@ public class PublisherService extends Service implements ServiceCallback,MQTTCon
                 while (true) {
                     String dataString = getCurrentDate() + "," + userName;
                     publishMessage(dataString);
-                    writeDataToLogFile("Publish message sent from Publisher thread");
+                    writeDataToLogFile("Publish message sent");
                     try {
                         Thread.sleep(SLEEP_TIME);
                     } catch (InterruptedException e) {

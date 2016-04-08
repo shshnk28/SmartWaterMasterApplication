@@ -21,6 +21,9 @@ public interface MQTTConstants {
 
     String PREFS_NAME = "MyPrefsFile";
     String USER_NAME_KEY = "username";
+
+    String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
+
     // TODO: 31/03/16 PUT THESE IN THE library once integrated
     /* MESSAGE HANDLER CONSTANTS. used when sending message to service to perform some action.Needs to be in the library once it is
     integrated. */
