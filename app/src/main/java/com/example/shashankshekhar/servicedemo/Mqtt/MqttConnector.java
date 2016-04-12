@@ -114,16 +114,21 @@ public class MqttConnector {
         }
     }
     private static void setPingAlarm (Context appContext) {
+        /*
+        chck if the mqtt is connected if not then trigger a connection req else send a ping
+         */
+        CommonUtils.printLog(" process id when setting alarm: " + android.os.Process.myPid());
         alarmManager = (AlarmManager)appContext.getSystemService(Context.ALARM_SERVICE);
-        MqttAsyncClient mqttClient = SCMqttClient.getInstance();
         MqttConnectOptions connectionOptions = SCMqttConnectionOptions.getConnectionOptions();
         int keepAlive = connectionOptions.getKeepAliveInterval();
         Intent intent = new Intent(appContext, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(appContext, 0, intent, 0);
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,keepAlive*1000,keepAlive*1000,pendingIntent);
-        CommonUtils.printLog("alarm set with keepalive: "+keepAlive);
+        CommonUtils.printLog("alarm set with keepalive: " + keepAlive);
+        MqttLogger.writeDataToTempLogFile("alarm set");
     }
     public static void cancelAlarm () {
+        CommonUtils.printLog("connection lost canceling alarm");
         alarmManager.cancel(pendingIntent);
     }
 

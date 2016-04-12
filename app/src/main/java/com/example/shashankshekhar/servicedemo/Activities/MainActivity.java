@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        CommonUtils.printLog(" Main activity process id: " + android.os.Process.myPid());
     }
 
     @Override
@@ -106,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
 
     @Override
     public void serviceConnected() {
-        CommonUtils.printLog("service connected callback received in main");
         showDialogAndConnectToMqtt(null);
     }
 

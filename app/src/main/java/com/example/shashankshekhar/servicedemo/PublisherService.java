@@ -86,7 +86,7 @@ public class PublisherService extends Service implements ServiceCallback,MQTTCon
             public void run() {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 while (true) {
-                    String dataString = getCurrentDate() + "," + userName;
+                    String dataString = CommonUtils.getCurrentDate() + "," + userName;
                     publishMessage(dataString);
                     writeDataToLogFile("Publish message sent");
                     try {
@@ -99,12 +99,7 @@ public class PublisherService extends Service implements ServiceCallback,MQTTCon
         }).start();
     }
 
-    private static String getCurrentDate() {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30"));
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String dateString = dateFormat.format(calendar.getTime());
-        return dateString;
-    }
+
     private void configureMessage () {
         clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(),this));
         messageToPublish = Message.obtain(null, PUBLISH_MESSAGE);
@@ -125,7 +120,7 @@ public class PublisherService extends Service implements ServiceCallback,MQTTCon
     }
     public void writeDataToLogFile(String logString) {
         String userName = "Shashank";
-        String dateString = getCurrentDate();
+        String dateString = CommonUtils.getCurrentDate();
         String loggerString = dateString + "," +userName + ","+ logString;
         if (smartCampusDirectory.exists() == false) {
             if (!smartCampusDirectory.mkdirs()) {

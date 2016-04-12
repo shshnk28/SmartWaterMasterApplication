@@ -151,11 +151,11 @@ public class MqttLogger implements MQTTConstants {
             }
         }).start();
     }
-    public static String readFromSharedPrefs (String key ) {
-        SharedPreferences settings = applicationContext.getSharedPreferences(PREFS_NAME,0);
-        String userName = settings.getString(USER_NAME_KEY,"Anon");
-        return userName;
-    }
+//    public static String readFromSharedPrefs (String key ) {
+//        SharedPreferences settings = applicationContext.getSharedPreferences(PREFS_NAME,0);
+//        String userName = settings.getString(USER_NAME_KEY,"Anon");
+//        return userName;
+//    }
     public static synchronized void writeDataToTempLogFile(String logString) {
         String userName = "Shashank";
         String dateString = getCurrentDate();

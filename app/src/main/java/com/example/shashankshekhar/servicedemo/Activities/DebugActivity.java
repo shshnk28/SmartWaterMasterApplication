@@ -1,12 +1,17 @@
 package com.example.shashankshekhar.servicedemo.Activities;
 
+import android.content.Intent;
 import android.os.Message;
+import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.FirstService;
+import com.example.shashankshekhar.servicedemo.IncomingHandler;
+import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.R;
 import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
@@ -18,14 +23,15 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 
-public class DebugActivity extends AppCompatActivity implements MQTTConstants {
-
+public class DebugActivity extends AppCompatActivity implements MQTTConstants,ServiceCallback {
+    Messenger clientMessenger;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connection_check);
 //        debugIntent.putExtra("messengerObj", messenger);
 //        debugIntent.putExtra("bound", mBound);
+        clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(), this));
         if (SCServiceConnector.messenger == null) {
             CommonUtils.printLog("messenger is null in debug screen");
         }
@@ -140,6 +146,7 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants {
             return;
         }
         Message message = Message.obtain(null,CHECK_MQTT_CONNECTION);
+        message.replyTo = clientMessenger;
         try {
             SCServiceConnector.messenger.send(message);
         } catch (RemoteException e) {
@@ -180,5 +187,31 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants {
                 CommonUtils.showToast(getApplicationContext(), message);
             }
         });
+    }
+    @Override
+    public void serviceConnected() {
+        CommonUtils.printLog("service connected message in alarm recever ");
+    }
+
+    @Override
+    public void serviceDisconnected() {
+        CommonUtils.printLog("service disconnected message in alarm recever ");
+    }
+
+    @Override
+    public void messageReceivedFromService(int status) {
+        switch (status) {
+            case MQTT_CONNECTION_IN_PROGRESS:
+                showToastOnUIThread("Mqtt connection in progress");
+                break;
+            case MQTT_NOT_CONNECTED:
+                showToastOnUIThread("Mqtt Not Connected");
+                break;
+            case MQTT_CONNECTED:
+                showToastOnUIThread("Mqtt Connected");
+                break;
+            default:
+                showToastOnUIThread("status unknown");
+        }
     }
 }

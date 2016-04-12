@@ -119,16 +119,16 @@ public class FirstService extends Service implements MQTTConstants {
                     }
                     break;
                 case CHECK_MQTT_CONNECTION: // check if the mqtt client is connected
-                    // TODO: 31/03/16 this is not sendng a reply back to client. send it
+                    int status;
                     if (MqttConnector.isConnecting) {
-                        CommonUtils.showToast(getApplicationContext(), "connection in progress");
-                        return;
+                        status= MQTT_CONNECTION_IN_PROGRESS;
                     }
-                    if (SCMqttClient.isMqttConnected()) {
-                        CommonUtils.showToast(getApplicationContext(), "client connected ");
+                    else if (SCMqttClient.isMqttConnected()) {
+                        status = MQTT_CONNECTED;
                     } else {
-                        CommonUtils.showToast(getApplicationContext(), "client not connected ");
+                        status = MQTT_NOT_CONNECTED;
                     }
+                    sendMessageToClient(message.replyTo,status);
                     break;
                 case CONNECT_MQTT: // reconnect mqtt
                     if (message.replyTo == null) {
@@ -148,6 +148,7 @@ public class FirstService extends Service implements MQTTConstants {
                     mqttConnector.start();
                     break;
                 default:
+                    CommonUtils.printLog("unknown message received from client");
                     super.handleMessage(message);
             }
         }
@@ -183,8 +184,8 @@ public class FirstService extends Service implements MQTTConstants {
 //            intent.putExtra("username", userName);
             String userName = intent.getStringExtra("username");
             if (userName != null) {
-                CommonUtils.printLog("username received: "+userName);
-                writeToSharedPreferences(USER_NAME_KEY,userName);
+                CommonUtils.printLog("username received: " + userName);
+//                writeToSharedPreferences(USER_NAME_KEY,userName);
             }
             CommonUtils.printLog("manual start service call userName: " + intent.getStringExtra("username"));
         }
@@ -195,9 +196,10 @@ public class FirstService extends Service implements MQTTConstants {
     public void onCreate() {
         CommonUtils.printLog("ONCreate called in service");
         // start ReConnector Thread
-        reconnecter  = new MqttReconnecter(getApplicationContext());
-        reconnecter.setRunReconnectorThread(true);
-        reconnecter.startReconnectorThread();
+//        CommonUtils.printLog(" FS process id: " + android.os.Process.myPid());
+//        reconnecter  = new MqttReconnecter(getApplicationContext());
+//        reconnecter.setRunReconnectorThread(true);
+//        reconnecter.startReconnectorThread();
 
     }
 
@@ -321,13 +323,13 @@ public class FirstService extends Service implements MQTTConstants {
             }
         }).start();
     }
-    private void writeToSharedPreferences (String key, String val) {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,0);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(key,val);
-        editor.commit();
-
-    }
+//    private void writeToSharedPreferences (String key, String val) {
+//        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,0);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putString(key,val);
+//        editor.commit();
+//
+//    }
 
     /* left for referecne purpose
     private class AsyncCaller extends AsyncTask<Void, Void, Void>

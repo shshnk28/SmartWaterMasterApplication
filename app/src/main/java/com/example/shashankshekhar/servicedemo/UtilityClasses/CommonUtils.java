@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.UUID;
 
 /**
@@ -117,5 +120,11 @@ public class CommonUtils {
             e.printStackTrace();
         }
         return false;
+    }
+    public static String getCurrentDate() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30"));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String dateString = dateFormat.format(calendar.getTime());
+        return dateString;
     }
 }
