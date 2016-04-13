@@ -62,7 +62,7 @@ public class MqttPublisher implements MQTTConstants {
             return false;
         }
         try {
-            // TODO: 16/02/16 the message has to be in json format. It needs to be made a standard in SmartX
+            // TODO: 16/02/16 the message has to be in json/senML format.
             mqttClient.publish(topicName, message1);
             CommonUtils.printLog("published: " + topicName + " data:" + payload);
             MqttLogger.writeDataToTempLogFile("mqtt message published: "+ payload);

@@ -27,7 +27,8 @@ public class SCMqttClient extends MqttAsyncClient implements MQTTConstants {
          }
          try {
              MemoryPersistence persistence = new MemoryPersistence();
-             scMqttClient = new SCMqttClient(BROKER_ADDRESS_CLOUD, CommonUtils.randomString(),persistence);
+             CommonUtils.printLog("Connecting with client id: " + CommonUtils.getClientId());
+             scMqttClient = new SCMqttClient(BROKER_ADDRESS_CLOUD, CommonUtils.getClientId(),persistence);
 //             pingSender = new TimerPingSender();
 //             clientComms = new ClientComms(scMqttClient,persistence,pingSender);
 //             pingSender.init(clientComms);

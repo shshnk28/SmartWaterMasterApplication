@@ -27,7 +27,6 @@ import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity implements MQTTConstants, ServiceCallback {
-
     //    ProgressDialog connectingDialog;
     Messenger clientMessenger;
     String userName;
@@ -68,17 +67,17 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
             case MQTT_CONNECTED:
                 toastStr = "Mqtt Connected";
                 // SUBSCRIBE call
-//                Message message = Message.obtain(null, SUBSCRIBE_TO_TOPIC);
-//                Bundle bundle = new Bundle();
-//                bundle.putString("topicName",TEST_TOPIC);
-//                message.setData(bundle);
-//                message.replyTo = clientMessenger;
-//                try {
-//                    SCServiceConnector.messenger.send(message);
-//                } catch (RemoteException e) {
-//                    e.printStackTrace();
-//                    CommonUtils.printLog("remote Exception,Could not send message");
-//                }
+                Message message = Message.obtain(null, SUBSCRIBE_TO_TOPIC);
+                Bundle bundle = new Bundle();
+                bundle.putString("topicName",TEST_TOPIC);
+                message.setData(bundle);
+                message.replyTo = clientMessenger;
+                try {
+                    SCServiceConnector.messenger.send(message);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                    CommonUtils.printLog("remote Exception,Could not send message");
+                }
                 break;
             case UNABLE_TO_CONNECT:
                 toastStr = "Not Connected";
@@ -129,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
             CommonUtils.showToast(getApplicationContext(), "Pls enter name");
             return;
         }
-
         ComponentName componentName = new ComponentName(PACKAGE_NAME, SERVICE_NAME);
         Intent intent = new Intent();
         intent.putExtra("username", userName);

@@ -47,7 +47,7 @@ public class MqttConnector {
                     CommonUtils.printLog("connection established with client: ");
                     MqttLogger.initAppContext(appContext);
                     MqttLogger.writeDataToLogFile(" Connection Successful/");
-                    MqttLogger.runStatusPublisher(30);
+//                    MqttLogger.runStatusPublisher(30);
                     setPingAlarm(appContext);
                     onSuccess.run();
                     return;
@@ -119,12 +119,13 @@ public class MqttConnector {
          */
         CommonUtils.printLog(" process id when setting alarm: " + android.os.Process.myPid());
         alarmManager = (AlarmManager)appContext.getSystemService(Context.ALARM_SERVICE);
-        MqttConnectOptions connectionOptions = SCMqttConnectionOptions.getConnectionOptions();
-        int keepAlive = connectionOptions.getKeepAliveInterval();
+//        MqttConnectOptions connectionOptions = SCMqttConnectionOptions.getConnectionOptions();
+//        int keepAlive = connectionOptions.getKeepAliveInterval();
+//        keepAlive/=2;
         Intent intent = new Intent(appContext, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(appContext, 0, intent, 0);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,keepAlive*1000,keepAlive*1000,pendingIntent);
-        CommonUtils.printLog("alarm set with keepalive: " + keepAlive);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,3*60*1000,3*60*1000,pendingIntent);
+//        CommonUtils.printLog("alarm set with keepalive: " + keepAlive);
         MqttLogger.writeDataToTempLogFile("alarm set");
     }
     public static void cancelAlarm () {

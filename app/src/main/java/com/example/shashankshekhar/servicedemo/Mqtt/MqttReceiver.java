@@ -55,24 +55,26 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
 //        broadcast.putExtra("topicName", topic);
 //        broadcast.setAction(topic);
 //        appContext.sendBroadcast(broadcast);
-        MqttLogger.writeDataToTempLogFile("message arr");
+        MqttLogger.writeDataToTempLogFile("message arr: " + msg.toString());
         CommonUtils.printLog("message arrived");
     }
 
 
     @Override
     public void connectionLost(Throwable cause) {
-        MqttConnector.cancelAlarm();
         CommonUtils.printLog("connection lost to broker");
         CommonUtils.printLog("cause: " + cause.getCause());
         String logString = "Connection lost to broker/ ";
         if (cause.getCause() != null) {
             logString += cause.getCause();
         }
+        if (cause.getMessage()!= null) {
+            logString+=cause.getMessage();
+        }
         MqttLogger.initAppContext(appContext);
         MqttLogger.writeDataToLogFile(logString);
         //write to log file here as well
-        MqttLogger.writeDataToTempLogFile("Connection Lost");
+        MqttLogger.writeDataToTempLogFile(logString);
     }
 
     @Override

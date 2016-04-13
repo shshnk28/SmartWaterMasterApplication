@@ -15,11 +15,11 @@ public class SCMqttConnectionOptions implements MQTTConstants {
     private static void initialiseConnectionOptions () {
         connOpts = new MqttConnectOptions();
         // TODO: 29/02/16 set the clean session to false if you want to get resubscribed to the old topics   
-        connOpts.setCleanSession(true);
+        connOpts.setCleanSession(false);
         connOpts.setUserName(USERNAME);
         connOpts.setPassword(PASSWORD.toCharArray());
         connOpts.setConnectionTimeout(60);
-        connOpts.setKeepAliveInterval(2*60);
+        connOpts.setKeepAliveInterval(20*60);
     }
     public static MqttConnectOptions getConnectionOptions () {
         if (connOpts == null) {

@@ -174,10 +174,12 @@ public class FirstService extends Service implements MQTTConstants {
             // the service start call is coming from network change broadcast receiver
             CommonUtils.printLog("service start call from BR receiver");
             MqttLogger.writeDataToLogFile("reconnection initiated from BR");
+            MqttLogger.writeDataToTempLogFile("reconnection initiated from BR");
             onNetworkChange();
         } else if (intent != null && intent.getBooleanExtra("fromReconnecter",false) == true) {
             CommonUtils.printLog("service start call from reconnector");
             MqttLogger.writeDataToLogFile("reconnection initiated from reconnector thread");
+            MqttLogger.writeDataToTempLogFile("reconnection initiated from reconnector thread");
             initiateMqttOnNewThread();
         }
         else {
@@ -200,6 +202,7 @@ public class FirstService extends Service implements MQTTConstants {
 //        reconnecter  = new MqttReconnecter(getApplicationContext());
 //        reconnecter.setRunReconnectorThread(true);
 //        reconnecter.startReconnectorThread();
+        CommonUtils.setClientId(getApplicationContext());
 
     }
 
@@ -211,6 +214,7 @@ public class FirstService extends Service implements MQTTConstants {
 
     @Override
     public void onDestroy() {
+        MqttConnector.cancelAlarm();
         CommonUtils.printLog("SERVICE DESTROYED!!");
         MqttConnector.disconnectMqtt();
         MqttLogger.initAppContext(getApplicationContext());
@@ -218,11 +222,11 @@ public class FirstService extends Service implements MQTTConstants {
 
     }
 
-    public void resubscribeToAllTopics() {
-        for (String topic : subscribedTopics) {
-            MqttSubscriber.subscribeToTopic(topic);
-        }
-    }
+//    public void resubscribeToAllTopics() {
+//        for (String topic : subscribedTopics) {
+//            MqttSubscriber.subscribeToTopic(topic);
+//        }
+//    }
 
     private void sendMessageToClient(Messenger messenger, int val) {
         if (messenger == null) {
@@ -264,9 +268,10 @@ public class FirstService extends Service implements MQTTConstants {
                 new MqttReceiver(getApplicationContext());
                 if (sendMessage == true) {
                     sendMessageToClient(clientMessenger, MQTT_CONNECTED);
-                } else {
-                    resubscribeToAllTopics();
                 }
+//                else {
+//                    resubscribeToAllTopics();
+//                }
             }
         };
         Runnable failure= new Runnable() {

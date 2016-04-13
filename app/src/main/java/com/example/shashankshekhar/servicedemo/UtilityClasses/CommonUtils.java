@@ -27,6 +27,7 @@ public class CommonUtils {
     public static void printLog (String string) {
         Log.d("S-WATER",string);
     }
+    private static String clientId;
     public static String randomString () {
         String uuid = UUID.randomUUID().toString().replaceAll("-","");
         return uuid;
@@ -45,14 +46,13 @@ public class CommonUtils {
         }
         return false;
     }
-    public static String deviceId (Context appContext) {
-        if (appContext == null) {
-            return null;
-        } else {
-            String id = Settings.Secure.getString(appContext.getContentResolver(),
+    public static void setClientId(Context appContext) {
+
+            clientId = Settings.Secure.getString(appContext.getContentResolver(),
                     Settings.Secure.ANDROID_ID);
-            return id;
-        }
+    }
+    public static String getClientId (){
+        return clientId;
     }
     public static boolean checkMainThread () {
         if(Looper.myLooper() == Looper.getMainLooper()) {

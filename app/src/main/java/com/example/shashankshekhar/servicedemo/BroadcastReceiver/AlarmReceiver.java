@@ -41,12 +41,9 @@ public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, S
     Context appContext;
 
     public void onReceive(Context context, Intent intent) {
-        //alarm received here
-        writeDataToLogFile("alarm received");
         clientMessenger = new Messenger(new IncomingHandler(context, this));
         appContext = context;
         checkConnection();
-
     }
 
     private void configureMessage() {
@@ -127,7 +124,7 @@ public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, S
                 /*
                 a publish to maintain a connection
                  */
-                publishMessage("0");
+                publishMessage("ab");
 
                 break;
         }
