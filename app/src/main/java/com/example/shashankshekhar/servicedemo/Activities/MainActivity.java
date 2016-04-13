@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
     // service callbacks
     @Override
     public void messageReceivedFromService(int number) {
-        CommonUtils.printLog("messageReceivedFromService  in mainActivity" + number);
 //        int MQTT_CONNECTED =1;
 //        int UNABLE_TO_CONNECT =2;
 //        int NO_NETWORK_AVAILABLE =4;

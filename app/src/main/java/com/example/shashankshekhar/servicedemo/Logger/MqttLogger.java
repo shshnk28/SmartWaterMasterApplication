@@ -151,7 +151,7 @@ public class MqttLogger implements MQTTConstants {
             }
         }).start();
     }
-    public static String readFromSharedPrefs (String key ) {
+    private static String readFromSharedPrefs (String key ) {
         SharedPreferences settings = applicationContext.getSharedPreferences(PREFS_NAME,0);
         String userName = settings.getString(key,"Anon");
         if (userName.equals("Anon"))  {
