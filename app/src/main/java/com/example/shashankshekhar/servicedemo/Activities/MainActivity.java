@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
                 // SUBSCRIBE call
                 Message message = Message.obtain(null, SUBSCRIBE_TO_TOPIC);
                 Bundle bundle = new Bundle();
-                bundle.putString("topicName",TEST_TOPIC);
+                bundle.putString("topicName",TEST_TOPIC1);
                 message.setData(bundle);
                 message.replyTo = clientMessenger;
                 try {

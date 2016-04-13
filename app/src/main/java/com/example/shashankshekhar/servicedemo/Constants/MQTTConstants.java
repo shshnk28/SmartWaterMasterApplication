@@ -23,6 +23,7 @@ public interface MQTTConstants {
     String USER_NAME_KEY = "username";
 
     String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
+    String TEST_TOPIC1 = "iisc/smartx/crowd/network/mqttTest1";
 
     // TODO: 31/03/16 PUT THESE IN THE library once integrated
     /* MESSAGE HANDLER CONSTANTS. used when sending message to service to perform some action.Needs to be in the library once it is
