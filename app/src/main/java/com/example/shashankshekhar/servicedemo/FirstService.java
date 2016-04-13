@@ -2,27 +2,22 @@ package com.example.shashankshekhar.servicedemo;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.Handler;
-import android.util.ArraySet;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttConnector;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttReceiver;
-import com.example.shashankshekhar.servicedemo.Mqtt.MqttReconnecter;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttSubscriber;
 import com.example.shashankshekhar.servicedemo.Mqtt.SCMqttClient;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class FirstService extends Service implements MQTTConstants {
@@ -43,7 +38,6 @@ public class FirstService extends Service implements MQTTConstants {
     static final int SUBSCRIPTION_ERROR = 10;
 
     final Messenger messenger = new Messenger(new IncomingHandler());
-    MqttReconnecter reconnecter;
 
     class IncomingHandler extends Handler {
         @Override
@@ -197,11 +191,6 @@ public class FirstService extends Service implements MQTTConstants {
     @Override
     public void onCreate() {
         CommonUtils.printLog("ONCreate called in service");
-        // start ReConnector Thread
-//        CommonUtils.printLog(" FS process id: " + android.os.Process.myPid());
-//        reconnecter  = new MqttReconnecter(getApplicationContext());
-//        reconnecter.setRunReconnectorThread(true);
-//        reconnecter.startReconnectorThread();
         CommonUtils.setClientId(getApplicationContext());
 
     }
@@ -328,13 +317,7 @@ public class FirstService extends Service implements MQTTConstants {
             }
         }).start();
     }
-//    private void writeToSharedPreferences (String key, String val) {
-//        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,0);
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.putString(key,val);
-//        editor.commit();
-//
-//    }
+
 
     /* left for referecne purpose
     private class AsyncCaller extends AsyncTask<Void, Void, Void>
