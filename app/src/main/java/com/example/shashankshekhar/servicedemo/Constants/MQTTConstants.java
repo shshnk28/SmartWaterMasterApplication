@@ -19,8 +19,8 @@ public interface MQTTConstants {
     String PACKAGE_NAME = "com.example.shashankshekhar.servicedemo";
     String SERVICE_NAME = "com.example.shashankshekhar.servicedemo.FirstService";
 
-//    String PREFS_NAME = "MyPrefsFile";
-//    String USER_NAME_KEY = "username";
+    String PREFS_NAME = "MyPrefsFile";
+    String USER_NAME_KEY = "username";
 
     String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
     String TEST_TOPIC1 = "iisc/smartx/crowd/network/mqttTest1";

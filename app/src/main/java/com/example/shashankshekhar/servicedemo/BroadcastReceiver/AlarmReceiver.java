@@ -3,6 +3,7 @@ package com.example.shashankshekhar.servicedemo.BroadcastReceiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
@@ -131,7 +132,7 @@ public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, S
     }
 
     public void writeDataToLogFile(String logString) {
-        String userName = "Shashank";
+        String userName = readFromSharedPrefs(USER_NAME_KEY);
         String dateString = CommonUtils.getCurrentDate();
         String loggerString = dateString + "," + userName + "," + logString;
         if (smartCampusDirectory.exists() == false) {
@@ -150,6 +151,14 @@ public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, S
             CommonUtils.printLog("file write failed in mqtt logfile");
             return;
         }
+    }
+    private  String readFromSharedPrefs (String key) {
+        SharedPreferences settings = appContext.getSharedPreferences(PREFS_NAME,0);
+        String userName = settings.getString(key, "Anon");
+        if (userName.equals("Anon"))  {
+            CommonUtils.printLog("shared prefs is null, returning Anon");
+        }
+        return userName;
     }
 }
 

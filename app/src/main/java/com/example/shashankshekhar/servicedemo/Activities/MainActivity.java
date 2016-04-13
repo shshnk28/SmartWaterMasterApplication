@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -19,7 +20,6 @@ import android.view.View;
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.IncomingHandler;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
-import com.example.shashankshekhar.servicedemo.PublisherService;
 import com.example.shashankshekhar.servicedemo.R;
 import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
     // service callbacks
     @Override
     public void messageReceivedFromService(int number) {
-        CommonUtils.printLog("messageReceivedFromService  in mainActivity" + number);
 //        int MQTT_CONNECTED =1;
 //        int UNABLE_TO_CONNECT =2;
 //        int NO_NETWORK_AVAILABLE =4;
@@ -128,9 +127,9 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
             CommonUtils.showToast(getApplicationContext(), "Pls enter name");
             return;
         }
+        writeToSharedPreferences(USER_NAME_KEY,userName);
         ComponentName componentName = new ComponentName(PACKAGE_NAME, SERVICE_NAME);
         Intent intent = new Intent();
-        intent.putExtra("username", userName);
         intent.setComponent(componentName);
         ComponentName componentName1 = startService(intent);
         Boolean bindSuccess = bindService(intent, serviceConnector, Context.BIND_AUTO_CREATE);
@@ -177,5 +176,13 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
                 CommonUtils.showToast(getApplicationContext(), message);
             }
         });
+    }
+
+    private void writeToSharedPreferences (String key, String val) {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key,val);
+        editor.commit();
+
     }
 }

@@ -57,11 +57,6 @@
         <activity android:name=".Activities.DebugActivity">
         </activity>
 
-        <service
-            android:name=".PublisherService"
-            android:enabled="true"
-            android:exported="false">
-        </service>
     </application>
 
 </manifest>
