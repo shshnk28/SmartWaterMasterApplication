@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.shashankshekhar.servicedemo.BroadcastReceiver.AlarmReceiver;
-import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
+import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;

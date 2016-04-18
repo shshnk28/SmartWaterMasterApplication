@@ -3,15 +3,12 @@ package com.example.shashankshekhar.servicedemo.Mqtt;
 import android.content.Context;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
-import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
+import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
 
 /**
  * Created by shashankshekhar on 11/03/16.

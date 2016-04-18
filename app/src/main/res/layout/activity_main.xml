@@ -16,7 +16,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start Service"
-        android:id="@+id/button4"
         android:onClick="startAndBindService" />
     <!--<Button-->
         <!--android:layout_width="wrap_content"-->
@@ -33,7 +32,16 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Debugging Options"
-        android:id="@+id/button9"
+        android:text="Admin Options"
+        android:onClick="launchAdminScreen"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Debug Options"
         android:onClick="launchDebugScreen"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stats Options"
+        android:onClick="launchStatsScreen"/>
 </LinearLayout>

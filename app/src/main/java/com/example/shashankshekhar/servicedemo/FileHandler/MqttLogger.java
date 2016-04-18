@@ -1,8 +1,7 @@
-package com.example.shashankshekhar.servicedemo.Logger;
+package com.example.shashankshekhar.servicedemo.FileHandler;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Environment;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
@@ -18,7 +17,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Stack;
 import java.util.TimeZone;
 
 /**

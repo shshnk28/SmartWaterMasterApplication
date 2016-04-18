@@ -1,14 +1,12 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
-import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
+import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.TimerPingSender;
-import org.eclipse.paho.client.mqttv3.internal.ClientComms;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /**

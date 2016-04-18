@@ -9,7 +9,7 @@ import android.os.RemoteException;
 import android.os.Handler;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
-import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
+import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttConnector;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttReceiver;
@@ -178,12 +178,7 @@ public class FirstService extends Service implements MQTTConstants {
         }
         else {
 //            intent.putExtra("username", userName);
-            String userName = intent.getStringExtra("username");
-            if (userName != null) {
-                CommonUtils.printLog("username received: " + userName);
-//                writeToSharedPreferences(USER_NAME_KEY,userName);
-            }
-            CommonUtils.printLog("manual start service call userName: " + intent.getStringExtra("username"));
+            CommonUtils.printLog("manual start service call");
         }
         return Service.START_NOT_STICKY;
     }

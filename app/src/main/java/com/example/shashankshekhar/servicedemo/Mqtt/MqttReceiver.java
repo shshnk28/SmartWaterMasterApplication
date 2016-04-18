@@ -1,22 +1,15 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
 import android.content.Context;
-import android.content.Intent;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
-import com.example.shashankshekhar.servicedemo.Logger.MqttLogger;
+import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
 /**
  * Created by shashankshekhar on 09/11/15.
@@ -56,7 +49,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
 //        broadcast.setAction(topic);
 //        appContext.sendBroadcast(broadcast);
         MqttLogger.writeDataToTempLogFile("message arr: " + msg.toString());
-        CommonUtils.printLog("message arrived");
+        CommonUtils.printLog("message arrived: " + msg.toString());
     }
 
 

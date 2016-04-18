@@ -5,16 +5,13 @@ package com.example.shashankshekhar.servicedemo.Constants;
  */
 public interface MQTTConstants {
     /* CONNECTION CONSTANTS */
-//    String CLIENT_ID = "someRandomPerson";
     int QoS = 1;
     String BROKER_ADDRESS_CLOUD = "tcp://smartx.cds.iisc.ac.in:1883";
     String STATIC_BROKER_ADDRESS = "tcp://13.76.132.113:1883";
     String GOOGLE_INDIA = "www.google.co.in";
     String GOOGLE_INDIA_NO_DNS = "8:8:8:8";
-
-
     String USERNAME = "AppUser";
-    String PASSWORD = "scdl@App";
+    String PASSWORD_TEMP = "scdl@App";
 
     String PACKAGE_NAME = "com.example.shashankshekhar.servicedemo";
     String SERVICE_NAME = "com.example.shashankshekhar.servicedemo.FirstService";
@@ -24,6 +21,19 @@ public interface MQTTConstants {
 
     String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
     String TEST_TOPIC1 = "iisc/smartx/crowd/network/mqttTest1";
+
+    // JSON Connection Option constants
+    String BROKER_ADDRESS = "brokerAddress";
+    String PORT_NUM = "portNumber";
+    String USER_NAME = "userName";
+    String PASSWORD = "password";
+    String CONNECTION_TIME_OUT = "connectionTimeOut";
+    String PING_FREQ = "pingFreq";
+    String KEEP_ALIVE = "keepALive";
+    String CLEAN_SESSION = "cleanSession";
+    String SSL_ENABLED = "SslEnabled";
+    String PUBLISH_CONN_LOGS = "publishConnLogs";
+
 
     // TODO: 31/03/16 PUT THESE IN THE library once integrated
     /* MESSAGE HANDLER CONSTANTS. used when sending message to service to perform some action.Needs to be in the library once it is

@@ -17,7 +17,7 @@ public class SCMqttConnectionOptions implements MQTTConstants {
         // TODO: 29/02/16 set the clean session to false if you want to get resubscribed to the old topics   
         connOpts.setCleanSession(false);
         connOpts.setUserName(USERNAME);
-        connOpts.setPassword(PASSWORD.toCharArray());
+        connOpts.setPassword(PASSWORD_TEMP.toCharArray());
         connOpts.setConnectionTimeout(60);
         connOpts.setKeepAliveInterval(20*60);
     }

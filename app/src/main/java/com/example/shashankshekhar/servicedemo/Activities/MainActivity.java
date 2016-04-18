@@ -169,6 +169,15 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
         Intent debugIntent = new Intent(this, DebugActivity.class);
         startActivity(debugIntent);
     }
+    public void launchAdminScreen(View view) {
+        Intent adminIntent = new Intent(this, AdminActivity.class);
+        startActivity(adminIntent);
+    }
+    public void launchStatsScreen(View view) {
+        Intent statsIntent = new Intent(this, StatsActivity.class);
+        startActivity(statsIntent);
+    }
+
 
     private void showToastOnUIThread(final String message) {
         this.runOnUiThread(new Runnable() {
