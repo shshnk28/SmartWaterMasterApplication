@@ -16,8 +16,8 @@
             android:layout_height="wrap_content"
             android:text="Broker Address"/>
         <EditText
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
+            android:id="@+id/brokerAddress"
+            android:layout_width="20dp"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"/>
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="Port"/>
         <EditText
-            android:id="@+id/textView2"
+            android:id="@+id/portNum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:text="User Name"/>
         <EditText
-            android:id="@+id/textView3"
+            android:id="@+id/userName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -46,24 +46,69 @@
             android:layout_height="wrap_content"
             android:text="Password"/>
         <EditText
-            android:id="@+id/textView4"
+            android:id="@+id/pwd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"/>
-        <TextView
-            android:layout_width="wrap_content"
+            android:layout_alignParentTop="true"
+            android:inputType="textPassword">
+            <requestFocus/>
+        </EditText>
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Keep Alive Time"/>
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ping Freq"/>
+            <TextView
+                android:id="@+id/pingFreqTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"/>
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/pingFreq"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Keep Alive Time"/>
+            <TextView
+                android:id="@+id/keepAliveTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"/>
+        </LinearLayout>
+
         <SeekBar
             android:id="@+id/seekKeepAlive"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"/>
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Connection Timeout"/>
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Connection Timeout"/>
+            <TextView
+                android:id="@+id/connectionTO"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"/>
+        </LinearLayout>
         <SeekBar
             android:id="@+id/seekConnTimeOut"
             android:layout_width="fill_parent"
@@ -102,6 +147,12 @@
             android:gravity="center_vertical"
             android:text="Save and Reconnect"
             android:onClick="saveAndReconnect"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Reset"
+            android:onClick="resetConnectionOptions"/>
     </LinearLayout>
 </ScrollView>
 

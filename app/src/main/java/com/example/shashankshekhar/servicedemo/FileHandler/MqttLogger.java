@@ -62,7 +62,7 @@ public class MqttLogger implements MQTTConstants {
 //    }
 
     public static synchronized void writeDataToLogFile(String logString) {
-        String userName = readFromSharedPrefs(USER_NAME_KEY);
+        String userName = readFromSharedPrefs(USER_NAME);
         String dateString = getCurrentDate();
         String loggerString = dateString + "," +userName + ","+ logString;
         if (smartCampusDirectory.exists() == false) {
@@ -158,7 +158,7 @@ public class MqttLogger implements MQTTConstants {
         return userName;
     }
     public static synchronized void writeDataToTempLogFile(String logString) {
-        String userName = readFromSharedPrefs(USER_NAME_KEY);
+        String userName = readFromSharedPrefs(USER_NAME);
         String dateString = getCurrentDate();
         String loggerString = dateString + "," +userName + ","+ logString;
         if (smartCampusDirectory.exists() == false) {
