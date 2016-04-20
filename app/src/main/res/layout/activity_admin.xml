@@ -52,7 +52,6 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:inputType="textPassword">
-            <requestFocus/>
         </EditText>
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,20 +60,25 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ping Freq"/>
-            <TextView
-                android:id="@+id/pingFreqTV"
+                android:text="Keep Alive Time"/>
+            <EditText
+                android:id="@+id/keepAliveTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="20dp"/>
+                android:paddingLeft="20dp"
+                android:inputType="number"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="minutes"
+                android:paddingLeft="5dp"/>
         </LinearLayout>
 
         <SeekBar
-            android:id="@+id/pingFreq"
+            android:id="@+id/seekKeepAlive"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -82,16 +86,23 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Keep Alive Time"/>
-            <TextView
-                android:id="@+id/keepAliveTime"
+                android:text="Ping Freq"/>
+            <EditText
+                android:id="@+id/pingFreqTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="20dp"/>
+                android:paddingLeft="20dp"
+                android:inputType="number"
+                android:gravity="right|bottom"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="minutes"
+                android:paddingLeft="5dp"/>
         </LinearLayout>
 
         <SeekBar
-            android:id="@+id/seekKeepAlive"
+            android:id="@+id/pingFreq"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"/>
@@ -108,6 +119,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:text="seconds"/>
         </LinearLayout>
         <SeekBar
             android:id="@+id/seekConnTimeOut"
@@ -121,8 +137,7 @@
         <CheckBox
             android:id="@+id/cleanSessionCheckbox"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onCheckBoxClicked"/>
+            android:layout_height="wrap_content"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -130,8 +145,7 @@
         <CheckBox
             android:id="@+id/SSLCheckBox"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onCheckBoxClicked"/>
+            android:layout_height="wrap_content"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -139,8 +153,7 @@
         <CheckBox
             android:id="@+id/ConnLogsCheckBox"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onCheckBoxClicked"/>
+            android:layout_height="wrap_content"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

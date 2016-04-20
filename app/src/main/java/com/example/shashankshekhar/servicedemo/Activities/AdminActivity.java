@@ -2,6 +2,8 @@ package com.example.shashankshekhar.servicedemo.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -14,12 +16,15 @@ import com.example.shashankshekhar.servicedemo.R;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 public class AdminActivity extends AppCompatActivity implements MQTTConstants {
+    private static final int PING_FREQ_MAX = 720; // minutes
+    private static final int KEEP_ALIVE_INTERVAL_MAX = 720; // minutes
+    private static final int CONNECTION_TIMEOUT_MAX = 120; // seconds
     private SeekBar keepAliveBar;
     private SeekBar connectionTimeOutBar;
     private SeekBar pingFreqBar;
 
-    private TextView pingFreqTV;
-    private TextView keepAliveTV;
+    private EditText pingFreqTV;
+    private EditText keepAliveTV;
     private TextView connectionTimeOutTV;
 
     private CheckBox cleanSession;
@@ -40,17 +45,68 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
         keepAliveBar = (SeekBar) findViewById(R.id.seekKeepAlive);
         connectionTimeOutBar = (SeekBar) findViewById(R.id.seekConnTimeOut);
         pingFreqBar = (SeekBar) findViewById(R.id.pingFreq);
+
         keepAliveBar.setOnSeekBarChangeListener(new SeekbarListener());
         connectionTimeOutBar.setOnSeekBarChangeListener(new SeekbarListener());
         pingFreqBar.setOnSeekBarChangeListener(new SeekbarListener());
 
+        keepAliveBar.setMax(KEEP_ALIVE_INTERVAL_MAX);
+        connectionTimeOutBar.setMax(CONNECTION_TIMEOUT_MAX);
+        pingFreqBar.setMax(PING_FREQ_MAX);
+
         // set text views
-        pingFreqTV = (TextView) findViewById(R.id.pingFreqTV);
-        pingFreqTV.setText("23");
-        keepAliveTV = (TextView) findViewById(R.id.keepAliveTime);
-        keepAliveTV.setText("11");
+        pingFreqTV = (EditText) findViewById(R.id.pingFreqTV);
+        pingFreqTV.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String txt = pingFreqTV.getText().toString();
+                txt = txt.trim();
+                if (txt == null || txt.isEmpty()) {
+                    return;
+                }
+                if (Integer.parseInt(txt) > PING_FREQ_MAX) {
+                    CommonUtils.showToast(getApplicationContext(),"Ping freq limited to" +PING_FREQ_MAX+ "Minutes");
+                    pingFreqTV.setText("100");
+                    pingFreqBar.setProgress(100);
+                } else {
+                    pingFreqBar.setProgress(Integer.parseInt(txt));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        keepAliveTV = (EditText) findViewById(R.id.keepAliveTime);
+        keepAliveTV.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String txt = keepAliveTV.getText().toString();
+                txt = txt.trim();
+                if (txt == null || txt.isEmpty()) {
+                    return;
+                }
+                if (Integer.parseInt(txt) > KEEP_ALIVE_INTERVAL_MAX) {
+                    CommonUtils.showToast(getApplicationContext(),"Ping freq limited to "+ KEEP_ALIVE_INTERVAL_MAX+" Minutes");
+                    keepAliveTV.setText("100");
+                    keepAliveBar.setProgress(100);
+                    return;
+                }
+                keepAliveBar.setProgress(Integer.parseInt(txt));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         connectionTimeOutTV = (TextView) findViewById(R.id.connectionTO);
-        connectionTimeOutTV.setText("42");
+
         // configure chec boxes
         cleanSession = (CheckBox) findViewById(R.id.cleanSessionCheckbox);
         enableSSL = (CheckBox) findViewById(R.id.SSLCheckBox);
@@ -61,6 +117,8 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
         portNum = (EditText) findViewById(R.id.portNum);
         userName = (EditText) findViewById(R.id.userName);
         pwd = (EditText) findViewById(R.id.pwd);
+
+
 
         // read from json and initialise the fields here as well
     }
@@ -84,41 +142,7 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
     public void resetConnectionOptions(View view) {
         // reload the UI elements from JSON
     }
-
-    //    public void onCheckBoxClicked (View view) {
-//        CheckBox tempCheckBox = null;
-//        String key = null;
-//        /*
-//        String CLEAN_SESSION = "cleanSession";
-//    String SSL_ENABLED = "SslEnabled";
-//    String PUBLISH_CONN_LOGS = "publishConnLogs";
-//         */
-//        switch (view.getId()) {
-//            case R.id.ConnLogsCheckBox:
-//                tempCheckBox = publishConnLogs;
-//                key = PUBLISH_CONN_LOGS;
-//                break;
-//            case R.id.cleanSessionCheckbox:
-//                tempCheckBox = cleanSession;
-//                key = CLEAN_SESSION;
-//                break;
-//            case R.id.SSLCheckBox:
-//                tempCheckBox = enableSSL;
-//                key =  SSL_ENABLED;
-//                break;
-//            default:
-//                break;
-//        }
-//        if (tempCheckBox == null || key == null) {
-//            return;
-//        }
-//        if (tempCheckBox.isChecked()) {
-//            connectionOptions.put(key,"true");
-//        } else {
-//            connectionOptions.put(key, "false");
-//        }
-//    }
-    private void saveFiledstoJsonFile() {
+    private void saveFieldstoJsonFile() {
         String brokerAdd = brokerAddress.getText().toString().trim();
         String port = portNum.getText().toString().trim();
         String username = userName.getText().toString().trim();
@@ -157,7 +181,9 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
     private class SeekbarListener implements SeekBar.OnSeekBarChangeListener {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            // update the textvew here
+            if (!fromUser) {
+                return;
+            }
             if (seekBar.equals(keepAliveBar)) {
                 keepAliveTV.setText(progress + "");
             } else if (seekBar.equals(pingFreqBar)) {
@@ -169,24 +195,10 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-            if (seekBar.equals(keepAliveBar)) {
-
-            } else if (seekBar.equals(pingFreqBar)) {
-
-            } else {
-
-            }
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            if (seekBar.equals(keepAliveBar)) {
-
-            } else if (seekBar.equals(pingFreqBar)) {
-
-            } else {
-
-            }
         }
     }
 }
