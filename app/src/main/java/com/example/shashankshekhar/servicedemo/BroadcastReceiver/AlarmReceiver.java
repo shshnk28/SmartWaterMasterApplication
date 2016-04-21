@@ -127,7 +127,7 @@ public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, S
     }
 
     public void writeDataToLogFile(String logString) {
-        String userName = readFromSharedPrefs(USER_NAME);
+        String userName = readFromSharedPrefs(USER_NAME_KEY);
         String dateString = CommonUtils.getCurrentDate();
         String loggerString = dateString + "," + userName + "," + logString;
         if (smartCampusDirectory.exists() == false) {

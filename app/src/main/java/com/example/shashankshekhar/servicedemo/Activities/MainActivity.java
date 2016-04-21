@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
             CommonUtils.showToast(getApplicationContext(), "Pls enter name");
             return;
         }
-        writeToSharedPreferences(USER_NAME,userName);
+        writeToSharedPreferences(USER_NAME_KEY,userName);
         ComponentName componentName = new ComponentName(PACKAGE_NAME, SERVICE_NAME);
         Intent intent = new Intent();
         intent.setComponent(componentName);

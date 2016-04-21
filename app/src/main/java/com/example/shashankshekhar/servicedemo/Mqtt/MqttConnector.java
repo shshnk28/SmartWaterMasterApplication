@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.shashankshekhar.servicedemo.BroadcastReceiver.AlarmReceiver;
+import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
@@ -19,7 +20,7 @@ import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 /**
  * Created by shashankshekhar on 22/03/16.
  */
-public class MqttConnector {
+public class MqttConnector implements MQTTConstants {
     public static boolean isConnecting;
     private static AlarmManager alarmManager;
     private static PendingIntent pendingIntent;
@@ -124,7 +125,7 @@ public class MqttConnector {
 //        keepAlive/=2;
         Intent intent = new Intent(appContext, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(appContext, 0, intent, 0);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,3*60*1000,3*60*1000,pendingIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, PING_FREQ_VAL, PING_FREQ_VAL,pendingIntent);
 //        CommonUtils.printLog("alarm set with keepalive: " + keepAlive);
         MqttLogger.writeDataToTempLogFile("alarm set");
     }

@@ -9,6 +9,7 @@ import android.os.RemoteException;
 import android.os.Handler;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.FileHandler.ConnOptsJsonHandler;
 import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttConnector;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
@@ -187,6 +188,10 @@ public class FirstService extends Service implements MQTTConstants {
     public void onCreate() {
         CommonUtils.printLog("ONCreate called in service");
         CommonUtils.setClientId(getApplicationContext());
+        /*
+        write the connection options to json
+         */
+        ConnOptsJsonHandler.writeDefaultConnectionSettings();
 
     }
 

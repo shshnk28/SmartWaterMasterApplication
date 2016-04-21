@@ -1,6 +1,7 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.FileHandler.ConnOptsJsonHandler;
 import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
@@ -26,7 +27,9 @@ public class SCMqttClient extends MqttAsyncClient implements MQTTConstants {
          try {
              MemoryPersistence persistence = new MemoryPersistence();
              CommonUtils.printLog("Connecting with client id: " + CommonUtils.getClientId());
-             scMqttClient = new SCMqttClient(BROKER_ADDRESS_CLOUD, CommonUtils.getClientId(),persistence);
+             String brokerAdd = ConnOptsJsonHandler.readFromJsonFile(BROKER_ADDRESS_KEY);
+             String portNum = ConnOptsJsonHandler.readFromJsonFile(PORT_NUM_KEY);
+             scMqttClient = new SCMqttClient(brokerAdd+":"+portNum, CommonUtils.getClientId(),persistence);
 //             pingSender = new TimerPingSender();
 //             clientComms = new ClientComms(scMqttClient,persistence,pingSender);
 //             pingSender.init(clientComms);

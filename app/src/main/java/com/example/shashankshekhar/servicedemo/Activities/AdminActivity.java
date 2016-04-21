@@ -58,22 +58,12 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
         pingFreqTV = (EditText) findViewById(R.id.pingFreqTV);
         pingFreqTV.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String txt = pingFreqTV.getText().toString();
-                txt = txt.trim();
-                if (txt == null || txt.isEmpty()) {
-                    return;
-                }
-                if (Integer.parseInt(txt) > PING_FREQ_MAX) {
-                    CommonUtils.showToast(getApplicationContext(),"Ping freq limited to" +PING_FREQ_MAX+ "Minutes");
-                    pingFreqTV.setText("100");
-                    pingFreqBar.setProgress(100);
-                } else {
-                    pingFreqBar.setProgress(Integer.parseInt(txt));
-                }
+                changeSeekBarAndTextView(pingFreqBar,pingFreqTV,PING_FREQ_MAX);
             }
 
             @Override
@@ -83,26 +73,17 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
         keepAliveTV = (EditText) findViewById(R.id.keepAliveTime);
         keepAliveTV.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String txt = keepAliveTV.getText().toString();
-                txt = txt.trim();
-                if (txt == null || txt.isEmpty()) {
-                    return;
-                }
-                if (Integer.parseInt(txt) > KEEP_ALIVE_INTERVAL_MAX) {
-                    CommonUtils.showToast(getApplicationContext(),"Ping freq limited to "+ KEEP_ALIVE_INTERVAL_MAX+" Minutes");
-                    keepAliveTV.setText("100");
-                    keepAliveBar.setProgress(100);
-                    return;
-                }
-                keepAliveBar.setProgress(Integer.parseInt(txt));
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                changeSeekBarAndTextView(keepAliveBar,keepAliveTV,KEEP_ALIVE_INTERVAL_MAX);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         connectionTimeOutTV = (TextView) findViewById(R.id.connectionTO);
@@ -117,18 +98,11 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
         portNum = (EditText) findViewById(R.id.portNum);
         userName = (EditText) findViewById(R.id.userName);
         pwd = (EditText) findViewById(R.id.pwd);
-
-
-
-        // read from json and initialise the fields here as well
     }
-
     @Override
-    protected void onResume() {
+    public void onResume () {
+        populateUIFromJson();
         super.onResume();
-        /*
-        init it every time the screen loads
-         */
     }
 
     public void saveAndReconnect(View view) {
@@ -136,12 +110,18 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
         write the UI components to json file and reconnect to broker
         implement the connection UI here with connecting dialog
          */
+        saveFieldstoJsonFile();
+        /*
+        use the process dialog here. issue a reconnect call as done in main activity
+         */
 
     }
 
     public void resetConnectionOptions(View view) {
         // reload the UI elements from JSON
+        populateUIFromJson();
     }
+
     private void saveFieldstoJsonFile() {
         String brokerAdd = brokerAddress.getText().toString().trim();
         String port = portNum.getText().toString().trim();
@@ -155,27 +135,31 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
             // call to reset the fields
             return;
         }
-        ConnOptsJsonHandler.writeToJsonFile(BROKER_ADDRESS, brokerAdd);
-        ConnOptsJsonHandler.writeToJsonFile(PORT_NUM, port);
-        ConnOptsJsonHandler.writeToJsonFile(USER_NAME, username);
-        ConnOptsJsonHandler.writeToJsonFile(PASSWORD, pwdtemp);
+        ConnOptsJsonHandler.initJsonWriter();
+        ConnOptsJsonHandler.writeToJsonFile(BROKER_ADDRESS_KEY, brokerAdd);
+        ConnOptsJsonHandler.writeToJsonFile(PORT_NUM_KEY, port);
+        ConnOptsJsonHandler.writeToJsonFile(USER_NAME_KEY, username);
+        ConnOptsJsonHandler.writeToJsonFile(PASSWORD_KEY, pwdtemp);
 
         String keepAlive = keepAliveBar.getProgress() + "";
         String connectionTO = connectionTimeOutBar.getProgress() + "";
         String pingfreq = pingFreqBar.getProgress() + "";
         if (pingFreqBar.getProgress() > keepAliveBar.getProgress()) {
-            CommonUtils.showToast(getApplicationContext(), "ping freq should be less than keep alive ");
+            CommonUtils.showToast(getApplicationContext(), "ping freq should be less than keep alive. Retry");
+            ConnOptsJsonHandler.closeJsonFile();
+            return;
         }
-        ConnOptsJsonHandler.writeToJsonFile(KEEP_ALIVE, keepAlive);
-        ConnOptsJsonHandler.writeToJsonFile(CONNECTION_TIME_OUT, connectionTO);
-        ConnOptsJsonHandler.writeToJsonFile(PING_FREQ, pingfreq);
+        ConnOptsJsonHandler.writeToJsonFile(KEEP_ALIVE_KEY, keepAlive);
+        ConnOptsJsonHandler.writeToJsonFile(CONNECTION_TIME_OUT_KEY, connectionTO);
+        ConnOptsJsonHandler.writeToJsonFile(PING_FREQ_KEY, pingfreq);
 
         String ssl = enableSSL.isChecked() + "";
         String session = cleanSession.isChecked() + "";
         String connLogs = publishConnLogs.isChecked() + "";
-        ConnOptsJsonHandler.writeToJsonFile(SSL_ENABLED, ssl);
-        ConnOptsJsonHandler.writeToJsonFile(CLEAN_SESSION, session);
-        ConnOptsJsonHandler.writeToJsonFile(PUBLISH_CONN_LOGS, connLogs);
+        ConnOptsJsonHandler.writeToJsonFile(SSL_ENABLED_KEY, ssl);
+        ConnOptsJsonHandler.writeToJsonFile(CLEAN_SESSION_KEY, session);
+        ConnOptsJsonHandler.writeToJsonFile(PUBLISH_CONN_LOGS_KEY, connLogs);
+        ConnOptsJsonHandler.closeJsonFile();
     }
 
     private class SeekbarListener implements SeekBar.OnSeekBarChangeListener {
@@ -192,13 +176,40 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
                 connectionTimeOutTV.setText(progress + "");
             }
         }
-
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
         }
-
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
         }
+    }
+    private void changeSeekBarAndTextView (SeekBar seekBar,TextView textView, int interval) {
+        String txt = textView.getText().toString();
+        txt = txt.trim();
+        if (txt == null || txt.isEmpty()) {
+            return;
+        }
+        if (Integer.parseInt(txt) > interval) {
+            CommonUtils.showToast(getApplicationContext(), "Ping freq limited to " + interval + " Minutes");
+            textView.setText("100");
+            seekBar.setProgress(100);
+            return;
+        }
+        seekBar.setProgress(Integer.parseInt(txt));
+    }
+    private void populateUIFromJson () {
+        brokerAddress.setText(ConnOptsJsonHandler.readFromJsonFile(BROKER_ADDRESS_KEY));
+        portNum.setText(ConnOptsJsonHandler.readFromJsonFile(PORT_NUM_KEY));
+        userName.setText(ConnOptsJsonHandler.readFromJsonFile(USER_NAME_KEY));
+        pwd.setText(ConnOptsJsonHandler.readFromJsonFile(PASSWORD_KEY));
+
+        keepAliveTV.setText(ConnOptsJsonHandler.readFromJsonFile(KEEP_ALIVE_KEY));
+        pingFreqTV.setText(ConnOptsJsonHandler.readFromJsonFile(PING_FREQ_KEY));
+        connectionTimeOutTV.setText(ConnOptsJsonHandler.readFromJsonFile(CONNECTION_TIME_OUT_KEY));
+        connectionTimeOutBar.setProgress(Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(CONNECTION_TIME_OUT_KEY)));
+
+        cleanSession.setChecked(Boolean.valueOf(ConnOptsJsonHandler.readFromJsonFile(CLEAN_SESSION_KEY)));
+        enableSSL.setChecked(Boolean.valueOf(ConnOptsJsonHandler.readFromJsonFile(SSL_ENABLED_KEY)));
+        publishConnLogs.setChecked(Boolean.valueOf(ConnOptsJsonHandler.readFromJsonFile(PUBLISH_CONN_LOGS_KEY)));
     }
 }

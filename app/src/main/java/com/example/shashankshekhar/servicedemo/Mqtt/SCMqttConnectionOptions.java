@@ -1,6 +1,7 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.FileHandler.ConnOptsJsonHandler;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -15,11 +16,11 @@ public class SCMqttConnectionOptions implements MQTTConstants {
     private static void initialiseConnectionOptions () {
         connOpts = new MqttConnectOptions();
         // TODO: 29/02/16 set the clean session to false if you want to get resubscribed to the old topics   
-        connOpts.setCleanSession(false);
-        connOpts.setUserName(USERNAME);
-        connOpts.setPassword(PASSWORD_TEMP.toCharArray());
-        connOpts.setConnectionTimeout(60);
-        connOpts.setKeepAliveInterval(20*60);
+        connOpts.setCleanSession(Boolean.getBoolean(ConnOptsJsonHandler.readFromJsonFile(CLEAN_SESSION_KEY)));
+        connOpts.setUserName(ConnOptsJsonHandler.readFromJsonFile(USER_NAME_KEY));
+        connOpts.setPassword(ConnOptsJsonHandler.readFromJsonFile(PASSWORD_KEY).toString().toCharArray());
+        connOpts.setConnectionTimeout(Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(CONNECTION_TIME_OUT_KEY)));
+        connOpts.setKeepAliveInterval(Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(KEEP_ALIVE_KEY)));
     }
     public static MqttConnectOptions getConnectionOptions () {
         if (connOpts == null) {

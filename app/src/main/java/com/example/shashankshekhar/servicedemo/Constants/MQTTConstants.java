@@ -1,38 +1,57 @@
 package com.example.shashankshekhar.servicedemo.Constants;
 
+import android.os.Environment;
+
+import java.io.File;
+
 /**
  * Created by shashankshekhar on 06/11/15.
  */
 public interface MQTTConstants {
     /* CONNECTION CONSTANTS */
     int QoS = 1;
-    String BROKER_ADDRESS_CLOUD = "tcp://smartx.cds.iisc.ac.in:1883";
     String STATIC_BROKER_ADDRESS = "tcp://13.76.132.113:1883";
     String GOOGLE_INDIA = "www.google.co.in";
     String GOOGLE_INDIA_NO_DNS = "8:8:8:8";
-    String USERNAME = "AppUser";
-    String PASSWORD_TEMP = "scdl@App";
+
+
+    // JSON Connection Option keys
+    String BROKER_ADDRESS_KEY = "brokerAddress";
+    String PORT_NUM_KEY = "portNumber";
+    String USER_NAME_KEY = "userName";
+    String PASSWORD_KEY = "password";
+    String CONNECTION_TIME_OUT_KEY = "connectionTimeOut";
+    String PING_FREQ_KEY = "pingFreq";
+    String KEEP_ALIVE_KEY = "keepALive";
+    String CLEAN_SESSION_KEY = "cleanSession";
+    String SSL_ENABLED_KEY = "SslEnabled";
+    String PUBLISH_CONN_LOGS_KEY = "publishConnLogs";
+
+    // JSON Connection Option values
+    String BROKER_ADDRESS_VAL = "tcp://smartx.cds.iisc.ac.in";
+    String PORT_NUM_VAL = "1883";
+    String USER_NAME_VAL = "AppUser";
+    String PASSWORD_VAL = "scdl@App";
+    int CONNECTION_TIMEOUT_VAL = 60; // seconds
+    int KEEP_ALIVE_INTERVAL_VAL = 20*60; // seconds
+    int PING_FREQ_VAL = 3*60*1000; // milliseconds
+    boolean CLEAN_SESSION_VAL = false;
+    boolean SSL_ENABLED_VAL = false;
+    boolean PUBLISH_CONN_LOGS_VAL = false;
+
 
     String PACKAGE_NAME = "com.example.shashankshekhar.servicedemo";
     String SERVICE_NAME = "com.example.shashankshekhar.servicedemo.FirstService";
 
+
+    String SMART_CAMPUS_FOLDER_NAME = "SmartCampus";
+    File smartCampusDirectory = new File(Environment.getExternalStorageDirectory(), SMART_CAMPUS_FOLDER_NAME);
+
     String PREFS_NAME = "MyPrefsFile";
-//    String USER_NAME_KEY = "username";
+//    String USER_NAME_VAL = "username";
 
     String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
     String TEST_TOPIC1 = "iisc/smartx/crowd/network/mqttTest1";
-
-    // JSON Connection Option constants
-    String BROKER_ADDRESS = "brokerAddress";
-    String PORT_NUM = "portNumber";
-    String USER_NAME = "userName";
-    String PASSWORD = "password";
-    String CONNECTION_TIME_OUT = "connectionTimeOut";
-    String PING_FREQ = "pingFreq";
-    String KEEP_ALIVE = "keepALive";
-    String CLEAN_SESSION = "cleanSession";
-    String SSL_ENABLED = "SslEnabled";
-    String PUBLISH_CONN_LOGS = "publishConnLogs";
 
 
     // TODO: 31/03/16 PUT THESE IN THE library once integrated

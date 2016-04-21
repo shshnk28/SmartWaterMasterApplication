@@ -19,7 +19,7 @@ public class ConnectivityCheck implements MQTTConstants {
     static int PORT_NUM = 1883;
 
     private Context appContext;
-    //    String BROKER_ADDRESS_CLOUD = "tcp://smartx.cds.iisc.ac.in:1883";
+    //    String BROKER_ADDRESS_VAL = "tcp://smartx.cds.iisc.ac.in:1883";
 //    String STATIC_BROKER_ADDRESS = "tcp://13.76.132.113:1883";
 
     /*

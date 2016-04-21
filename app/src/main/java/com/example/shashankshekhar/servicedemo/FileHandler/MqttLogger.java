@@ -2,7 +2,6 @@ package com.example.shashankshekhar.servicedemo.FileHandler;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttPublisher;
@@ -23,14 +22,11 @@ import java.util.TimeZone;
  * Created by shashankshekhar on 10/03/16.
  */
 public class MqttLogger implements MQTTConstants {
-    private static final String SMART_CAMPUS_FOLDER_NAME = "SmartCampus";
     private static final String SMART_CAMPUS_LOG_FILE_NAME = "SmartCampusLog.txt";
     private static final String MOBILE_TELEMETRY_TOPIC_NAME =  "iisc/smartx/mobile/telemetry/data";
     private static final String MOBILE_TELEMETRY_EVENT_NAME = "Mobile Telemetry";
     private static final String TEST_TOPIC = "iisc/smartx/crowd/network/mqttTest";
     private static Context applicationContext;
-    private static File smartCampusDirectory = new File(Environment.getExternalStorageDirectory(), SMART_CAMPUS_FOLDER_NAME);
-
 
     // temp
     private static final String SMART_CAMPUS_LOG_FILE_NAME2 = "FromBGService.txt";
@@ -62,7 +58,7 @@ public class MqttLogger implements MQTTConstants {
 //    }
 
     public static synchronized void writeDataToLogFile(String logString) {
-        String userName = readFromSharedPrefs(USER_NAME);
+        String userName = readFromSharedPrefs(USER_NAME_KEY);
         String dateString = getCurrentDate();
         String loggerString = dateString + "," +userName + ","+ logString;
         if (smartCampusDirectory.exists() == false) {
@@ -158,7 +154,7 @@ public class MqttLogger implements MQTTConstants {
         return userName;
     }
     public static synchronized void writeDataToTempLogFile(String logString) {
-        String userName = readFromSharedPrefs(USER_NAME);
+        String userName = readFromSharedPrefs(USER_NAME_KEY);
         String dateString = getCurrentDate();
         String loggerString = dateString + "," +userName + ","+ logString;
         if (smartCampusDirectory.exists() == false) {
