@@ -13,10 +13,14 @@
         android:layout_marginTop="18dp"
         android:hint="enter your name"
         android:text="shashank"/>
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start Service"
+        android:clickable="true"
+        android:textColor="#FF0080FF"
+        android:textSize="15dp"
+        android:padding="17dp"
         android:onClick="startAndBindService" />
     <!--<Button-->
         <!--android:layout_width="wrap_content"-->
@@ -30,24 +34,44 @@
         <!--android:text="Try Reconnecting"-->
         <!--android:id="@+id/button8"-->
         <!--android:onClick="showDialogAndConnectToMqtt" />-->
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Admin Options"
+        android:clickable="true"
+        android:textColor="#FF0080FF"
+        android:textSize="15dp"
+        android:padding="17dp"
         android:onClick="launchAdminScreen"/>
-    <Button
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#c0c0c0"/>
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pub Sub"
+        android:clickable="true"
+        android:textColor="#FF0080FF"
+        android:textSize="15dp"
+        android:padding="20dp"
         android:onClick="launchPubSubScreen"/>
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Debug Options"
+        android:clickable="true"
+        android:textColor="#FF0080FF"
+        android:textSize="15dp"
+        android:padding="20dp"
         android:onClick="launchDebugScreen"/>
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Stats Options"
+        android:clickable="true"
+        android:textColor="#FF0080FF"
+        android:textSize="15dp"
+        android:padding="20dp"
         android:onClick="launchStatsScreen"/>
 </LinearLayout>

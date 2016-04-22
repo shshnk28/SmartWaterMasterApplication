@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
         startActivity(statsIntent);
     }
     public void launchPubSubScreen(View view) {
-        Intent pubsubIntent = new Intent(this, StatsActivity.class);
+        Intent pubsubIntent = new Intent(this, PubSubActivity.class);
         startActivity(pubsubIntent);
     }
 

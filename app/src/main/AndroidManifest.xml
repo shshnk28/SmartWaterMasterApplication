@@ -54,11 +54,13 @@
 
         <activity android:name=".Activities.DebugActivity">
         </activity>
-        <activity android:name=".Activities.AdminActivity"
+        <activity
+            android:name=".Activities.AdminActivity"
             android:windowSoftInputMode="stateHidden">
-
         </activity>
         <activity android:name=".Activities.StatsActivity">
+        </activity>
+        <activity android:name=".Activities.PubSubActivity">
         </activity>
     </application>
 
