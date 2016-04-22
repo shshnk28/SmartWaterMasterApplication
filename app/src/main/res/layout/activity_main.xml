@@ -11,7 +11,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="18dp"
-        android:hint="enter your name" />
+        android:hint="enter your name"
+        android:text="shashank"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,6 +35,11 @@
         android:layout_height="wrap_content"
         android:text="Admin Options"
         android:onClick="launchAdminScreen"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pub Sub"
+        android:onClick="launchPubSubScreen"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

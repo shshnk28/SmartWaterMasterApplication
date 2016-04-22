@@ -130,30 +130,66 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"/>
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Clean Session"/>
-        <CheckBox
-            android:id="@+id/cleanSessionCheckbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_width="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clean Session"
+                android:paddingBottom="20dp"/>
+            <!--<CheckBox-->
+                <!--android:id="@+id/cleanSessionCheckbox"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"/>-->
+            <Switch
+                android:id="@+id/cleanSessionSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:paddingRight="20dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Enable SSL"/>
-        <CheckBox
-            android:id="@+id/SSLCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_width="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enable SSL"
+                android:paddingBottom="20dp"/>
+            <!--<CheckBox-->
+                <!--android:id="@+id/SSLCheckBox"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"/>-->
+            <Switch
+                android:id="@+id/SSLSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:paddingRight="20dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Publish Connection Logs"/>
-        <CheckBox
-            android:id="@+id/ConnLogsCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Publish Connection Logs"
+                android:paddingBottom="20dp"/>
+            <!--<CheckBox-->
+                <!--android:id="@+id/ConnLogsCheckBox"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"/>-->
+            <Switch
+                android:id="@+id/ConnLogsSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingRight="20dp"
+                android:layout_gravity="right"/>
+        </LinearLayout>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

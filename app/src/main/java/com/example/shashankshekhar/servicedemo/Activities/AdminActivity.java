@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
@@ -34,9 +35,9 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
     private EditText keepAliveTV;
     private TextView connectionTimeOutTV;
 
-    private CheckBox cleanSession;
-    private CheckBox enableSSL;
-    private CheckBox publishConnLogs;
+    private Switch cleanSession;
+    private Switch enableSSL;
+    private Switch publishConnLogs;
 
     private EditText brokerAddress;
     private EditText portNum;
@@ -98,9 +99,9 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
         connectionTimeOutTV = (TextView) findViewById(R.id.connectionTO);
 
         // configure chec boxes
-        cleanSession = (CheckBox) findViewById(R.id.cleanSessionCheckbox);
-        enableSSL = (CheckBox) findViewById(R.id.SSLCheckBox);
-        publishConnLogs = (CheckBox) findViewById(R.id.ConnLogsCheckBox);
+        cleanSession = (Switch) findViewById(R.id.cleanSessionSwitch);
+        enableSSL = (Switch) findViewById(R.id.SSLSwitch);
+        publishConnLogs = (Switch) findViewById(R.id.ConnLogsSwitch);
 
         // configure edit texts
         brokerAddress = (EditText) findViewById(R.id.brokerAddress);
@@ -121,6 +122,8 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
         write the UI components to json file and reconnect to broker
         implement the connection UI here with connecting dialog
          */
+        connectingDialog = ProgressDialog.show(this, "Please Wait...", "Reconnecting");
+        connectingDialog.setCancelable(false);
         saveFieldstoJsonFile();
         disconnectMqtt();
 
@@ -130,32 +133,38 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
 
     }
     public void messageReceivedFromService(int number) {
-        connectingDialog.dismiss();
-        String toastStr;
+        String toastStr = null;
         switch (number) {
             case MQTT_CONNECTED:
-                toastStr = "Not Connected";
+                toastStr = "Connected";
+                connectingDialog.dismiss();
                 break;
             case UNABLE_TO_CONNECT:
                 toastStr = "Not Connected";
+                connectingDialog.dismiss();
                 break;
             case NO_NETWORK_AVAILABLE:
                 toastStr = "No network";
+                connectingDialog.dismiss();
                 break;
             case MQTT_CONNECTION_IN_PROGRESS:
                 toastStr = "Connection in progress";
+                connectingDialog.dismiss();
                 break;
-            case MQTT_NOT_CONNECTED:
-                toastStr = "Mqtt Not Connected";
+            case DISCONNECT_SUCCESS:
+                CommonUtils.printLog("mqtt disconnected before reconnecting");
+                connectMqtt();// start the reconnection
                 break;
             default:
                 toastStr = "switch case unknown";
         }
-        CommonUtils.showToast(getApplicationContext(),toastStr);
+        if (toastStr!=null) {
+            CommonUtils.showToast(getApplicationContext(),toastStr);
+        }
+
     }
     @Override
     public void serviceConnected() {
-        showDialogAndConnectToMqtt();
     }
 
     @Override
@@ -178,7 +187,17 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
                 username == null || username.isEmpty() ||
                 pwdtemp == null || pwdtemp.isEmpty()) {
             CommonUtils.showToast(getApplicationContext(), "Enter a valid field in text");
-            // call to reset the fields
+            resetConnectionOptions(null);
+            return;
+        }
+
+
+        String keepAlive = keepAliveBar.getProgress() + "";
+        String connectionTO = connectionTimeOutBar.getProgress() + "";
+        String pingfreq = pingFreqBar.getProgress() + "";
+        if (pingFreqBar.getProgress() > keepAliveBar.getProgress()) {
+            CommonUtils.showToast(getApplicationContext(), "ping freq should be less than keep alive. Retry");
+            resetConnectionOptions(null);
             return;
         }
         ConnOptsJsonHandler.initJsonWriter();
@@ -187,14 +206,6 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
         ConnOptsJsonHandler.writeToJsonFile(USER_NAME_KEY, username);
         ConnOptsJsonHandler.writeToJsonFile(PASSWORD_KEY, pwdtemp);
 
-        String keepAlive = keepAliveBar.getProgress() + "";
-        String connectionTO = connectionTimeOutBar.getProgress() + "";
-        String pingfreq = pingFreqBar.getProgress() + "";
-        if (pingFreqBar.getProgress() > keepAliveBar.getProgress()) {
-            CommonUtils.showToast(getApplicationContext(), "ping freq should be less than keep alive. Retry");
-            ConnOptsJsonHandler.closeJsonFile();
-            return;
-        }
         ConnOptsJsonHandler.writeToJsonFile(KEEP_ALIVE_KEY, keepAlive);
         ConnOptsJsonHandler.writeToJsonFile(CONNECTION_TIME_OUT_KEY, connectionTO);
         ConnOptsJsonHandler.writeToJsonFile(PING_FREQ_KEY, pingfreq);
@@ -244,6 +255,10 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
         seekBar.setProgress(Integer.parseInt(txt));
     }
     private void populateUIFromJson () {
+        if (ConnOptsJsonHandler.doesConfigFileExists() == false) {
+            CommonUtils.showToast(getApplicationContext(),"confing file missing.Restart app");
+            return;
+        }
         brokerAddress.setText(ConnOptsJsonHandler.readFromJsonFile(BROKER_ADDRESS_KEY));
         portNum.setText(ConnOptsJsonHandler.readFromJsonFile(PORT_NUM_KEY));
         userName.setText(ConnOptsJsonHandler.readFromJsonFile(USER_NAME_KEY));
@@ -258,17 +273,18 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
         enableSSL.setChecked(Boolean.valueOf(ConnOptsJsonHandler.readFromJsonFile(SSL_ENABLED_KEY)));
         publishConnLogs.setChecked(Boolean.valueOf(ConnOptsJsonHandler.readFromJsonFile(PUBLISH_CONN_LOGS_KEY)));
     }
-    private void showDialogAndConnectToMqtt( ) {
+    private boolean isServiceRunning( ) {
         if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false) {
             CommonUtils.printLog("service not connected .. returning");
             CommonUtils.showToast(getApplicationContext(), "Service not running");
-            return;
+            return false;
         }
-        connectingDialog = ProgressDialog.show(this, "Please Wait...", "Connecting to broker");
-        connectingDialog.setCancelable(false);
-        connectMqtt();
+        return true;
     }
     private void connectMqtt() {
+        if (isServiceRunning() == false) {
+            return;
+        }
         Message message = Message.obtain(null, CONNECT_MQTT);
         message.replyTo = clientMessenger;
         try {
@@ -279,6 +295,12 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
         }
     }
     private void disconnectMqtt () {
+        if (isServiceRunning() == false) {
+            if (connectingDialog.isShowing()) {
+                connectingDialog.dismiss();
+            }
+            return;
+        }
         Message message = Message.obtain(null, DISCONNECT_MQTT);
         message.replyTo = clientMessenger;
         try {

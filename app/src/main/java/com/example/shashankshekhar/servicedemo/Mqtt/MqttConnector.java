@@ -122,9 +122,6 @@ public class MqttConnector implements MQTTConstants {
          */
         CommonUtils.printLog(" process id when setting alarm: " + android.os.Process.myPid());
         alarmManager = (AlarmManager)appContext.getSystemService(Context.ALARM_SERVICE);
-//        MqttConnectOptions connectionOptions = SCMqttConnectionOptions.getConnectionOptions();
-//        int keepAlive = connectionOptions.getKeepAliveInterval();
-//        keepAlive/=2;
         Intent intent = new Intent(appContext, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(appContext, 0, intent, 0);
         CommonUtils.printLog("reading form json");
@@ -132,7 +129,6 @@ public class MqttConnector implements MQTTConstants {
         pingFreq *=60 *1000; // converting the val from minutes to millisec
         CommonUtils.printLog("setting alarm: " + pingFreq);
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, pingFreq, pingFreq,pendingIntent);
-
         MqttLogger.writeDataToTempLogFile("alarm set");
     }
     public static void cancelAlarm () {

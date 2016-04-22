@@ -151,6 +151,7 @@ public class FirstService extends Service implements MQTTConstants {
                         return;
                     }
                     MqttConnector.disconnectMqtt();
+                    sendMessageToClient(message.replyTo,DISCONNECT_SUCCESS);
                     break;
                 default:
                     CommonUtils.printLog("unknown message received from client");
