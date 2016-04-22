@@ -4,9 +4,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.IntegerRes;
 
 import com.example.shashankshekhar.servicedemo.BroadcastReceiver.AlarmReceiver;
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.FileHandler.ConnOptsJsonHandler;
 import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
@@ -125,8 +127,12 @@ public class MqttConnector implements MQTTConstants {
 //        keepAlive/=2;
         Intent intent = new Intent(appContext, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(appContext, 0, intent, 0);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, PING_FREQ_VAL, PING_FREQ_VAL,pendingIntent);
-//        CommonUtils.printLog("alarm set with keepalive: " + keepAlive);
+        CommonUtils.printLog("reading form json");
+        int pingFreq = Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(PING_FREQ_KEY));
+        pingFreq *=60 *1000; // converting the val from minutes to millisec
+        CommonUtils.printLog("setting alarm: " + pingFreq);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, pingFreq, pingFreq,pendingIntent);
+
         MqttLogger.writeDataToTempLogFile("alarm set");
     }
     public static void cancelAlarm () {

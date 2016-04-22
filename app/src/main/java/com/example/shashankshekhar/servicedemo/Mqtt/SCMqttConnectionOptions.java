@@ -19,8 +19,12 @@ public class SCMqttConnectionOptions implements MQTTConstants {
         connOpts.setCleanSession(Boolean.getBoolean(ConnOptsJsonHandler.readFromJsonFile(CLEAN_SESSION_KEY)));
         connOpts.setUserName(ConnOptsJsonHandler.readFromJsonFile(USER_NAME_KEY));
         connOpts.setPassword(ConnOptsJsonHandler.readFromJsonFile(PASSWORD_KEY).toString().toCharArray());
-        connOpts.setConnectionTimeout(Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(CONNECTION_TIME_OUT_KEY)));
-        connOpts.setKeepAliveInterval(Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(KEEP_ALIVE_KEY)));
+        int connectionTO = Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(CONNECTION_TIME_OUT_KEY));
+        connectionTO*=60; // minutes to sec
+        connOpts.setConnectionTimeout(connectionTO);
+        int keepAlive  = Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(KEEP_ALIVE_KEY));
+        keepAlive*=60;
+        connOpts.setKeepAliveInterval(keepAlive);
     }
     public static MqttConnectOptions getConnectionOptions () {
         if (connOpts == null) {

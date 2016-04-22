@@ -1,5 +1,9 @@
 package com.example.shashankshekhar.servicedemo.Activities;
 
+import android.app.ProgressDialog;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,10 +16,13 @@ import android.widget.TextView;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.FileHandler.ConnOptsJsonHandler;
+import com.example.shashankshekhar.servicedemo.IncomingHandler;
+import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.R;
+import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
-public class AdminActivity extends AppCompatActivity implements MQTTConstants {
+public class AdminActivity extends AppCompatActivity implements MQTTConstants,ServiceCallback {
     private static final int PING_FREQ_MAX = 720; // minutes
     private static final int KEEP_ALIVE_INTERVAL_MAX = 720; // minutes
     private static final int CONNECTION_TIMEOUT_MAX = 120; // seconds
@@ -36,7 +43,9 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
     private EditText userName;
     private EditText pwd;
 
-    //    private HashMap<String,String> connectionOptions;
+    ProgressDialog connectingDialog;
+    Messenger clientMessenger;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +107,8 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
         portNum = (EditText) findViewById(R.id.portNum);
         userName = (EditText) findViewById(R.id.userName);
         pwd = (EditText) findViewById(R.id.pwd);
+
+        clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(), this));
     }
     @Override
     public void onResume () {
@@ -111,10 +122,45 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
         implement the connection UI here with connecting dialog
          */
         saveFieldstoJsonFile();
+        disconnectMqtt();
+
         /*
         use the process dialog here. issue a reconnect call as done in main activity
          */
 
+    }
+    public void messageReceivedFromService(int number) {
+        connectingDialog.dismiss();
+        String toastStr;
+        switch (number) {
+            case MQTT_CONNECTED:
+                toastStr = "Not Connected";
+                break;
+            case UNABLE_TO_CONNECT:
+                toastStr = "Not Connected";
+                break;
+            case NO_NETWORK_AVAILABLE:
+                toastStr = "No network";
+                break;
+            case MQTT_CONNECTION_IN_PROGRESS:
+                toastStr = "Connection in progress";
+                break;
+            case MQTT_NOT_CONNECTED:
+                toastStr = "Mqtt Not Connected";
+                break;
+            default:
+                toastStr = "switch case unknown";
+        }
+        CommonUtils.showToast(getApplicationContext(),toastStr);
+    }
+    @Override
+    public void serviceConnected() {
+        showDialogAndConnectToMqtt();
+    }
+
+    @Override
+    public void serviceDisconnected() {
+        CommonUtils.printLog("service disconnecetd");
     }
 
     public void resetConnectionOptions(View view) {
@@ -211,5 +257,35 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants {
         cleanSession.setChecked(Boolean.valueOf(ConnOptsJsonHandler.readFromJsonFile(CLEAN_SESSION_KEY)));
         enableSSL.setChecked(Boolean.valueOf(ConnOptsJsonHandler.readFromJsonFile(SSL_ENABLED_KEY)));
         publishConnLogs.setChecked(Boolean.valueOf(ConnOptsJsonHandler.readFromJsonFile(PUBLISH_CONN_LOGS_KEY)));
+    }
+    private void showDialogAndConnectToMqtt( ) {
+        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false) {
+            CommonUtils.printLog("service not connected .. returning");
+            CommonUtils.showToast(getApplicationContext(), "Service not running");
+            return;
+        }
+        connectingDialog = ProgressDialog.show(this, "Please Wait...", "Connecting to broker");
+        connectingDialog.setCancelable(false);
+        connectMqtt();
+    }
+    private void connectMqtt() {
+        Message message = Message.obtain(null, CONNECT_MQTT);
+        message.replyTo = clientMessenger;
+        try {
+            SCServiceConnector.messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            CommonUtils.printLog("remote Exception,Could not send message");
+        }
+    }
+    private void disconnectMqtt () {
+        Message message = Message.obtain(null, DISCONNECT_MQTT);
+        message.replyTo = clientMessenger;
+        try {
+            SCServiceConnector.messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            CommonUtils.printLog("remote Exception,Could not send message");
+        }
     }
 }

@@ -18,6 +18,8 @@ import com.example.shashankshekhar.servicedemo.Mqtt.MqttSubscriber;
 import com.example.shashankshekhar.servicedemo.Mqtt.SCMqttClient;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,6 +31,7 @@ public class FirstService extends Service implements MQTTConstants {
     static final int NO_NETWORK_AVAILABLE = 4;
     static final int MQTT_CONNECTION_IN_PROGRESS = 5;
     static final int MQTT_NOT_CONNECTED = 6;
+    static final int DISCONNECT_SUCCESS= 11;
 
     // publish status
     static final int TOPIC_PUBLISHED = 7;
@@ -141,6 +144,13 @@ public class FirstService extends Service implements MQTTConstants {
                     ConnectToMqtt connectToMqtt = new ConnectToMqtt(message.replyTo);
                     Thread mqttConnector = new Thread(connectToMqtt);
                     mqttConnector.start();
+                    break;
+                case DISCONNECT_MQTT: // disconnect mqtt
+                    if (message.replyTo == null) {
+                        sendMessageToClient(message.replyTo, UNABLE_TO_CONNECT);
+                        return;
+                    }
+                    MqttConnector.disconnectMqtt();
                     break;
                 default:
                     CommonUtils.printLog("unknown message received from client");
@@ -285,7 +295,6 @@ public class FirstService extends Service implements MQTTConstants {
             CommonUtils.printLog("manual connection req initiated");
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             intiateMqttConnection(true, clientMessenger);
-            CommonUtils.printLog("manual connection req returned");
         }
     }
 

@@ -32,9 +32,9 @@ public interface MQTTConstants {
     String PORT_NUM_VAL = "1883";
     String USER_NAME_VAL = "AppUser";
     String PASSWORD_VAL = "scdl@App";
-    int CONNECTION_TIMEOUT_VAL = 60; // seconds
-    int KEEP_ALIVE_INTERVAL_VAL = 20*60; // seconds
-    int PING_FREQ_VAL = 3*60*1000; // milliseconds
+    int CONNECTION_TIMEOUT_VAL = 2; //minutes
+    int KEEP_ALIVE_INTERVAL_VAL = 20; // minutes
+    int PING_FREQ_VAL = 3; // minutes
     boolean CLEAN_SESSION_VAL = false;
     boolean SSL_ENABLED_VAL = false;
     boolean PUBLISH_CONN_LOGS_VAL = false;
@@ -63,15 +63,18 @@ public interface MQTTConstants {
     int CHECK_SERVICE = 6;
     int CHECK_MQTT_CONNECTION = 7;
     int CONNECT_MQTT = 8;
+    int DISCONNECT_MQTT = 9;
 
     /* these are returned from service as a a response to the above requests. Needs to be in the library once it is
     integrated.*/
+
     // connection status
     int MQTT_CONNECTED =1;
     int UNABLE_TO_CONNECT =2;
     int NO_NETWORK_AVAILABLE =4;
     int MQTT_CONNECTION_IN_PROGRESS = 5;
     int MQTT_NOT_CONNECTED = 6;
+    int DISCONNECT_SUCCESS= 11;
 
     // publish status
     int TOPIC_PUBLISHED = 7;
