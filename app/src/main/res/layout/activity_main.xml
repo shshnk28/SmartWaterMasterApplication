@@ -14,64 +14,28 @@
         android:hint="enter your name"
         android:text="shashank"/>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="Start Service"
-        android:clickable="true"
-        android:textColor="#FF0080FF"
-        android:textSize="15dp"
-        android:padding="17dp"
+        style="@style/MainScrTextView"
         android:onClick="startAndBindService" />
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Stop Service"-->
-        <!--android:id="@+id/button5"-->
-        <!--android:onClick="stopService" />-->
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Try Reconnecting"-->
-        <!--android:id="@+id/button8"-->
-        <!--android:onClick="showDialogAndConnectToMqtt" />-->
+    <View style="@style/Divider"/>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/MainScrTextView"
         android:text="Admin Options"
-        android:clickable="true"
-        android:textColor="#FF0080FF"
-        android:textSize="15dp"
-        android:padding="17dp"
         android:onClick="launchAdminScreen"/>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="#c0c0c0"/>
+    <View style="@style/Divider"/>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="Pub Sub"
-        android:clickable="true"
-        android:textColor="#FF0080FF"
-        android:textSize="15dp"
-        android:padding="20dp"
+        style="@style/MainScrTextView"
         android:onClick="launchPubSubScreen"/>
+    <View style="@style/Divider"/>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/MainScrTextView"
         android:text="Debug Options"
-        android:clickable="true"
-        android:textColor="#FF0080FF"
-        android:textSize="15dp"
-        android:padding="20dp"
         android:onClick="launchDebugScreen"/>
+    <View style="@style/Divider"/>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stats Options"
-        android:clickable="true"
-        android:textColor="#FF0080FF"
-        android:textSize="15dp"
-        android:padding="20dp"
+        style="@style/MainScrTextView"
+        android:text="Stats"
         android:onClick="launchStatsScreen"/>
+    <View style="@style/Divider"/>
 </LinearLayout>

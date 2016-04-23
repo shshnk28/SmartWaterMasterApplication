@@ -32,7 +32,7 @@ public interface MQTTConstants {
     String PORT_NUM_VAL = "1883";
     String USER_NAME_VAL = "AppUser";
     String PASSWORD_VAL = "scdl@App";
-    int CONNECTION_TIMEOUT_VAL = 2; //minutes
+    int CONNECTION_TIMEOUT_VAL = 120; //seconds
     int KEEP_ALIVE_INTERVAL_VAL = 20; // minutes
     int PING_FREQ_VAL = 3; // minutes
     boolean CLEAN_SESSION_VAL = false;

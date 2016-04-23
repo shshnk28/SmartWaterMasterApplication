@@ -20,7 +20,6 @@ public class SCMqttConnectionOptions implements MQTTConstants {
         connOpts.setUserName(ConnOptsJsonHandler.readFromJsonFile(USER_NAME_KEY));
         connOpts.setPassword(ConnOptsJsonHandler.readFromJsonFile(PASSWORD_KEY).toString().toCharArray());
         int connectionTO = Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(CONNECTION_TIME_OUT_KEY));
-        connectionTO*=60; // minutes to sec
         connOpts.setConnectionTimeout(connectionTO);
         int keepAlive  = Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(KEEP_ALIVE_KEY));
         keepAlive*=60;
