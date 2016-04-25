@@ -84,4 +84,8 @@ public interface MQTTConstants {
     int SUBSCRIPTION_SUCCESS = 9;
     int SUBSCRIPTION_ERROR = 10;
 
+    // unsubscription status
+    int UNSUBSCRIPTION_SUCCESS = 12;
+    int UNSUBSCRIPTION_ERROR = 13;
+
 }

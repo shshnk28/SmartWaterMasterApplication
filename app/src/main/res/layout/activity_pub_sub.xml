@@ -1,14 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.shashankshekhar.servicedemo.Activities.PubSubActivity"
-    android:orientation="vertical">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter topic name"/>
-
-</LinearLayout>
+<!--<ScrollView-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--tools:context="com.example.shashankshekhar.servicedemo.Activities.PubSubActivity">-->
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.shashankshekhar.servicedemo.Activities.PubSubActivity">
+        <RelativeLayout
+            android:id="@+id/topLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true">
+            <EditText
+                android:id="@+id/topicName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Enter topic name to subscribe"
+                android:text="iisc/smartx/crowd/network/mqttTest1"
+                android:padding="17dp"/>
+            <TextView
+                android:id="@+id/subsTextView"
+                style="@style/MainScrTextView"
+                android:text="Subscribe"
+                android:layout_below="@+id/topicName"
+                android:onClick="subscribeToTopic"/>
+            <View
+                android:id="@+id/dividerView"
+                style="@style/Divider"
+                android:layout_below="@+id/subsTextView"/>
+            <TextView
+                android:id="@+id/multiLineTextView"
+                android:layout_below="@+id/dividerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="10"
+                android:scrollbars="vertical"
+                android:padding="17dp"
+                android:textSize="17dp"
+                android:hint="Messages received will appear here"/>
+            <!--android:text="I want to show multiple line via TextView and strings.xml . I want to show first few lines until the middle of the page and other lines to show in full of the page. I want to show first few lines with same size of width page. I want to show multiple line via TextView and strings.xml . I want to show first few lines until the middle of the page and other lines to show in full of the page. I want to show first few lines with same size of width page. I want to show multiple line via TextView and strings.xml . I want to show first few lines until the middle of the page and other lines to show in full of the page. I want to show first few lines with same size of width page. I want to show multiple line via TextView and strings.xml . I want to show first few lines until the middle of the page and other lines to show in full of the page. I want to show first few lines with same size of width page"/>-->
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+            <EditText
+                android:id="@+id/publishTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="enter text to be published"
+                android:layout_alignParentLeft="true"
+                />
+            <TextView
+                style="@style/MainScrTextView"
+                android:text="Publish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+    </RelativeLayout>
+<!--</ScrollView>-->

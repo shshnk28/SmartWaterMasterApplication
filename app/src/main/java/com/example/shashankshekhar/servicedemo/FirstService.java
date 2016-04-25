@@ -41,11 +41,15 @@ public class FirstService extends Service implements MQTTConstants {
     static final int SUBSCRIPTION_SUCCESS = 9;
     static final int SUBSCRIPTION_ERROR = 10;
 
+    // unsubscription status
+    static final int UNSUBSCRIPTION_SUCCESS = 12;
+    static final int UNSUBSCRIPTION_ERROR = 13;
+
     final Messenger messenger = new Messenger(new IncomingHandler());
 
     class IncomingHandler extends Handler {
         @Override
-        public void handleMessage(Message message) {
+        public void handleMessage(final Message message) {
             switch (message.what) {
                 case 1: // not being used
                     break;
@@ -84,19 +88,27 @@ public class FirstService extends Service implements MQTTConstants {
                         CommonUtils.printLog("no reply messenger .. returning");
                         return;
                     }
-                    topicName = message.getData().getString("topicName");
+                    final String topicName2 = message.getData().getString("topicName");
                     if (checkConnectivity(message.replyTo) == false) {
                         return;
                     }
+                    Runnable success = new Runnable() {
+                        @Override
+                        public void run() {
+                            subscribedTopics.add(topicName2);
+                            sendMessageToClient(message.replyTo, SUBSCRIPTION_SUCCESS);
+                        }
+                    };
+                    Runnable failure= new Runnable() {
+                        @Override
+                        public void run() {
+                            CommonUtils.printLog("couldnot subscribe to topic : ");
+                            sendMessageToClient(message.replyTo, SUBSCRIPTION_ERROR);
+
+                        }
+                    };
                     CommonUtils.printLog("subscribe call made");
-                    String subscribeID = MqttSubscriber.subscribeToTopic(topicName);
-                    if (subscribeID == null) {
-                        sendMessageToClient(message.replyTo, SUBSCRIPTION_ERROR);
-                        CommonUtils.printLog("couldnot subscribe to topic : ");
-                    } else {
-                        subscribedTopics.add(topicName);
-                        sendMessageToClient(message.replyTo, SUBSCRIPTION_SUCCESS);
-                    }
+                    String subscribeID = MqttSubscriber.subscribeToTopic(topicName2,success,failure);
                     // TODO: 12/11/15 return the subscribeId to the client from here.
                     break;
                 case UNSUBSCRIBE_TO_TOPIC:// unsubscribe to a topic
@@ -104,7 +116,22 @@ public class FirstService extends Service implements MQTTConstants {
                         return;
                     }
                     topicName = message.getData().getString("topicName");
-                    MqttSubscriber.unsubscribeToTopic(topicName);
+                    if (topicName == null)
+                        return;
+                    Runnable successSubscribe = new Runnable() {
+                        @Override
+                        public void run() {
+                                sendMessageToClient(message.replyTo, UNSUBSCRIPTION_SUCCESS);
+                        }
+                    };
+                    Runnable failureSubscribe= new Runnable() {
+                        @Override
+                        public void run() {
+                                sendMessageToClient(message.replyTo, UNSUBSCRIPTION_ERROR);
+
+                        }
+                    };
+                    MqttSubscriber.unsubscribeToTopic(topicName,successSubscribe,failureSubscribe);
                     subscribedTopics.remove(topicName);
                     break;
                 case CHECK_SERVICE: // check if  service is running

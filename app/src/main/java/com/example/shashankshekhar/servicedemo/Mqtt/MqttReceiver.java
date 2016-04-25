@@ -1,6 +1,7 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
@@ -43,13 +44,13 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
          */
 //        CommonUtils.printLog("MQTT notif for topic: " + topic + "on thread " + CommonUtils.checkMainThread());
         // TODO: 10/11/15 call the library here that does the broadcast to seperate out the Mqtt implementation
-//        Intent broadcast = new Intent();
-//        broadcast.putExtra("message", msg.toString());
-//        broadcast.putExtra("topicName", topic);
-//        broadcast.setAction(topic);
-//        appContext.sendBroadcast(broadcast);
-        MqttLogger.writeDataToTempLogFile("message arr: " + msg.toString());
-        CommonUtils.printLog("message arrived: " + msg.toString());
+        Intent broadcast = new Intent();
+        broadcast.putExtra("message", msg.toString());
+        broadcast.putExtra("topicName", topic);
+        broadcast.setAction(topic);
+        appContext.sendBroadcast(broadcast);
+//        MqttLogger.writeDataToTempLogFile("message arr: " + msg.toString());
+
     }
 
 
@@ -67,7 +68,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         MqttLogger.initAppContext(appContext);
         MqttLogger.writeDataToLogFile(logString);
         //write to log file here as well
-        MqttLogger.writeDataToTempLogFile(logString);
+//        MqttLogger.writeDataToTempLogFile(logString);
     }
 
     @Override
