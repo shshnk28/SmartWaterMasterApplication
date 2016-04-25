@@ -26,7 +26,7 @@
         <View style="@style/Divider"/>
         <TextView
             style="@style/MainScrTextView"
-            android:text="Ping Ggl WO DNS"
+            android:text="Ping Google WO DNS"
             android:onClick="checkWODNS"/>
         <View style="@style/Divider"/>
         <TextView
@@ -36,7 +36,7 @@
         <View style="@style/Divider"/>
         <TextView
             style="@style/MainScrTextView"
-            android:text="Check Brkr WO DNS"
+            android:text="Check Broker WO DNS"
             android:onClick="checkBrokerWODNS"/>
         <View style="@style/Divider"/>
         <TextView
