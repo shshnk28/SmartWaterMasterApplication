@@ -66,17 +66,17 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
             case MQTT_CONNECTED:
                 toastStr = "Mqtt Connected";
                 // SUBSCRIBE call
-                Message message = Message.obtain(null, SUBSCRIBE_TO_TOPIC);
-                Bundle bundle = new Bundle();
-                bundle.putString("topicName",TEST_TOPIC1);
-                message.setData(bundle);
-                message.replyTo = clientMessenger;
-                try {
-                    SCServiceConnector.messenger.send(message);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    CommonUtils.printLog("remote Exception,Could not send message");
-                }
+//                Message message = Message.obtain(null, SUBSCRIBE_TO_TOPIC);
+//                Bundle bundle = new Bundle();
+//                bundle.putString("topicName",TEST_TOPIC1);
+//                message.setData(bundle);
+//                message.replyTo = clientMessenger;
+//                try {
+//                    SCServiceConnector.messenger.send(message);
+//                } catch (RemoteException e) {
+//                    e.printStackTrace();
+//                    CommonUtils.printLog("remote Exception,Could not send message");
+//                }
                 break;
             case UNABLE_TO_CONNECT:
                 toastStr = "Not Connected";

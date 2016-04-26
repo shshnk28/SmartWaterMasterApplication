@@ -42,7 +42,7 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         do not perform any heavy operations here. ack will go back from here only after the method has
         finished running.keep it light
          */
-//        CommonUtils.printLog("MQTT notif for topic: " + topic + "on thread " + CommonUtils.checkMainThread());
+        CommonUtils.printLog("MQTT notif for topic: " + topic + " :data: " + msg.toString() + " :qos: " + msg.getQos());
         // TODO: 10/11/15 call the library here that does the broadcast to seperate out the Mqtt implementation
         Intent broadcast = new Intent();
         broadcast.putExtra("message", msg.toString());

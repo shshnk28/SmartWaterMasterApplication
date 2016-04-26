@@ -29,6 +29,13 @@
                 android:text="Subscribe"
                 android:layout_below="@+id/topicName"
                 android:onClick="subscribeToTopic"/>
+            <TextView
+                android:id="@+id/unsubsTextView"
+                style="@style/MainScrTextView"
+                android:text="Unsubscribe"
+                android:layout_below="@+id/topicName"
+                android:layout_alignParentRight="true"
+                android:onClick="unsubscribeToTopic"/>
             <View
                 android:id="@+id/dividerView"
                 style="@style/Divider"
@@ -50,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true">
             <EditText
-                android:id="@+id/publishTV"
+                android:id="@+id/publishET"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="enter text to be published"
@@ -59,9 +66,8 @@
             <TextView
                 style="@style/MainScrTextView"
                 android:text="Publish"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="true"
+                android:onClick="publishData"/>
         </RelativeLayout>
     </RelativeLayout>
 <!--</ScrollView>-->

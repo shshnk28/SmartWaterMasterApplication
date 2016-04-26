@@ -13,18 +13,23 @@ import org.eclipse.paho.client.mqttv3.MqttException;
  * Created by shashankshekhar on 12/11/15.
  */
 public class MqttSubscriber implements MQTTConstants {
-    public static String subscribeToTopic (String topicName, final Runnable onSuccess, final Runnable onFailure) {
+    public static String subscribeToTopic (final String topicName, final Runnable onSuccess, final Runnable onFailure) {
         MqttAsyncClient mqttClient = SCMqttClient.getInstance();
+        if (mqttClient == null) {
+            onFailure.run();
+            return null;
+        }
         try {
-            mqttClient.subscribe(topicName, QoS, null, new IMqttActionListener() {
+            mqttClient.subscribe(topicName, SUBS_QOS, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    CommonUtils.printLog("topic subscribed: " + iMqttToken.toString());
+                    CommonUtils.printLog("topic subscribed: "+topicName);
                     onSuccess.run();
                 }
 
                 @Override
                 public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    CommonUtils.printLog("failed to subscribe to topic");
                     onFailure.run();
                 }
             });
@@ -38,6 +43,10 @@ public class MqttSubscriber implements MQTTConstants {
     }
     public static void unsubscribeToTopic (String topicName, final Runnable onSuccess, final Runnable onFail ) {
         MqttAsyncClient mqttClient = SCMqttClient.getInstance();
+        if (mqttClient == null) {
+            onFail.run();
+            return;
+        }
         try {
             mqttClient.unsubscribe(topicName, null, new IMqttActionListener() {
                 @Override

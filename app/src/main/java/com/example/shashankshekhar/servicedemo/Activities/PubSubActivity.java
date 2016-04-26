@@ -27,15 +27,20 @@ import java.util.List;
 public class PubSubActivity extends AppCompatActivity implements ServiceCallback,MQTTConstants {
     TextView multiLineTV;
     EditText topicEditText;
+    EditText publishEditText;
+    TextView incomingMessageTV;
     String topicName;
     String currentlySubscribedTopic = null;
     ProgressDialog connectingDialog;
     Messenger clientMessenger;
+    boolean continueWithSubscription;
 //    List<String> subscribedTopics;
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            CommonUtils.printLog("br received in pubsub ");
+            String message = intent.getStringExtra("message");
+            incomingMessageTV.append("received: " +message + "\n");
         }
     };
     @Override
@@ -45,6 +50,8 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
         multiLineTV  = (TextView)findViewById(R.id.multiLineTextView);
         multiLineTV.setMovementMethod(new ScrollingMovementMethod());
         topicEditText = (EditText)findViewById(R.id.topicName);
+        publishEditText = (EditText)findViewById(R.id.publishET);
+        incomingMessageTV = (TextView)findViewById(R.id.multiLineTextView);
         clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(), this));
     }
     @Override
@@ -63,12 +70,25 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
         1. usnsubscribe the previously subscribed topic if any
         2. unregister the broadcast receiver
          */
+            continueWithSubscription = true;
             unsubscribeToTopic(currentlySubscribedTopic);
         } else {
             subscribeToTopic();
         }
     }
 
+    public void publishData (View view) {
+        String data = publishEditText.getText().toString();
+        publishData(data);
+    }
+
+    public void unsubscribeToTopic (View view) {
+        if (currentlySubscribedTopic == null) {
+            return;
+        }
+        continueWithSubscription = false;
+        unsubscribeToTopic(currentlySubscribedTopic);
+    }
     public void messageReceivedFromService(int number) {
         String toastStr = null;
         switch (number) {
@@ -95,11 +115,20 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
                 // remove the broadcast receiver here
                 currentlySubscribedTopic = null;
                 unregisterReceiver(broadcastReceiver);
-                subscribeToTopic();
+                if (continueWithSubscription) {
+                    CommonUtils.printLog("unsub succcessful. Resubscribing now");
+                    subscribeToTopic();
+                }
                 break;
             case UNSUBSCRIPTION_ERROR:
                 toastStr = "could not unsubscribe";
                 connectingDialog.dismiss();
+                break;
+            case TOPIC_PUBLISHED:
+                toastStr = "published";
+                break;
+            case ERROR_IN_PUBLISHING:
+                toastStr = "could not publish";
                 break;
             default:
                 toastStr = "switch case unknown";
@@ -155,7 +184,25 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
             CommonUtils.printLog("remote Exception,Could not send message");
         }
     }
-    public void setupBroadcastReceiver () {
+    private void publishData (String data) {
+        if (isServiceRunning() == false) {
+            return;
+        }
+        String topicName = topicEditText.getText().toString();
+        Message message = Message.obtain(null, PUBLISH_MESSAGE);
+        Bundle bundle = new Bundle();
+        bundle.putString("topicName",topicName);
+        bundle.putString("dataString",data);
+        message.setData(bundle);
+        message.replyTo = clientMessenger;
+        try {
+            SCServiceConnector.messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            CommonUtils.printLog("remote Exception,Could not send message");
+        }
+    }
+    private void setupBroadcastReceiver () {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(currentlySubscribedTopic);
         try {

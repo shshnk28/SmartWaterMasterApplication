@@ -29,7 +29,10 @@ public class SCMqttClient extends MqttAsyncClient implements MQTTConstants {
              CommonUtils.printLog("Connecting with client id: " + CommonUtils.getClientId());
              String brokerAdd = ConnOptsJsonHandler.readFromJsonFile(BROKER_ADDRESS_KEY);
              String portNum = ConnOptsJsonHandler.readFromJsonFile(PORT_NUM_KEY);
-             scMqttClient = new SCMqttClient(brokerAdd+":"+portNum, CommonUtils.getClientId(),persistence);
+             String serverUrl = TCP_BROKER_PREFIX + brokerAdd+":"+portNum;
+             CommonUtils.printLog("serverURL: "+serverUrl);
+             scMqttClient = new SCMqttClient(serverUrl, CommonUtils.getClientId(),
+                     persistence);
 //             pingSender = new TimerPingSender();
 //             clientComms = new ClientComms(scMqttClient,persistence,pingSender);
 //             pingSender.init(clientComms);
@@ -50,7 +53,7 @@ public class SCMqttClient extends MqttAsyncClient implements MQTTConstants {
         }
         return scMqttClient.isConnected();
     }
-// public static void stopPingSender () {
-//     pingSender.stop();
-// }
+ public static void resetMqttClient () {
+     scMqttClient = null;
+ }
 }

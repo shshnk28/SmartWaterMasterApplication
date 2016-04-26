@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.support.annotation.IntegerRes;
 
 import com.example.shashankshekhar.servicedemo.BroadcastReceiver.AlarmReceiver;
@@ -29,6 +30,10 @@ public class MqttConnector implements MQTTConstants {
     public static void connectToMqttClient(final Runnable onSuccess, final Runnable onFailure, final Context appContext) {
 
         /* we can define an error class and return the error object from this method with all the necessary info.*/
+        /*
+        reset the client so that we can get a client with new properties
+         */
+        SCMqttClient.resetMqttClient();
         MqttAsyncClient mqttClient = SCMqttClient.getInstance();
         MqttConnectOptions connectionOptions = SCMqttConnectionOptions.getConnectionOptions();
         IMqttToken token = null;
@@ -59,7 +64,6 @@ public class MqttConnector implements MQTTConstants {
                 @Override
                 public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
                     isConnecting = false;
-                    CommonUtils.printLog("failed to connect in failure block");
                     String logStr = "Failed to connect/";
                     onFailure.run();
                     if (throwable.getCause() != null) {
@@ -67,6 +71,7 @@ public class MqttConnector implements MQTTConstants {
                     }
                     ConnectivityCheck connectivityCheck  = new ConnectivityCheck(appContext);
                     connectivityCheck.checkNonConnectivityReason(logStr);
+                    CommonUtils.printLog("failed to connect in failure block" + logStr);
                     return;
                 }
             });
@@ -130,6 +135,11 @@ public class MqttConnector implements MQTTConstants {
         CommonUtils.printLog("setting alarm: " + pingFreq);
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, pingFreq, pingFreq,pendingIntent);
         MqttLogger.writeDataToTempLogFile("alarm set");
+
+        // set up the wifi lock
+//        WifiManager wm = (WifiManager) appContext.getSystemService(Context.WIFI_SERVICE);
+//        WifiManager.WifiLock wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "MyWifiLock");
+//        wifiLock.acquire();
     }
     public static void cancelAlarm () {
         CommonUtils.printLog("connection lost canceling alarm");

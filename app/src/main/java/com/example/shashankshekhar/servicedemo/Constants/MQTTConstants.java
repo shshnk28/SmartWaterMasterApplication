@@ -10,6 +10,7 @@ import java.io.File;
 public interface MQTTConstants {
     /* CONNECTION CONSTANTS */
     int QoS = 1;
+    int SUBS_QOS = 1;
     String STATIC_BROKER_ADDRESS = "tcp://13.76.132.113:1883";
     String GOOGLE_INDIA = "www.google.co.in";
     String GOOGLE_INDIA_NO_DNS = "8:8:8:8";
@@ -28,7 +29,8 @@ public interface MQTTConstants {
     String PUBLISH_CONN_LOGS_KEY = "publishConnLogs";
 
     // JSON Connection Option values
-    String BROKER_ADDRESS_VAL = "tcp://smartx.cds.iisc.ac.in";
+    String TCP_BROKER_PREFIX = "tcp://";
+    String BROKER_ADDRESS_VAL = "smartx.cds.iisc.ac.in";
     String PORT_NUM_VAL = "1883";
     String USER_NAME_VAL = "AppUser";
     String PASSWORD_VAL = "scdl@App";

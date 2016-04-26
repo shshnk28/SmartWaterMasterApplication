@@ -89,6 +89,7 @@ public class FirstService extends Service implements MQTTConstants {
                         return;
                     }
                     final String topicName2 = message.getData().getString("topicName");
+                    final Messenger subReplyToMessenger = message.replyTo;
                     if (checkConnectivity(message.replyTo) == false) {
                         return;
                     }
@@ -96,14 +97,14 @@ public class FirstService extends Service implements MQTTConstants {
                         @Override
                         public void run() {
                             subscribedTopics.add(topicName2);
-                            sendMessageToClient(message.replyTo, SUBSCRIPTION_SUCCESS);
+                            sendMessageToClient(subReplyToMessenger, SUBSCRIPTION_SUCCESS);
                         }
                     };
                     Runnable failure= new Runnable() {
                         @Override
                         public void run() {
                             CommonUtils.printLog("couldnot subscribe to topic : ");
-                            sendMessageToClient(message.replyTo, SUBSCRIPTION_ERROR);
+                            sendMessageToClient(subReplyToMessenger, SUBSCRIPTION_ERROR);
 
                         }
                     };
@@ -115,19 +116,20 @@ public class FirstService extends Service implements MQTTConstants {
                     if (checkConnectivity(message.replyTo) == false) {
                         return;
                     }
+                    final Messenger unsubReplyToMessenger = message.replyTo;
                     topicName = message.getData().getString("topicName");
                     if (topicName == null)
                         return;
                     Runnable successSubscribe = new Runnable() {
                         @Override
                         public void run() {
-                                sendMessageToClient(message.replyTo, UNSUBSCRIPTION_SUCCESS);
+                                sendMessageToClient(unsubReplyToMessenger, UNSUBSCRIPTION_SUCCESS);
                         }
                     };
                     Runnable failureSubscribe= new Runnable() {
                         @Override
                         public void run() {
-                                sendMessageToClient(message.replyTo, UNSUBSCRIPTION_ERROR);
+                                sendMessageToClient(unsubReplyToMessenger, UNSUBSCRIPTION_ERROR);
 
                         }
                     };
@@ -281,14 +283,14 @@ public class FirstService extends Service implements MQTTConstants {
     }
 
     private void intiateMqttConnection( final boolean sendMessage, final Messenger clientMessenger) {
-        if (CommonUtils.httpConnectionTest(GOOGLE_INDIA) == false) {
-            MqttLogger.initAppContext(getApplicationContext());
-            MqttLogger.writeDataToLogFile("Not able to ping Google India");
-            if (sendMessage == true && clientMessenger != null) {
-                sendMessageToClient(clientMessenger, NO_NETWORK_AVAILABLE);
-            }
-            return;
-        }
+//        if (CommonUtils.httpConnectionTest(GOOGLE_INDIA) == false) {
+//            MqttLogger.initAppContext(getApplicationContext());
+//            MqttLogger.writeDataToLogFile("Not able to ping Google India");
+//            if (sendMessage == true && clientMessenger != null) {
+//                sendMessageToClient(clientMessenger, NO_NETWORK_AVAILABLE);
+//            }
+//            return;
+//        }
         Runnable success = new Runnable() {
             @Override
             public void run() {
