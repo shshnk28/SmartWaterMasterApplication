@@ -98,4 +98,10 @@ public class ConnOptsJsonHandler implements MQTTConstants {
     public static boolean doesConfigFileExists () {
         return configFile.exists();
     }
+    public static String jsonPath () {
+        if (configFile.exists() == false) {
+            return "file does not exist";
+        }
+        return configFile.getAbsolutePath();
+    }
 }

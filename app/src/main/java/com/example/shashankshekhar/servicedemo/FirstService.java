@@ -9,6 +9,7 @@ import android.os.RemoteException;
 import android.os.Handler;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.DBOperations.SCDBOperations;
 import com.example.shashankshekhar.servicedemo.FileHandler.ConnOptsJsonHandler;
 import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttConnector;
@@ -232,6 +233,10 @@ public class FirstService extends Service implements MQTTConstants {
         write the connection options to json
          */
         ConnOptsJsonHandler.writeDefaultConnectionSettings();
+
+        // for testing
+//        SCDBOperations.initDBAppContext(getApplicationContext());
+//        SCDBOperations.writeToDB();
 
     }
 

@@ -57,9 +57,32 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
     @Override
     public void onDestroy () {
         super.onDestroy();
+        if (currentlySubscribedTopic == null) {
+            return;
+        }
         unsubscribeToTopic(currentlySubscribedTopic);
         currentlySubscribedTopic = null;
-        unregisterReceiver(broadcastReceiver);
+        try {
+            unregisterReceiver(broadcastReceiver);
+        } catch (Exception e) {
+
+        }
+
+    }
+    @Override
+    public void onResume () {
+        super.onResume();
+        setupBroadcastReceiver();
+
+    }
+    @Override
+    public void onPause () {
+        super.onPause();
+        try {
+            unregisterReceiver(broadcastReceiver);
+        } catch (Exception e) {
+
+        }
     }
     public void subscribeToTopic(View view) {
         connectingDialog = ProgressDialog.show(this, "Please Wait...", "Subscribing to Topic");
@@ -114,10 +137,16 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
             case UNSUBSCRIPTION_SUCCESS:
                 // remove the broadcast receiver here
                 currentlySubscribedTopic = null;
-                unregisterReceiver(broadcastReceiver);
+                try {
+                    unregisterReceiver(broadcastReceiver);
+                } catch (Exception ex) {
+
+                }
                 if (continueWithSubscription) {
                     CommonUtils.printLog("unsub succcessful. Resubscribing now");
                     subscribeToTopic();
+                } else {
+                    toastStr = "unsubscribed";
                 }
                 break;
             case UNSUBSCRIPTION_ERROR:
@@ -203,6 +232,9 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
         }
     }
     private void setupBroadcastReceiver () {
+        if (currentlySubscribedTopic == null) {
+            return;
+        }
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(currentlySubscribedTopic);
         try {
