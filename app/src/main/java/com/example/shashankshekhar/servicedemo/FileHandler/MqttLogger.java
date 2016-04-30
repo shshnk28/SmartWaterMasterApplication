@@ -154,6 +154,8 @@ public class MqttLogger implements MQTTConstants {
         return userName;
     }
     public static synchronized void writeDataToTempLogFile(String logString) {
+        if (true)
+            return;
         String userName = readFromSharedPrefs(USER_NAME_KEY);
         String dateString = getCurrentDate();
         String loggerString = dateString + "," +userName + ","+ logString;

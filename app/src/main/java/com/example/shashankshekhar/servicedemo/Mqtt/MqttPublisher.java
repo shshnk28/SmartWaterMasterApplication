@@ -47,6 +47,10 @@ public class MqttPublisher implements MQTTConstants {
             CommonUtils.printLog("couldnot instantiate mqtt client..returning");
             return false;
         }
+        if (mqttClient.isConnected() == false) {
+            CommonUtils.printLog("not connected to mqtt.. returning in publisher");
+            return false;
+        }
         String payload;
         if (eventName!=null) {
             payload = eventName + "-" + data;
@@ -56,10 +60,6 @@ public class MqttPublisher implements MQTTConstants {
         }
         MqttMessage message1 = new MqttMessage(payload.getBytes());
         message1.setQos(QoS);
-        if (mqttClient.isConnected() == false) {
-            CommonUtils.printLog("not connected to mqtt.. returning in publisher");
-            return false;
-        }
         try {
             // TODO: 16/02/16 the message has to be in json/senML format.
             mqttClient.publish(topicName, message1);
@@ -86,4 +86,3 @@ public class MqttPublisher implements MQTTConstants {
     }
 
 }
-

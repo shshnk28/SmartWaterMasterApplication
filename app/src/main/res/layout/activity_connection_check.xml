@@ -44,6 +44,11 @@
             android:text="Check Http Conection"
             android:onClick="checkHttpConn"/>
         <View style="@style/Divider"/>
+        <TextView
+            style="@style/MainScrTextView"
+            android:text="Export database"
+            android:onClick="exportDB"/>
+        <View style="@style/Divider"/>
     </LinearLayout>
 
 </ScrollView>

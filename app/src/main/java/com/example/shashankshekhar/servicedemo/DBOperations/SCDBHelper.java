@@ -30,7 +30,7 @@ public class SCDBHelper extends SQLiteOpenHelper implements MQTTConstants {
         if (scdbHelper != null) {
             return scdbHelper;
         }
-        new SCDBHelper(context);
+        scdbHelper = new SCDBHelper(context);
         return scdbHelper;
     }
 
@@ -45,7 +45,7 @@ public class SCDBHelper extends SQLiteOpenHelper implements MQTTConstants {
         onCreate(db);
     }
 
-    public void exportDatabse(Context context) {
+    public static boolean exportDatabse(Context context) {
         try {
             File data = Environment.getDataDirectory();
             String currentDBPath = "//data//"+ context.getPackageName()+"//databases//"+DATABASE_NAME+"";
@@ -61,11 +61,14 @@ public class SCDBHelper extends SQLiteOpenHelper implements MQTTConstants {
                 dst.transferFrom(src, 0, src.size());
                 src.close();
                 dst.close();
+                return true;
             } else {
                 CommonUtils.printLog("current db does not exist");
+                return false;
             }
         } catch (Exception e) {
             CommonUtils.printLog("exception in exporting db");
+            return false;
         }
     }
 }

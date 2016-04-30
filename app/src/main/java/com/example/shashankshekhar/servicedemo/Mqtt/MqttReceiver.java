@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.DBOperations.SCDBOperations;
 import com.example.shashankshekhar.servicedemo.FileHandler.MqttLogger;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 
@@ -43,16 +45,18 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         finished running.keep it light
          */
         CommonUtils.printLog("MQTT notif for topic: " + topic + " :data: " + msg.toString() + " :qos: " + msg.getQos());
-        // TODO: 10/11/15 call the library here that does the broadcast to seperate out the Mqtt implementation
         Intent broadcast = new Intent();
         broadcast.putExtra("message", msg.toString());
         broadcast.putExtra("topicName", topic);
         broadcast.setAction(topic);
         appContext.sendBroadcast(broadcast);
+
+        // write in the db
+        SCDBOperations.initDBAppContext(appContext);
+        SCDBOperations.messageReceived(topic, msg.toString());
 //        MqttLogger.writeDataToTempLogFile("message arr: " + msg.toString());
 
     }
-
 
     @Override
     public void connectionLost(Throwable cause) {
@@ -76,5 +80,20 @@ public class MqttReceiver implements MQTTConstants, MqttCallback {
         CommonUtils.printLog("delivery complete");
         MqttLogger.initAppContext(appContext);
         MqttLogger.writeDataToTempLogFile("delivery complete");
+
+        // db operation
+        SCDBOperations.initDBAppContext(appContext);
+        try {
+            MqttMessage msg = tk.getMessage();
+            String topics[] = tk.getTopics();
+            if (topics.length > 0) {
+                SCDBOperations.initDBAppContext(appContext);
+                SCDBOperations.messageSent(topics[0],"samplePayload");
+            }
+
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.DBOperations.SCDBHelper;
 import com.example.shashankshekhar.servicedemo.FirstService;
 import com.example.shashankshekhar.servicedemo.IncomingHandler;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
@@ -180,6 +181,14 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants,Se
                 showToastOnUIThread("could not establish http connection");
             }
         }).start();
+    }
+    public void exportDB (View view) {
+        boolean success = SCDBHelper.exportDatabse(getApplicationContext());
+        if (success) {
+            CommonUtils.showToast(getApplicationContext(),"exported");
+        } else {
+            CommonUtils.showToast(getApplicationContext(),"error in exporting");
+        }
     }
     private void showToastOnUIThread(final String message) {
         this.runOnUiThread(new Runnable() {
