@@ -110,7 +110,8 @@ public class FirstService extends Service implements MQTTConstants {
                         }
                     };
                     CommonUtils.printLog("subscribe call made");
-                    String subscribeID = MqttSubscriber.subscribeToTopic(topicName2,success,failure);
+                    String subscribeID = MqttSubscriber.subscribeToTopic(getApplicationContext(),topicName2,success,
+                            failure);
                     // TODO: 12/11/15 return the subscribeId to the client from here.
                     break;
                 case UNSUBSCRIBE_TO_TOPIC:// unsubscribe to a topic
@@ -134,7 +135,8 @@ public class FirstService extends Service implements MQTTConstants {
 
                         }
                     };
-                    MqttSubscriber.unsubscribeToTopic(topicName,successSubscribe,failureSubscribe);
+                    MqttSubscriber.unsubscribeToTopic(getApplicationContext(),topicName,successSubscribe,
+                            failureSubscribe);
                     subscribedTopics.remove(topicName);
                     break;
                 case CHECK_SERVICE: // check if  service is running

@@ -1,6 +1,9 @@
 package com.example.shashankshekhar.servicedemo.Mqtt;
 
+import android.content.Context;
+
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
+import com.example.shashankshekhar.servicedemo.DBOperations.SCDBOperations;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -13,7 +16,9 @@ import org.eclipse.paho.client.mqttv3.MqttException;
  * Created by shashankshekhar on 12/11/15.
  */
 public class MqttSubscriber implements MQTTConstants {
-    public static String subscribeToTopic (final String topicName, final Runnable onSuccess, final Runnable onFailure) {
+    public static String subscribeToTopic (final Context appContext,final String topicName, final Runnable onSuccess,
+                                           final Runnable
+            onFailure) {
         MqttAsyncClient mqttClient = SCMqttClient.getInstance();
         if (mqttClient == null) {
             onFailure.run();
@@ -23,7 +28,10 @@ public class MqttSubscriber implements MQTTConstants {
             mqttClient.subscribe(topicName, SUBS_QOS, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    CommonUtils.printLog("topic subscribed: "+topicName);
+                    CommonUtils.printLog("topic subscribed: " + topicName);
+                    // add the entry to the db here
+                    SCDBOperations.initDBAppContext(appContext);
+                    SCDBOperations.addSubscribedTopicToDB(topicName);
                     onSuccess.run();
                 }
 
@@ -41,7 +49,10 @@ public class MqttSubscriber implements MQTTConstants {
         }
         return CommonUtils.randomString();
     }
-    public static void unsubscribeToTopic (String topicName, final Runnable onSuccess, final Runnable onFail ) {
+    public static void unsubscribeToTopic (final Context appContext, final String topicName, final Runnable onSuccess,
+                                           final Runnable
+            onFail
+    ) {
         MqttAsyncClient mqttClient = SCMqttClient.getInstance();
         if (mqttClient == null) {
             onFail.run();
@@ -51,6 +62,8 @@ public class MqttSubscriber implements MQTTConstants {
             mqttClient.unsubscribe(topicName, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
+                    SCDBOperations.initDBAppContext(appContext);
+                    SCDBOperations.removeUnsubscribedTopicFromDB(topicName);
                     onSuccess.run();
                 }
 

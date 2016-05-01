@@ -36,6 +36,7 @@ public class SCDBHelper extends SQLiteOpenHelper implements MQTTConstants {
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DBConstants.SQL_CREATE_MESSAGE_COUNT);
+        db.execSQL(DBConstants.SQL_CREATE_MESSAEG_COUNT_ROW);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

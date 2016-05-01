@@ -14,7 +14,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 public class SCMqttConnectionOptions implements MQTTConstants {
     public static MqttConnectOptions getConnectionOptions () {
         MqttConnectOptions connOpts = new MqttConnectOptions();
-        connOpts.setCleanSession(Boolean.getBoolean(ConnOptsJsonHandler.readFromJsonFile(CLEAN_SESSION_KEY)));
+        connOpts.setCleanSession(Boolean.valueOf(ConnOptsJsonHandler.readFromJsonFile(CLEAN_SESSION_KEY)));
         connOpts.setUserName(ConnOptsJsonHandler.readFromJsonFile(USER_NAME_KEY));
         connOpts.setPassword(ConnOptsJsonHandler.readFromJsonFile(PASSWORD_KEY).toString().toCharArray());
         int connectionTO = Integer.parseInt(ConnOptsJsonHandler.readFromJsonFile(CONNECTION_TIME_OUT_KEY));

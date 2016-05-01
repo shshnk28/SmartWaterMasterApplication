@@ -57,6 +57,11 @@ public class MqttConnector implements MQTTConstants {
                     MqttLogger.writeDataToLogFile(" Connection Successful/");
 //                    MqttLogger.runStatusPublisher(30);
                     setPingAlarm(appContext);
+                    String[] topics12 = iMqttToken.getTopics();
+//                    CommonUtils.printLog(topics12.length + "haha");
+//                    for (int i =0;i<topics12.length;i++) {
+//                        CommonUtils.printLog("subscribed topics: " + topics12[i]);
+//                    }
                     onSuccess.run();
                     return;
                 }

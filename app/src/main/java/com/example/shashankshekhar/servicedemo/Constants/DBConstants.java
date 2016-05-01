@@ -35,12 +35,15 @@ public final class DBConstants {
     private static final String SQL_DELETE_TABLE =
             "DROP TABLE IF EXISTS " + SCLogTable.TABLE_NAME;
 
+    // return count
     public static final String SQL_RETURN_RECEIVED_COUNT = "SELECT COUNT(" + SCLogTable._ID + ") FROM " + SCLogTable
             .TABLE_NAME +" WHERE " + SCLogTable.COL_EVENT_NAME + "=" + "'" + SCDBOperations.MESSAGE_RECEIVED_EVENT_NAME + "'" ;
 
     public static final String SQL_RETURN_SENT_COUNT = "SELECT COUNT(" + SCLogTable._ID + ") FROM " + SCLogTable
             .TABLE_NAME +" WHERE " + SCLogTable.COL_EVENT_NAME + "=" + "'" + SCDBOperations.MESSAGE_SENT_EVENT_NAME +"'";
 
+
+    // delete the top row
     public static final String SQL_DELETE_TOP_ROW_RECEIVED = SCLogTable._ID +" IN ( SELECT " + SCLogTable._ID + " FROM " + SCLogTable.TABLE_NAME + " WHERE " + SCLogTable.COL_EVENT_NAME + "=" +"'" + SCDBOperations.MESSAGE_RECEIVED_EVENT_NAME + "'" + " ORDER BY " +
             SCLogTable._ID + " ASC LIMIT 1)";
     /*
@@ -49,5 +52,20 @@ public final class DBConstants {
     public static final String SQL_DELETE_TOP_ROW_SENT = SCLogTable._ID +" IN ( " + "SELECT "+ SCLogTable._ID +
             " FROM "  + SCLogTable.TABLE_NAME + " WHERE " + SCLogTable.COL_EVENT_NAME + "=" + "'" + SCDBOperations.MESSAGE_SENT_EVENT_NAME +"'"+ " ORDER BY " + SCLogTable
             ._ID + " ASC LIMIT 1)";
+
+    public static final String SQL_CREATE_MESSAEG_COUNT_ROW = "INSERT INTO " + SCLogTable.TABLE_NAME +" ("+SCLogTable
+            .COL_EVENT_NAME + COMMA_SEP + SCLogTable.COL_1 + COMMA_SEP + SCLogTable.COL_2+ ") " +
+            "VALUES" + " (" + "'" +SCDBOperations.MESSAGE_COUNT_EVENT_NAME+"'" + COMMA_SEP +"'"+ SCDBOperations
+            .SENT_MESSAGE_COUNT + ":0" +"'"+
+            COMMA_SEP + "'" +SCDBOperations.RECEIVED_MESSAGE_COUNT + ":0" +  "')";
+
+    // return the top events
+    public static final String SQL_RETURN_SENT_EVENTS = "SELECT " + SCLogTable.COL_1 + COMMA_SEP + SCLogTable
+            .COL_2 + " FROM " + SCLogTable.TABLE_NAME  + " WHERE " + SCLogTable.COL_EVENT_NAME + "=" + "'" +
+            SCDBOperations.MESSAGE_SENT_EVENT_NAME + "'";
+
+    public static final String SQL_RETURN_RECEIVED_EVENTS = "SELECT " + SCLogTable.COL_1 + COMMA_SEP + SCLogTable
+            .COL_2 + " FROM " + SCLogTable.TABLE_NAME  + " WHERE " + SCLogTable.COL_EVENT_NAME + "=" + "'" +
+            SCDBOperations.MESSAGE_RECEIVED_EVENT_NAME + "'";
 
 }

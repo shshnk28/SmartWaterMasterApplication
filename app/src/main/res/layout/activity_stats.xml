@@ -11,12 +11,22 @@
         android:orientation="vertical">
         <TextView
             style="@style/AdminScrTextView"
-            android:text="Messages Sent"
+            android:text="Messages Sent Count"
             android:padding="17dp"/>
         <TextView
+            android:id="@+id/MessagesSentCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="17dp"/>
+        <TextView
             style="@style/AdminScrTextView"
-            android:text="Messages Received"
+            android:text="Messages Received Count"
             android:padding="17dp"/>
+        <TextView
+            android:id="@+id/MessagesReceivedCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="17dp"/>
         <TextView
             style="@style/AdminScrTextView"
             android:text="Subscribed Topics"
@@ -25,24 +35,34 @@
             android:id="@+id/subscribedTopicsList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="10"
-            android:scrollbars="vertical"
+            android:maxLines="20"
             android:padding="17dp"
-            android:textSize="17dp"
+            android:textSize="14dp"
             android:hint="Subscribed topics will appear here"/>
         <!--android:text="I want to show multiple line via TextView and strings.xml . I want to show first few lines until the middle of the page and other lines to show in full of the page. I want to show first few lines with same size of width page. I want to show multiple line via TextView and strings.xml . I want to show first few lines until the middle of the page and other lines to show in full of the page. I want to show first few lines with same size of width page. I want to show multiple line via TextView and strings.xml . I want to show first few lines until the middle of the page and other lines to show in full of the page. I want to show first few lines with same size of width page. I want to show multiple line via TextView and strings.xml . I want to show first few lines until the middle of the page and other lines to show in full of the page. I want to show first few lines with same size of width page"/>-->
         <TextView
             style="@style/AdminScrTextView"
-            android:text="Topics published to"
+            android:text="Topics published to (Last 10)"
             android:padding="17dp"/>
         <TextView
-            android:id="@+id/publishedTopicsList"
+            android:id="@+id/publishedMessagesList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="10"
-            android:scrollbars="vertical"
+            android:maxLines="20"
             android:padding="17dp"
-            android:textSize="17dp"
+            android:textSize="14dp"
+            android:hint="Published topics will appear here"/>
+        <TextView
+            style="@style/AdminScrTextView"
+            android:text="Messages received (Last 10)"
+            android:padding="17dp"/>
+        <TextView
+            android:id="@+id/receivedMessagesList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="20"
+            android:padding="17dp"
+            android:textSize="14dp"
             android:hint="Published topics will appear here"/>
         <TextView
             style="@style/AdminScrTextView"
