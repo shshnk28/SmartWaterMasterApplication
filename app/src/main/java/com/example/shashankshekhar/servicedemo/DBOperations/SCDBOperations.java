@@ -8,10 +8,14 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.shashankshekhar.servicedemo.Constants.DBConstants;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Created by shashankshekhar on 27/04/16.
  */
 public class SCDBOperations {
+    static ExecutorService executor = Executors.newSingleThreadExecutor();
     static Context appContext;
     public static String MESSAGE_RECEIVED_EVENT_NAME = "Event.MessageReceived";
     public static String MESSAGE_SENT_EVENT_NAME = "Event.MessageSent";
@@ -51,10 +55,10 @@ public class SCDBOperations {
         better approach is to have a queue and put operation in a queue. this is spawning a new thread for each
         operation
          */
-        new Thread(new Runnable() {
+        executor.execute(new Runnable() {
             @Override
             public void run() {
-                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+//                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 SCDBHelper dbHelper = SCDBHelper.gethelperInstance(appContext);
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
@@ -88,7 +92,14 @@ public class SCDBOperations {
                         new String[] {MESSAGE_COUNT_EVENT_NAME});
 
             }
-        }).start();
+        });
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        }).start();
 
         // by: java.lang.IllegalStateException: SQLiteDatabase created and never closed check if you get this if yes
         // then close the goddamn db.
@@ -145,10 +156,10 @@ public class SCDBOperations {
     }
 
     public static void addSubscribedTopicToDB(final String topicName) {
-        new Thread(new Runnable() {
+        executor.execute(new Runnable() {
             @Override
             public void run() {
-                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+//                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 SCDBHelper dbHelper = SCDBHelper.gethelperInstance(appContext);
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
@@ -163,15 +174,15 @@ public class SCDBOperations {
                         values
                 );
             }
-        }).start();
+        });
 
     }
 
     public static void removeUnsubscribedTopicFromDB(final String topicName) {
-        new Thread(new Runnable() {
+        executor.execute(new Runnable() {
             @Override
             public void run() {
-                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+//                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 SCDBHelper dbHelper = SCDBHelper.gethelperInstance(appContext);
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 int rows = db.delete(DBConstants.SCLogTable.TABLE_NAME,
@@ -179,7 +190,7 @@ public class SCDBOperations {
                         new String[]{TOPIC_SUBSCRIBED_EVENT_NAME, TOPIC + ":" + topicName});
                 CommonUtils.printLog("rows deleted: " + rows);
             }
-        }).start();
+        });
 
     }
 

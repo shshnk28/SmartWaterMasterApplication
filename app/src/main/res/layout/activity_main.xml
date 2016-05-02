@@ -4,15 +4,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".Activities.MainActivity">
-    <EditText
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="18dp"
-        android:hint="enter your name"
-        android:text="shashank"/>
+    <!--<EditText-->
+        <!--android:id="@+id/textView1"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_marginTop="18dp"-->
+        <!--android:hint="enter your name"-->
+        <!--android:text="shashank"/>-->
     <TextView
         android:text="Start Service"
         style="@style/MainScrTextView"

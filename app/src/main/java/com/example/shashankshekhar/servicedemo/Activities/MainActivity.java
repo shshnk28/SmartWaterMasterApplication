@@ -120,14 +120,14 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
             return;
         }
 
-        EditText editText = (EditText) findViewById(R.id.textView1);
-        userName = editText.getText().toString();
-        userName = userName.trim();
-        if (userName == null || userName.isEmpty()) {
-            CommonUtils.showToast(getApplicationContext(), "Pls enter name");
-            return;
-        }
-        writeToSharedPreferences(USER_NAME_KEY,userName);
+//        EditText editText = (EditText) findViewById(R.id.textView1);
+//        userName = editText.getText().toString();
+//        userName = userName.trim();
+//        if (userName == null || userName.isEmpty()) {
+//            CommonUtils.showToast(getApplicationContext(), "Pls enter name");
+//            return;
+//        }
+        writeToSharedPreferences(USER_NAME_KEY,"Anon");
         ComponentName componentName = new ComponentName(PACKAGE_NAME, SERVICE_NAME);
         Intent intent = new Intent();
         intent.setComponent(componentName);
