@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -38,7 +39,7 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            CommonUtils.printLog("br received in pubsub ");
+            CommonUtils.printLog("Broadcast received in Pub-Sub Screen");
             String message = intent.getStringExtra("message");
             incomingMessageTV.append("received: " +message + "\n");
         }
@@ -53,6 +54,8 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
         publishEditText = (EditText)findViewById(R.id.publishET);
         incomingMessageTV = (TextView)findViewById(R.id.multiLineTextView);
         clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(), this));
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
     @Override
     public void onDestroy () {
