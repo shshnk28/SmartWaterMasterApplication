@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/mqtt-client-1.9/mqtt-client-1.9.iml" filepath="$PROJECT_DIR$/mqtt-client-1.9/mqtt-client-1.9.iml" />
       <module fileurl="file://$PROJECT_DIR$/org.eclipse.paho.android.service-1.0.2/org.eclipse.paho.android.service-1.0.2.iml" filepath="$PROJECT_DIR$/org.eclipse.paho.android.service-1.0.2/org.eclipse.paho.android.service-1.0.2.iml" />
       <module fileurl="file://$PROJECT_DIR$/org.eclipse.paho.client.mqttv3-1.0.2/org.eclipse.paho.client.mqttv3-1.0.2.iml" filepath="$PROJECT_DIR$/org.eclipse.paho.client.mqttv3-1.0.2/org.eclipse.paho.client.mqttv3-1.0.2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/smartcampuslib-release/smartcampuslib-release.iml" filepath="$PROJECT_DIR$/smartcampuslib-release/smartcampuslib-release.iml" />
     </modules>
   </component>
 </project>

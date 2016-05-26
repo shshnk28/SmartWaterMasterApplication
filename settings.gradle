@@ -1,1 +1,1 @@
-include ':app', ':mqtt-client-1.9', ':org.eclipse.paho.android.service-1.0.2', ':org.eclipse.paho.client.mqttv3-1.0.2'
+include ':app', ':mqtt-client-1.9', ':org.eclipse.paho.android.service-1.0.2', ':org.eclipse.paho.client.mqttv3-1.0.2', ':smartcampuslib-release'

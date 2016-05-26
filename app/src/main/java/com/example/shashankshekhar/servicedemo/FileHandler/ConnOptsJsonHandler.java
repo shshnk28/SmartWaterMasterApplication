@@ -84,13 +84,10 @@ public class ConnOptsJsonHandler implements MQTTConstants {
             JSONObject jsonObject = new JSONObject(jsonString);
             return jsonObject.getString(key);
         } catch (FileNotFoundException e) {
-            CommonUtils.printLog("11");
             e.printStackTrace();
         } catch (IOException ex) {
-            CommonUtils.printLog("22");
             ex.printStackTrace();
         } catch (JSONException ex) {
-            CommonUtils.printLog("33");
             ex.printStackTrace();
         }
         return null;
