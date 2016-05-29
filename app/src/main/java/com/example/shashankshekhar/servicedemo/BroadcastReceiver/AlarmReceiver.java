@@ -16,6 +16,7 @@ import com.example.shashankshekhar.servicedemo.IncomingHandler;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,7 +26,7 @@ import java.io.IOException;
 /**
  * Created by shashankshekhar on 08/04/16.
  */
-public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, ServiceCallback {
+public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, ServiceCallback,SmartXLibConstants {
     private static final String TEST_TOPIC = "iisc/smartx/crowd/network/ping";
     private static final String SMART_CAMPUS_FOLDER_NAME = "SmartCampus";
     private static final String SMART_CAMPUS_LOG_FILE_NAME2 = "FromAlarm.txt";

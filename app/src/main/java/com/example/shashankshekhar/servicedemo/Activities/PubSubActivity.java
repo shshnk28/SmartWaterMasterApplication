@@ -20,12 +20,13 @@ import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.IncomingHandler;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.R;
-import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.example.shashankshekhar.smartcampuslib.ServiceAdapter;
+import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
 import java.util.List;
 
-public class PubSubActivity extends AppCompatActivity implements ServiceCallback,MQTTConstants {
+public class PubSubActivity extends AppCompatActivity implements ServiceCallback,MQTTConstants,SmartXLibConstants {
     TextView multiLineTV;
     EditText topicEditText;
     EditText publishEditText;
@@ -35,6 +36,7 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
     ProgressDialog connectingDialog;
     Messenger clientMessenger;
     boolean continueWithSubscription;
+    ServiceAdapter serviceAdapter;
 //    List<String> subscribedTopics;
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -56,6 +58,7 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
         clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(), this));
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        serviceAdapter = new ServiceAdapter(getApplicationContext());
     }
     @Override
     public void onDestroy () {
@@ -170,7 +173,7 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
         }
     }
     private boolean isServiceRunning( ) {
-        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false) {
+        if (serviceAdapter.serviceConnected() == false) {
             CommonUtils.printLog("service not connected .. returning");
             CommonUtils.showToast(getApplicationContext(), "Service not running");
             return false;
@@ -185,17 +188,18 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
             }
             return;
         }
-        Message message = Message.obtain(null, UNSUBSCRIBE_TO_TOPIC);
-        Bundle bundle = new Bundle();
-        bundle.putString("topicName",topicName2);
-        message.setData(bundle);
-        message.replyTo = clientMessenger;
-        try {
-            SCServiceConnector.messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
+        serviceAdapter.unsubscribeFromTopic(topicName2,clientMessenger);
+//        Message message = Message.obtain(null, UNSUBSCRIBE_TO_TOPIC);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("topicName",topicName2);
+//        message.setData(bundle);
+//        message.replyTo = clientMessenger;
+//        try {
+//            SCServiceConnector.messenger.send(message);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            CommonUtils.printLog("remote Exception,Could not send message");
+//        }
     }
     private void subscribeToTopic () {
         if (isServiceRunning() == false) {
@@ -204,35 +208,37 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
             }
             return;
         }
-        Message message = Message.obtain(null, SUBSCRIBE_TO_TOPIC);
-        Bundle bundle = new Bundle();
-        bundle.putString("topicName",topicName);
-        message.setData(bundle);
-        message.replyTo = clientMessenger;
-        try {
-            SCServiceConnector.messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
+        serviceAdapter.subscribeToTopic(topicName,clientMessenger);
+//        Message message = Message.obtain(null, SUBSCRIBE_TO_TOPIC);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("topicName",topicName);
+//        message.setData(bundle);
+//        message.replyTo = clientMessenger;
+//        try {
+//            SCServiceConnector.messenger.send(message);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            CommonUtils.printLog("remote Exception,Could not send message");
+//        }
     }
     private void publishData (String data) {
         if (isServiceRunning() == false) {
             return;
         }
         String topicName = topicEditText.getText().toString();
-        Message message = Message.obtain(null, PUBLISH_MESSAGE);
-        Bundle bundle = new Bundle();
-        bundle.putString("topicName",topicName);
-        bundle.putString("dataString",data);
-        message.setData(bundle);
-        message.replyTo = clientMessenger;
-        try {
-            SCServiceConnector.messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
+        serviceAdapter.publishGlobal(topicName,null,data,clientMessenger);
+//        Message message = Message.obtain(null, PUBLISH_MESSAGE);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("topicName",topicName);
+//        bundle.putString("dataString",data);
+//        message.setData(bundle);
+//        message.replyTo = clientMessenger;
+//        try {
+//            SCServiceConnector.messenger.send(message);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            CommonUtils.printLog("remote Exception,Could not send message");
+//        }
     }
     private void setupBroadcastReceiver () {
         if (currentlySubscribedTopic == null) {

@@ -18,13 +18,14 @@ import com.example.shashankshekhar.servicedemo.Mqtt.MqttReceiver;
 import com.example.shashankshekhar.servicedemo.Mqtt.MqttSubscriber;
 import com.example.shashankshekhar.servicedemo.Mqtt.SCMqttClient;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class FirstService extends Service implements MQTTConstants {
+public class FirstService extends Service implements MQTTConstants,SmartXLibConstants {
 
     // connection options
     static final int MQTT_CONNECTED = 1;

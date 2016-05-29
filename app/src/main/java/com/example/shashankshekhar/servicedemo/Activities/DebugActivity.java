@@ -10,12 +10,12 @@ import android.view.View;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.DBOperations.SCDBHelper;
-import com.example.shashankshekhar.servicedemo.FirstService;
 import com.example.shashankshekhar.servicedemo.IncomingHandler;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.R;
-import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.example.shashankshekhar.smartcampuslib.ServiceAdapter;
+import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -24,8 +24,9 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 
-public class DebugActivity extends AppCompatActivity implements MQTTConstants,ServiceCallback {
+public class DebugActivity extends AppCompatActivity implements MQTTConstants,ServiceCallback,SmartXLibConstants {
     Messenger clientMessenger;
+    ServiceAdapter serviceAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,9 +34,7 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants,Se
 //        debugIntent.putExtra("messengerObj", messenger);
 //        debugIntent.putExtra("bound", mBound);
         clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(), this));
-        if (SCServiceConnector.messenger == null) {
-            CommonUtils.printLog("messenger is null in debug screen");
-        }
+        serviceAdapter = new ServiceAdapter(getApplicationContext());
     }
     public void checkGoogle(View view) {
         pingTest("www.google.co.in");
@@ -127,33 +126,29 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants,Se
         httpConnectionTest("www.google.co.in");
     }
     public  void checkService (View view) {
-        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false ) {
+        if (serviceAdapter.serviceConnected() == false) {
             CommonUtils.printLog("service not connected .. returning");
             CommonUtils.showToast(getApplicationContext(), "not running");
             return;
         }
-        Message message = Message.obtain(null,CHECK_SERVICE);
-        try {
-            SCServiceConnector.messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
+        CommonUtils.showToast(getApplicationContext(), "Running");
+
     }
     public void checkConnection (View view) {
-        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false ) {
+        if (serviceAdapter.serviceConnected() == false) {
             CommonUtils.printLog("service not connected .. returning");
             CommonUtils.showToast(getApplicationContext(), "Service not running");
             return;
         }
-        Message message = Message.obtain(null,CHECK_MQTT_CONNECTION);
-        message.replyTo = clientMessenger;
-        try {
-            SCServiceConnector.messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
+        serviceAdapter.checkMqttConnection(clientMessenger);
+//        Message message = Message.obtain(null,CHECK_MQTT_CONNECTION);
+//        message.replyTo = clientMessenger;
+//        try {
+//            SCServiceConnector.messenger.send(message);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            CommonUtils.printLog("remote Exception,Could not send message");
+//        }
     }
     private void httpConnectionTest(final String url) {
         new Thread(new Runnable() {
@@ -161,6 +156,7 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants,Se
             public void run() {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 try {
+                    CommonUtils.printLog("testing HTTP connection");
                     URL url1 = new URL("http://" + url);
                     Long start1 = System.currentTimeMillis();
                     HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
@@ -170,6 +166,8 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants,Se
                         CommonUtils.printLog("time taken: " + (System.currentTimeMillis() - start1));
                         showToastOnUIThread("http success");
                         return;
+                    } else {
+                        CommonUtils.printLog("http connection not ok");
                     }
                 } catch (MalformedURLException e) {
                     CommonUtils.printLog("malformed url exception");

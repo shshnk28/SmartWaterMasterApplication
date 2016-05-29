@@ -20,10 +20,12 @@ import com.example.shashankshekhar.servicedemo.FileHandler.ConnOptsJsonHandler;
 import com.example.shashankshekhar.servicedemo.IncomingHandler;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.R;
-import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.example.shashankshekhar.smartcampuslib.ServiceAdapter;
+import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
-public class AdminActivity extends AppCompatActivity implements MQTTConstants,ServiceCallback {
+
+public class AdminActivity extends AppCompatActivity implements MQTTConstants,ServiceCallback,SmartXLibConstants {
     private static final int PING_FREQ_MAX = 720; // minutes
     private static final int KEEP_ALIVE_INTERVAL_MAX = 720; // minutes
     private static final int CONNECTION_TIMEOUT_MAX = 120; // seconds
@@ -43,6 +45,7 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
     private EditText portNum;
     private EditText userName;
     private EditText pwd;
+    ServiceAdapter serviceAdapter;
 
     ProgressDialog connectingDialog;
     Messenger clientMessenger;
@@ -110,6 +113,7 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
         pwd = (EditText) findViewById(R.id.pwd);
 
         clientMessenger = new Messenger(new IncomingHandler(getApplicationContext(), this));
+        serviceAdapter = new  ServiceAdapter(getApplicationContext());
     }
     @Override
     public void onResume () {
@@ -274,7 +278,7 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
         publishConnLogs.setChecked(Boolean.valueOf(ConnOptsJsonHandler.readFromJsonFile(PUBLISH_CONN_LOGS_KEY)));
     }
     private boolean isServiceRunning( ) {
-        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false) {
+        if (serviceAdapter.serviceConnected() == false) {
             CommonUtils.printLog("service not connected .. returning");
             CommonUtils.showToast(getApplicationContext(), "Service not running");
             return false;
@@ -285,14 +289,15 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
         if (isServiceRunning() == false) {
             return;
         }
-        Message message = Message.obtain(null, CONNECT_MQTT);
-        message.replyTo = clientMessenger;
-        try {
-            SCServiceConnector.messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
+        serviceAdapter.connectMqtt(clientMessenger);
+//        Message message = Message.obtain(null, CONNECT_MQTT);
+//        message.replyTo = clientMessenger;
+//        try {
+//            SCServiceConnector.messenger.send(message);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            CommonUtils.printLog("remote Exception,Could not send message");
+//        }
     }
     private void disconnectMqtt () {
         if (isServiceRunning() == false) {
@@ -301,13 +306,14 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
             }
             return;
         }
-        Message message = Message.obtain(null, DISCONNECT_MQTT);
-        message.replyTo = clientMessenger;
-        try {
-            SCServiceConnector.messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
+        serviceAdapter.disconnectMqtt(clientMessenger);
+//        Message message = Message.obtain(null, DISCONNECT_MQTT);
+//        message.replyTo = clientMessenger;
+//        try {
+//            SCServiceConnector.messenger.send(message);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            CommonUtils.printLog("remote Exception,Could not send message");
+//        }
     }
 }

@@ -42,8 +42,8 @@ public interface MQTTConstants {
     boolean PUBLISH_CONN_LOGS_VAL = false;
 
 
-    String PACKAGE_NAME = "com.example.shashankshekhar.servicedemo";
-    String SERVICE_NAME = "com.example.shashankshekhar.servicedemo.FirstService";
+//    String PACKAGE_NAME = "com.example.shashankshekhar.servicedemo";
+//    String SERVICE_NAME = "com.example.shashankshekhar.servicedemo.FirstService";
 
 
     String SMART_CAMPUS_FOLDER_NAME = "SmartCampus";
@@ -59,35 +59,35 @@ public interface MQTTConstants {
     // TODO: 31/03/16 PUT THESE IN THE library once integrated
     /* MESSAGE HANDLER CONSTANTS. used when sending message to service to perform some action.Needs to be in the library once it is
     integrated. */
-    int PUBLISH_MESSAGE = 3;
-    int SUBSCRIBE_TO_TOPIC = 4;
-    int UNSUBSCRIBE_TO_TOPIC = 5;
-    int CHECK_SERVICE = 6;
-    int CHECK_MQTT_CONNECTION = 7;
-    int CONNECT_MQTT = 8;
-    int DISCONNECT_MQTT = 9;
+//    int PUBLISH_MESSAGE = 3;
+//    int SUBSCRIBE_TO_TOPIC = 4;
+//    int UNSUBSCRIBE_TO_TOPIC = 5;
+//    int CHECK_SERVICE = 6;
+//    int CHECK_MQTT_CONNECTION = 7;
+//    int CONNECT_MQTT = 8;
+//    int DISCONNECT_MQTT = 9;
 
     /* these are returned from service as a a response to the above requests. Needs to be in the library once it is
     integrated.*/
 
     // connection status
-    int MQTT_CONNECTED =1;
-    int UNABLE_TO_CONNECT =2;
-    int NO_NETWORK_AVAILABLE =4;
-    int MQTT_CONNECTION_IN_PROGRESS = 5;
-    int MQTT_NOT_CONNECTED = 6;
-    int DISCONNECT_SUCCESS= 11;
-
-    // publish status
-    int TOPIC_PUBLISHED = 7;
-    int ERROR_IN_PUBLISHING = 8;
-
-    // subscription status
-    int SUBSCRIPTION_SUCCESS = 9;
-    int SUBSCRIPTION_ERROR = 10;
-
-    // unsubscription status
-    int UNSUBSCRIPTION_SUCCESS = 12;
-    int UNSUBSCRIPTION_ERROR = 13;
+//    int MQTT_CONNECTED =1;
+//    int UNABLE_TO_CONNECT =2;
+//    int NO_NETWORK_AVAILABLE =4;
+//    int MQTT_CONNECTION_IN_PROGRESS = 5;
+//    int MQTT_NOT_CONNECTED = 6;
+//    int DISCONNECT_SUCCESS= 11;
+//
+//    // publish status
+//    int TOPIC_PUBLISHED = 7;
+//    int ERROR_IN_PUBLISHING = 8;
+//
+//    // subscription status
+//    int SUBSCRIPTION_SUCCESS = 9;
+//    int SUBSCRIPTION_ERROR = 10;
+//
+//    // unsubscription status
+//    int UNSUBSCRIPTION_SUCCESS = 12;
+//    int UNSUBSCRIPTION_ERROR = 13;
 
 }

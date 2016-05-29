@@ -10,7 +10,7 @@ import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
 /**
  * Created by shashankshekhar on 30/03/16.
- */
+
 public class SCServiceConnector implements ServiceConnection {
     // TODO: 31/03/16 these two vars should only have getters and no setters
     public static Messenger messenger;
@@ -33,4 +33,4 @@ public class SCServiceConnector implements ServiceConnection {
         messenger = null;
         callback.serviceDisconnected();
     }
-}
+}*/

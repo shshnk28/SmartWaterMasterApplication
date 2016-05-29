@@ -21,23 +21,27 @@ import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.IncomingHandler;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.R;
-import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+
+import com.example.shashankshekhar.smartcampuslib.ServiceAdapter;
+import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
 import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity implements MQTTConstants, ServiceCallback {
+public class MainActivity extends AppCompatActivity implements MQTTConstants, ServiceCallback,SmartXLibConstants {
     //    ProgressDialog connectingDialog;
     Messenger clientMessenger;
     String userName;
     ProgressDialog connectingDialog;
-    SCServiceConnector serviceConnector = new SCServiceConnector(this);
+//    SCServiceConnector serviceConnector = new SCServiceConnector(this);
+    ServiceAdapter serviceAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        CommonUtils.printLog(" Main activity process id: " + android.os.Process.myPid());
+        serviceAdapter = new ServiceAdapter(getApplicationContext());
+//        CommonUtils.printLog(" Main activity process id: " + android.os.Process.myPid());
     }
 
     @Override
@@ -55,11 +59,6 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
     // service callbacks
     @Override
     public void messageReceivedFromService(int number) {
-//        int MQTT_CONNECTED =1;
-//        int UNABLE_TO_CONNECT =2;
-//        int NO_NETWORK_AVAILABLE =4;
-//        int MQTT_CONNECTION_IN_PROGRESS = 5;
-//        int MQTT_NOT_CONNECTED = 6;
         connectingDialog.dismiss();
         String toastStr;
         switch (number) {
@@ -114,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
     }
 
     public void startAndBindService(View view) {
-        if (SCServiceConnector.messenger != null && SCServiceConnector.mBound != false) {
+        if (serviceAdapter.serviceConnected()) {
             CommonUtils.printLog("service connected already ");
             CommonUtils.showToast(getApplicationContext(), "Service already connected");
             return;
@@ -128,16 +127,14 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
 //            return;
 //        }
         writeToSharedPreferences(USER_NAME_KEY,"Anon");
-        ComponentName componentName = new ComponentName(PACKAGE_NAME, SERVICE_NAME);
-        Intent intent = new Intent();
-        intent.setComponent(componentName);
-        ComponentName componentName1 = startService(intent);
-        Boolean bindSuccess = bindService(intent, serviceConnector, Context.BIND_AUTO_CREATE);
+        serviceAdapter.startAndBindToService();
+//        ComponentName componentName1 = startService(intent);
+//        Boolean bindSuccess = bindService(intent, serviceConnector, Context.BIND_AUTO_CREATE);
 
     }
 
     public void showDialogAndConnectToMqtt(View view) {
-        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false) {
+        if (serviceAdapter.serviceConnected() == false) {
             CommonUtils.printLog("service not connected .. returning");
             CommonUtils.showToast(getApplicationContext(), "Service not running");
             return;
@@ -152,17 +149,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
     }
 
     public void connectMqtt() {
-        // TODO: 22/03/16 remove the hardcoded stuff such as 8. integrate the library and also amake a new subclass
-        // of message which mandates a reply to messenger to which the reply can be sent
-
-        Message message = Message.obtain(null, CONNECT_MQTT);
-        message.replyTo = clientMessenger;
-        try {
-            SCServiceConnector.messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
+        serviceAdapter.connectMqtt(clientMessenger);
     }
 
     public void launchDebugScreen(View view) {
