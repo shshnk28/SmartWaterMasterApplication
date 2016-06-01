@@ -103,11 +103,13 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
                 toastStr = "switch case unknown";
 
         }
+        CommonUtils.printLog("number: " + number);
         showToastOnUIThread(toastStr);
     }
 
     @Override
     public void serviceConnected() {
+        CommonUtils.printLog("connection callback received in main activity");
         showDialogAndConnectToMqtt(null);
     }
 

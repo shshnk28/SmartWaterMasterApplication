@@ -12,7 +12,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/mqtt-client-1.9" />
             <option value="$PROJECT_DIR$/org.eclipse.paho.client.mqttv3-1.0.2" />
-            <option value="$PROJECT_DIR$/smartcampuslib-release" />
+            <option value="$PROJECT_DIR$/smartcampuslib-debug" />
           </set>
         </option>
       </GradleProjectSettings>
