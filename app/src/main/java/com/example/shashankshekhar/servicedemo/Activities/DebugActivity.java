@@ -10,10 +10,10 @@ import android.view.View;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.DBOperations.SCDBHelper;
-import com.example.shashankshekhar.servicedemo.IncomingHandler;
-import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.R;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.example.shashankshekhar.smartcampuslib.IncomingHandler;
+import com.example.shashankshekhar.smartcampuslib.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.smartcampuslib.ServiceAdapter;
 import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
@@ -194,15 +194,6 @@ public class DebugActivity extends AppCompatActivity implements MQTTConstants,Se
                 CommonUtils.showToast(getApplicationContext(), message);
             }
         });
-    }
-    @Override
-    public void serviceConnected() {
-        CommonUtils.printLog("service connected message in alarm recever ");
-    }
-
-    @Override
-    public void serviceDisconnected() {
-        CommonUtils.printLog("service disconnected message in alarm recever ");
     }
 
     @Override

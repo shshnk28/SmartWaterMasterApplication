@@ -12,9 +12,9 @@ import android.os.RemoteException;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.FirstService;
-import com.example.shashankshekhar.servicedemo.IncomingHandler;
-import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.example.shashankshekhar.smartcampuslib.IncomingHandler;
+import com.example.shashankshekhar.smartcampuslib.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.smartcampuslib.ServiceAdapter;
 import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
@@ -53,7 +53,7 @@ public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, S
 //    }
 
     private void publishMessage(String message) {
-        serviceAdapter.publishGlobal(TEST_TOPIC,null,message,clientMessenger);
+        serviceAdapter.publishGlobal(TEST_TOPIC, null, message, clientMessenger);
 //        bundleToPublish.remove("dataString");
 //        bundleToPublish.putString("dataString", message);
 //        try {
@@ -80,15 +80,6 @@ public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, S
 //        }
     }
 
-    @Override
-    public void serviceConnected() {
-        CommonUtils.printLog("service connected message in alarm recever ");
-    }
-
-    @Override
-    public void serviceDisconnected() {
-        CommonUtils.printLog("service disconnected message in alarm recever ");
-    }
 
     @Override
     public void messageReceivedFromService(int status) {

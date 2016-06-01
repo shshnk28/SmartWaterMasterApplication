@@ -18,22 +18,26 @@ import android.view.View;
 
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
-import com.example.shashankshekhar.servicedemo.IncomingHandler;
-import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.R;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 
+import com.example.shashankshekhar.smartcampuslib.IncomingHandler;
+import com.example.shashankshekhar.smartcampuslib.Interfaces.ServiceCallback;
+import com.example.shashankshekhar.smartcampuslib.Interfaces.ServiceStatusCallback;
+
+import com.example.shashankshekhar.smartcampuslib.SCServiceConnector;
 import com.example.shashankshekhar.smartcampuslib.ServiceAdapter;
 import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
 import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity implements MQTTConstants, ServiceCallback,SmartXLibConstants {
+public class MainActivity extends AppCompatActivity implements MQTTConstants, ServiceCallback,SmartXLibConstants,ServiceStatusCallback
+         {
     //    ProgressDialog connectingDialog;
     Messenger clientMessenger;
     String userName;
     ProgressDialog connectingDialog;
-//    SCServiceConnector serviceConnector = new SCServiceConnector(this);
+    SCServiceConnector serviceConnector = new SCServiceConnector(this);
     ServiceAdapter serviceAdapter;
 
     @Override
@@ -127,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
 //            return;
 //        }
         writeToSharedPreferences(USER_NAME_KEY,"Anon");
-        serviceAdapter.startAndBindToService();
+        serviceAdapter.startAndBindToService(serviceConnector);
 //        ComponentName componentName1 = startService(intent);
 //        Boolean bindSuccess = bindService(intent, serviceConnector, Context.BIND_AUTO_CREATE);
 

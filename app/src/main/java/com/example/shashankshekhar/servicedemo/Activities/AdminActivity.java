@@ -17,10 +17,10 @@ import android.widget.TextView;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.FileHandler.ConnOptsJsonHandler;
-import com.example.shashankshekhar.servicedemo.IncomingHandler;
-import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.R;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.example.shashankshekhar.smartcampuslib.IncomingHandler;
+import com.example.shashankshekhar.smartcampuslib.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.smartcampuslib.ServiceAdapter;
 import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
@@ -136,6 +136,7 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
          */
 
     }
+    @Override
     public void messageReceivedFromService(int number) {
         String toastStr = null;
         switch (number) {
@@ -166,14 +167,6 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
             CommonUtils.showToast(getApplicationContext(),toastStr);
         }
 
-    }
-    @Override
-    public void serviceConnected() {
-    }
-
-    @Override
-    public void serviceDisconnected() {
-        CommonUtils.printLog("service disconnecetd");
     }
 
     public void resetConnectionOptions(View view) {
@@ -286,13 +279,13 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
         return true;
     }
     private void connectMqtt() {
-        if (isServiceRunning() == false) {
-            return;
+        if (isServiceRunning()) {
+            serviceAdapter.connectMqtt(clientMessenger);
         }
-        serviceAdapter.connectMqtt(clientMessenger);
+
     }
     private void disconnectMqtt () {
-        if (isServiceRunning() == false) {
+        if (!isServiceRunning()) {
             if (connectingDialog.isShowing()) {
                 connectingDialog.dismiss();
             }

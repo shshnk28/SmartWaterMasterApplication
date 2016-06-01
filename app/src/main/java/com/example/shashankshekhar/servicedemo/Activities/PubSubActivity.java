@@ -17,10 +17,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
-import com.example.shashankshekhar.servicedemo.IncomingHandler;
-import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.servicedemo.R;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.example.shashankshekhar.smartcampuslib.IncomingHandler;
+import com.example.shashankshekhar.smartcampuslib.Interfaces.ServiceCallback;
 import com.example.shashankshekhar.smartcampuslib.ServiceAdapter;
 import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
@@ -188,7 +188,7 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
             }
             return;
         }
-        serviceAdapter.unsubscribeFromTopic(topicName2,clientMessenger);
+        serviceAdapter.unsubscribeFromTopic(topicName2, clientMessenger);
 //        Message message = Message.obtain(null, UNSUBSCRIBE_TO_TOPIC);
 //        Bundle bundle = new Bundle();
 //        bundle.putString("topicName",topicName2);
@@ -251,13 +251,5 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
         } catch (IllegalArgumentException ex) {
             // recevier already registered
         }
-    }
-    @Override
-    public void serviceConnected() {
-    }
-
-    @Override
-    public void serviceDisconnected() {
-        CommonUtils.printLog("service disconnecetd");
     }
 }
