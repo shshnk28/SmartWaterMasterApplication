@@ -290,14 +290,6 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
             return;
         }
         serviceAdapter.connectMqtt(clientMessenger);
-//        Message message = Message.obtain(null, CONNECT_MQTT);
-//        message.replyTo = clientMessenger;
-//        try {
-//            SCServiceConnector.messenger.send(message);
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//            CommonUtils.printLog("remote Exception,Could not send message");
-//        }
     }
     private void disconnectMqtt () {
         if (isServiceRunning() == false) {
@@ -307,13 +299,5 @@ public class AdminActivity extends AppCompatActivity implements MQTTConstants,Se
             return;
         }
         serviceAdapter.disconnectMqtt(clientMessenger);
-//        Message message = Message.obtain(null, DISCONNECT_MQTT);
-//        message.replyTo = clientMessenger;
-//        try {
-//            SCServiceConnector.messenger.send(message);
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//            CommonUtils.printLog("remote Exception,Could not send message");
-//        }
     }
 }

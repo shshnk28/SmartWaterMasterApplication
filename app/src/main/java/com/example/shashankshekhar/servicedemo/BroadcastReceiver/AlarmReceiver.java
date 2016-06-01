@@ -14,8 +14,8 @@ import com.example.shashankshekhar.servicedemo.Constants.MQTTConstants;
 import com.example.shashankshekhar.servicedemo.FirstService;
 import com.example.shashankshekhar.servicedemo.IncomingHandler;
 import com.example.shashankshekhar.servicedemo.Interfaces.ServiceCallback;
-import com.example.shashankshekhar.servicedemo.SCServiceConnector;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
+import com.example.shashankshekhar.smartcampuslib.ServiceAdapter;
 import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
 import java.io.BufferedWriter;
@@ -36,45 +36,48 @@ public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, S
     Message messageToPublish;
     Bundle bundleToPublish;
     Context appContext;
-
+    ServiceAdapter serviceAdapter;
     public void onReceive(Context context, Intent intent) {
         clientMessenger = new Messenger(new IncomingHandler(context, this));
         appContext = context;
+        serviceAdapter = new ServiceAdapter(context);
         checkConnection();
     }
 
-    private void configureMessage() {
-        messageToPublish = Message.obtain(null, PUBLISH_MESSAGE);
-        bundleToPublish = new Bundle();
-        bundleToPublish.putString("topicName", TEST_TOPIC);
-        messageToPublish.setData(bundleToPublish);
-        messageToPublish.replyTo = clientMessenger;
-    }
+//    private void configureMessage() {
+//        messageToPublish = Message.obtain(null, PUBLISH_MESSAGE);
+//        bundleToPublish = new Bundle();
+//        bundleToPublish.putString("topicName", TEST_TOPIC);
+//        messageToPublish.setData(bundleToPublish);
+//        messageToPublish.replyTo = clientMessenger;
+//    }
 
     private void publishMessage(String message) {
-        bundleToPublish.remove("dataString");
-        bundleToPublish.putString("dataString", message);
-        try {
-            SCServiceConnector.messenger.send(messageToPublish);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
+        serviceAdapter.publishGlobal(TEST_TOPIC,null,message,clientMessenger);
+//        bundleToPublish.remove("dataString");
+//        bundleToPublish.putString("dataString", message);
+//        try {
+//            SCServiceConnector.messenger.send(messageToPublish);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            CommonUtils.printLog("remote Exception,Could not send message");
+//        }
     }
 
     private void checkConnection() {
-        if (SCServiceConnector.messenger == null || SCServiceConnector.mBound == false) {
+        if (serviceAdapter.serviceConnected() == false) {
             CommonUtils.printLog("service not connected .. returning");
             return;
         }
-        Message message = Message.obtain(null, CHECK_MQTT_CONNECTION);
-        message.replyTo = clientMessenger;
-        try {
-            SCServiceConnector.messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            CommonUtils.printLog("remote Exception,Could not send message");
-        }
+        serviceAdapter.checkMqttConnection(clientMessenger);
+//        Message message = Message.obtain(null, CHECK_MQTT_CONNECTION);
+//        message.replyTo = clientMessenger;
+//        try {
+//            SCServiceConnector.messenger.send(message);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            CommonUtils.printLog("remote Exception,Could not send message");
+//        }
     }
 
     @Override
@@ -117,9 +120,8 @@ public class AlarmReceiver extends BroadcastReceiver implements MQTTConstants, S
                  */
                 writeDataToLogFile("sending ping message");
                 CommonUtils.printLog("callback in alarm receiver- mqtt connected,Sending ping");
-                configureMessage();
                 /*
-                a publish to maintain a connection
+                a publish to maintain connection
                  */
                 publishMessage("ab");
 

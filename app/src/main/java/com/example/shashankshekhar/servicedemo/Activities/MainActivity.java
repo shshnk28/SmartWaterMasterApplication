@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
     }
 
     public void connectMqtt() {
+        CommonUtils.printLog("connection req sent in main activity");
         serviceAdapter.connectMqtt(clientMessenger);
     }
 

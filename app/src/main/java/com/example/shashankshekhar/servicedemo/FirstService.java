@@ -150,6 +150,7 @@ public class FirstService extends Service implements MQTTConstants,SmartXLibCons
                     }
                     break;
                 case CHECK_MQTT_CONNECTION: // check if the mqtt client is connected
+                    CommonUtils.printLog("check mqtt request received");
                     int status;
                     if (MqttConnector.isConnecting) {
                         status= MQTT_CONNECTION_IN_PROGRESS;
@@ -159,9 +160,11 @@ public class FirstService extends Service implements MQTTConstants,SmartXLibCons
                     } else {
                         status = MQTT_NOT_CONNECTED;
                     }
-                    sendMessageToClient(message.replyTo,status);
+                    CommonUtils.printLog("sending status back: " + status);
+                    sendMessageToClient(message.replyTo, status);
                     break;
                 case CONNECT_MQTT: // reconnect mqtt
+                    CommonUtils.printLog("connect to mqtt req received");
                     if (message.replyTo == null) {
                         sendMessageToClient(message.replyTo, UNABLE_TO_CONNECT);
                         return;
