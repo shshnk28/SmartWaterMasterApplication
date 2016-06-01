@@ -73,8 +73,6 @@ public class FirstService extends Service implements MQTTConstants,SmartXLibCons
                         sendMessageToClient(message.replyTo, ERROR_IN_PUBLISHING);
                         return;
                     }
-                    // TODO: 18/01/16  don't call MQTT directly here. make it modular so that this class does not need know
-                    // who handles the publishing event
                     MqttPublisher mqttPublisher = new MqttPublisher(topicName, eventName, dataString);
                     boolean didPublish = mqttPublisher.publishData();
                     if (didPublish) {
@@ -116,13 +114,18 @@ public class FirstService extends Service implements MQTTConstants,SmartXLibCons
                     // TODO: 12/11/15 return the subscribeId to the client from here.
                     break;
                 case UNSUBSCRIBE_TO_TOPIC:// unsubscribe to a topic
+                    if (message.replyTo == null) {
+                        CommonUtils.printLog("reply messenger is null.. returning");
+                        return;
+                    }
                     if (checkConnectivity(message.replyTo) == false) {
                         return;
                     }
                     final Messenger unsubReplyToMessenger = message.replyTo;
                     topicName = message.getData().getString("topicName");
-                    if (topicName == null)
-                        return;
+                    if (topicName == null){
+                        sendMessageToClient(unsubReplyToMessenger, UNSUBSCRIPTION_ERROR);
+                    }
                     Runnable successSubscribe = new Runnable() {
                         @Override
                         public void run() {
@@ -140,17 +143,22 @@ public class FirstService extends Service implements MQTTConstants,SmartXLibCons
                             failureSubscribe);
                     subscribedTopics.remove(topicName);
                     break;
-                case CHECK_SERVICE: // check if  service is running
-                    // TODO: 31/03/16 this is not sendng a reply back to client. send it
-                    boolean isRunning = CommonUtils.isMyServiceRunning(FirstService.class, getApplicationContext());
-                    if (isRunning) {
-                        CommonUtils.showToast(getApplicationContext(), "running");
-                    } else {
-                        CommonUtils.showToast(getApplicationContext(), "Not running");
-                    }
-                    break;
+//                case CHECK_SERVICE: // check if  service is running
+//                    boolean isRunning = CommonUtils.isMyServiceRunning(FirstService.class, getApplicationContext());
+//                    if (isRunning) {
+//                        CommonUtils.showToast(getApplicationContext(), "running");
+//                    } else {
+//                        CommonUtils.showToast(getApplicationContext(), "Not running");
+//                    }
+//                    break;
                 case CHECK_MQTT_CONNECTION: // check if the mqtt client is connected
-                    CommonUtils.printLog("check mqtt request received");
+                    if (message.replyTo == null) {
+                        CommonUtils.printLog("reply messenger is null.. returning");
+                        return;
+                    }
+                    if (checkConnectivity(message.replyTo) == false) {
+                        return;
+                    }
                     int status;
                     if (MqttConnector.isConnecting) {
                         status= MQTT_CONNECTION_IN_PROGRESS;
@@ -166,7 +174,7 @@ public class FirstService extends Service implements MQTTConstants,SmartXLibCons
                 case CONNECT_MQTT: // reconnect mqtt
                     CommonUtils.printLog("connect to mqtt req received");
                     if (message.replyTo == null) {
-                        sendMessageToClient(message.replyTo, UNABLE_TO_CONNECT);
+                        CommonUtils.printLog("reply messenger is null.. returning");
                         return;
                     }
                     if (MqttConnector.isConnecting == true) {
@@ -175,6 +183,10 @@ public class FirstService extends Service implements MQTTConstants,SmartXLibCons
                     }
                     if (SCMqttClient.isMqttConnected() == true) {
                         sendMessageToClient(message.replyTo, MQTT_CONNECTED);
+                        return;
+                    }
+                    if (CommonUtils.isNetworkAvailable(getApplicationContext()) == false) {
+                        sendMessageToClient(messenger, NO_NETWORK_AVAILABLE);
                         return;
                     }
                     ConnectToMqtt connectToMqtt = new ConnectToMqtt(message.replyTo);
