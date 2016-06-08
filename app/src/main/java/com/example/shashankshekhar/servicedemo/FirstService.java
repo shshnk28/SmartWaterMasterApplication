@@ -108,7 +108,7 @@ public class FirstService extends Service implements MQTTConstants,SmartXLibCons
 
                         }
                     };
-                    CommonUtils.printLog("subscribe call made");
+                    CommonUtils.printLog("trying to subscribe");
                     String subscribeID = MqttSubscriber.subscribeToTopic(getApplicationContext(),topicName2,success,
                             failure);
                     // TODO: 12/11/15 return the subscribeId to the client from here.
