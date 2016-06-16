@@ -1,2 +1,0 @@
-configurations.create("default")
-artifacts.add("default", file('mqtt-client-1.9.jar'))
