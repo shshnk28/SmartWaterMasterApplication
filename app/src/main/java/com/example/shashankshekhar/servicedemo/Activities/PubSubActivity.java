@@ -126,19 +126,23 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
                 // here only register the BR
                 currentlySubscribedTopic = topicName;
                 setupBroadcastReceiver();
-                connectingDialog.dismiss();
+                if(connectingDialog != null && connectingDialog.isShowing())
+                    {connectingDialog.dismiss();}
                 break;
             case SUBSCRIPTION_ERROR:
                 toastStr = "could not subscribe";
-                connectingDialog.dismiss();
+                if(connectingDialog != null && connectingDialog.isShowing())
+                    {connectingDialog.dismiss();}
                 break;
             case NO_NETWORK_AVAILABLE:
                 toastStr = "No Network";
-                connectingDialog.dismiss();
+                if(connectingDialog != null && connectingDialog.isShowing())
+                    {connectingDialog.dismiss();}
                 break;
             case MQTT_NOT_CONNECTED:
                 toastStr = "Mqtt Not cnnected to broker";
-                connectingDialog.dismiss();
+                if(connectingDialog != null && connectingDialog.isShowing())
+                    {connectingDialog.dismiss();}
                 break;
             case UNSUBSCRIPTION_SUCCESS:
                 // remove the broadcast receiver here
@@ -157,7 +161,7 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
                 break;
             case UNSUBSCRIPTION_ERROR:
                 toastStr = "could not unsubscribe";
-                connectingDialog.dismiss();
+                if(connectingDialog != null && connectingDialog.isShowing()){connectingDialog.dismiss();}
                 break;
             case TOPIC_PUBLISHED:
                 toastStr = "published";
@@ -184,7 +188,7 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
     private void unsubscribeToTopic(String topicName2) {
         if (isServiceRunning() == false) {
             if (connectingDialog.isShowing()) {
-                connectingDialog.dismiss();
+                if(connectingDialog != null && connectingDialog.isShowing()){connectingDialog.dismiss();}
             }
             return;
         }
@@ -204,7 +208,7 @@ public class PubSubActivity extends AppCompatActivity implements ServiceCallback
     private void subscribeToTopic () {
         if (isServiceRunning() == false) {
             if (connectingDialog.isShowing()) {
-                connectingDialog.dismiss();
+                if(connectingDialog != null && connectingDialog.isShowing()){connectingDialog.dismiss();}
             }
             return;
         }

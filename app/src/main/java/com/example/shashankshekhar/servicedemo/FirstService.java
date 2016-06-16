@@ -20,7 +20,7 @@ import com.example.shashankshekhar.servicedemo.Mqtt.SCMqttClient;
 import com.example.shashankshekhar.servicedemo.UtilityClasses.CommonUtils;
 import com.example.shashankshekhar.smartcampuslib.SmartXLibConstants;
 
-import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
+//import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 
 import java.util.HashSet;
 import java.util.Set;

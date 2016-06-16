@@ -1,14 +1,21 @@
 package com.example.shashankshekhar.servicedemo.Activities;
 
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -44,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        serviceAdapter = new ServiceAdapter(getApplicationContext());
+        if(isStoragePermissionGranted())
+            serviceAdapter = new ServiceAdapter(getApplicationContext());
 //        CommonUtils.printLog(" Main activity process id: " + android.os.Process.myPid());
     }
 
@@ -193,4 +201,48 @@ public class MainActivity extends AppCompatActivity implements MQTTConstants, Se
         editor.commit();
 
     }
+
+     @Override
+     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+         if(grantResults[0]== PackageManager.PERMISSION_GRANTED && grantResults[1]== PackageManager.PERMISSION_GRANTED){
+             CommonUtils.printLog("Permission: "+permissions[0]+ " was "+grantResults[0]);
+             CommonUtils.printLog("Permission: "+permissions[1]+ " was "+grantResults[1]);
+             //resume tasks needing this permission
+             serviceAdapter = new ServiceAdapter(getApplicationContext());
+         }
+         else
+         {
+             new AlertDialog.Builder(MainActivity.this)
+                     .setTitle("Error!")
+                     .setMessage("Allow storage permissions and try again!")
+                     .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                         @Override
+                         public void onClick(DialogInterface dialog, int which) {
+                             finish();
+                         }
+                     }).create().show();
+         }
+     }
+
+     public  boolean isStoragePermissionGranted() {
+         if (Build.VERSION.SDK_INT >= 23) {
+             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                     == PackageManager.PERMISSION_GRANTED &&
+                     checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                             == PackageManager.PERMISSION_GRANTED) {
+                 CommonUtils.printLog("Read and Write Storage permission is granted");
+                 return true;
+             } else {
+
+                 CommonUtils.printLog("Read and Write Storage permission is revoked");
+                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                 return false;
+             }
+         }
+         else { //permission is automatically granted on sdk<23 upon installation
+             CommonUtils.printLog("Read and Write Storage permission is granted");
+             return true;
+         }
+     }
 }
