@@ -24,6 +24,9 @@ public class ConnOptsJsonHandler implements MQTTConstants {
     private static final String JSON_FILE = "configSettings.json";
     private static File configFile= new File(smartCampusDirectory, JSON_FILE);
     public static void initJsonWriter () {
+        if(!smartCampusDirectory.exists())
+            smartCampusDirectory.mkdirs();
+
         FileOutputStream stream = null;
         try {
             stream = new FileOutputStream(configFile);
